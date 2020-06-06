@@ -20,6 +20,7 @@ from DSB2017.preprocessing.prep_testing import preprocess_mhd
 from DSB2017.split_combine import SplitComb
 from DSB2017.test_detect import test_detect
 from DSB2017.utils import *
+torch.cuda.empty_cache()
 
 parser = argparse.ArgumentParser(description='DSB2017 inference')
 parser.add_argument('--input', '-i', type=str, required=True,
@@ -30,64 +31,7 @@ args = parser.parse_args()
 
 skip_prep = config_submit['skip_preprocessing']
 skip_detect = config_submit['skip_detect']
-
-input_path = args.input
-if os.path.isfile(input_path) and input_path.endswith('mhd'):
-    prep_result_path = bbox_result_path = Path(input_path).parent
-    testsplit = [input_path]
-    preprocess_mhd(input_path, save_to_file=True)
-
-elif os.path.isdir(input_path):
-    prep_result_path = bbox_result_path = input_path
-    n_worker = config_submit['n_worker_preprocessing']
-    pool = Pool(n_worker)
-    mhd_files = [os.path.join(input_path, f) for f in os.listdir(input_path) if f.endswith('.mhd')]
-    testsplit = mhd_files
-    if len(mhd_files) == 0:
-        raise FileNotFoundError('Found no CT scan in dir:', input_path)
-    partial_preprocess = partial(preprocess_mhd, save_to_file=True)
-
-    N = len(mhd_files)
-    _ = pool.map(partial_preprocess, mhd_files)
-    pool.close()
-    pool.join()
-else:
-    raise ValueError('Input a mhd file or a mhd directory!')
-
-
-nodmodel = import_module(config_submit['detector_model'].split('.py')[0])
-config1, nod_net, loss, get_pbb = nodmodel.get_model()
-checkpoint = torch.load(config_submit['detector_param'])
-nod_net.load_state_dict(checkpoint['state_dict'])
-
-torch.cuda.set_device(0)
-nod_net = nod_net.cuda()
-cudnn.benchmark = True
-nod_net = DataParallel(nod_net)
-
-if not skip_detect:
-    margin = 32
-    sidelen = 144
-    config1['datadir'] = prep_result_path
-    split_comber = SplitComb(sidelen, config1['max_stride'], config1['stride'], margin, pad_value=config1['pad_value'])
-
-    dataset = DataBowl3Detector(testsplit, config1, phase='test', split_comber=split_comber)
-    test_loader = DataLoader(dataset, batch_size=1,
-                             shuffle=False, num_workers=32, pin_memory=False, collate_fn=collate)
-
-    test_detect(test_loader, nod_net, get_pbb, bbox_result_path, config1, n_gpu=config_submit['n_gpu'])
-
-casemodel = import_module(config_submit['classifier_model'].split('.py')[0])
-casenet = casemodel.CaseNet(topk=5)
-config2 = casemodel.config
-checkpoint = torch.load(config_submit['classifier_param'], encoding='latin1')
-casenet.load_state_dict(checkpoint['state_dict'])
-
-torch.cuda.set_device(0)
-casenet = casenet.cuda()
-cudnn.benchmark = True
-casenet = DataParallel(casenet)
-
+sidelen = 144
 
 def test_casenet(model, testset):
     data_loader = DataLoader(
@@ -111,13 +55,81 @@ def test_casenet(model, testset):
     return predlist
 
 
-config2['bboxpath'] = bbox_result_path
-config2['datadir'] = prep_result_path
+def inference(input_path=args.input):
+    if os.path.isfile(input_path) and input_path.endswith('mhd'):
+        prep_result_path = bbox_result_path = Path(input_path).parent
+        testsplit = [input_path]
+        preprocess_mhd(input_path, save_to_file=True)
 
-dataset = DataBowl3Classifier(testsplit, config2, phase='test')
-predlist = test_casenet(casenet, dataset).T
+    elif os.path.isdir(input_path):
+        prep_result_path = bbox_result_path = input_path
+        n_worker = config_submit['n_worker_preprocessing']
+        pool = Pool(n_worker)
+        from fnmatch import fnmatch
 
-print('Predictions:', predlist)
-df = pandas.DataFrame({'filepath': testsplit, 'cancer': predlist})
-df.to_csv(args.output_file, index=False)
-print('Output log wrote to file:', args.output_file)
+        pattern = "*.mhd"
+        mhd_files = []
+        for path, subdirs, files in os.walk(input_path):
+            for name in files:
+                if fnmatch(name, pattern):
+                    mhd_files.append(os.path.join(path, name))
+
+        testsplit = mhd_files
+        if len(mhd_files) == 0:
+            raise FileNotFoundError('Found no CT scan in dir:', input_path)
+        partial_preprocess = partial(preprocess_mhd, save_to_file=True)
+
+        N = len(mhd_files)
+        _ = pool.map(partial_preprocess, mhd_files)
+        pool.close()
+        pool.join()
+    else:
+        raise ValueError('Input a mhd file or a mhd directory!')
+
+    nodmodel = import_module(config_submit['detector_model'].split('.py')[0])
+    config1, nod_net, loss, get_pbb = nodmodel.get_model()
+    checkpoint = torch.load(config_submit['detector_param'])
+    nod_net.load_state_dict(checkpoint['state_dict'])
+
+    torch.cuda.set_device(0)
+    nod_net = nod_net.cuda()
+    cudnn.benchmark = True
+    nod_net = DataParallel(nod_net)
+
+    if not skip_detect:
+        margin = 32
+        sidelen = 144
+        config1['datadir'] = prep_result_path
+        split_comber = SplitComb(sidelen, config1['max_stride'], config1['stride'], margin,
+                                 pad_value=config1['pad_value'])
+
+        dataset = DataBowl3Detector(testsplit, config1, phase='test', split_comber=split_comber)
+        test_loader = DataLoader(dataset, batch_size=1,
+                                 shuffle=False, num_workers=32, pin_memory=False, collate_fn=collate)
+
+        test_detect(test_loader, nod_net, get_pbb, bbox_result_path, config1, n_gpu=config_submit['n_gpu'])
+
+    casemodel = import_module(config_submit['classifier_model'].split('.py')[0])
+    casenet = casemodel.CaseNet(topk=5)
+    config2 = casemodel.config
+    checkpoint = torch.load(config_submit['classifier_param'], encoding='latin1')
+    casenet.load_state_dict(checkpoint['state_dict'])
+
+    torch.cuda.set_device(0)
+    casenet = casenet.cuda()
+    cudnn.benchmark = True
+    casenet = DataParallel(casenet)
+    config2['bboxpath'] = bbox_result_path
+    config2['datadir'] = prep_result_path
+
+    dataset = DataBowl3Classifier(testsplit, config2, phase='test')
+    predlist = test_casenet(casenet, dataset).T
+
+    print('Predictions:', predlist)
+    df = pandas.DataFrame({'filepath': testsplit, 'cancer': predlist})
+    df.to_csv(args.output_file, index=False)
+    print('Output log wrote to file:', args.output_file)
+
+
+if __name__ == "__main__":
+    inference()

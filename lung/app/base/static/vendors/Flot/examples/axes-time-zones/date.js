@@ -119,7 +119,7 @@
     }
     if (!opts) return;
     if (!opts.url) throw new Error ('URL must be specified');
-    if (!('async' in opts)) opts.async = true;
+    if (!('async' in opts)) opts.;
     if (!opts.async) {
       return fleegix && fleegix.xhr
       ? fleegix.xhr.doReq({ url: opts.url, async: false })

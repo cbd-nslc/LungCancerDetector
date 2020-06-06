@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from torch import optim
 from torch.autograd import Variable
 
-from layers import acc
+from DSB2017.layers import acc
 
 def get_lr(epoch,args):
     assert epoch<=args.lr_stage[-1]
@@ -38,9 +38,9 @@ def train_nodulenet(data_loader, net, loss, epoch, optimizer, args):
         if args.debug:
             if i >4:
                 break
-        data = Variable(data.cuda(async = True))
-        target = Variable(target.cuda(async = True))
-        coord = Variable(coord.cuda(async = True))
+        data = Variable(data.cuda())
+        target = Variable(target.cuda())
+        coord = Variable(coord.cuda())
 
         _,output = net(data, coord)
         loss_output = loss(output, target)
@@ -78,9 +78,9 @@ def validate_nodulenet(data_loader, net, loss):
 
     metrics = []
     for i, (data, target, coord) in enumerate(data_loader):
-        data = Variable(data.cuda(async = True), volatile = True)
-        target = Variable(target.cuda(async = True), volatile = True)
-        coord = Variable(coord.cuda(async = True), volatile = True)
+        data = Variable(data.cuda(), volatile = True)
+        target = Variable(target.cuda(), volatile = True)
+        coord = Variable(coord.cuda(), volatile = True)
 
         _,output = net(data, coord)
         loss_output = loss(output, target, train = False)

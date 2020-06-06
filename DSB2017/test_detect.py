@@ -27,6 +27,7 @@ def test_detect(data_loader, net, get_pbb, save_dir, config, n_gpu):
     split_comber = data_loader.dataset.split_comber
     for i_name, (data, target, coord, nzhw) in enumerate(data_loader):
         s = time.time()
+        save_dir = os.path.split(data_loader.dataset.filenames[i_name])[0]
         target = [np.asarray(t, np.float32) for t in target]
         lbb = target[0]
         nzhw = nzhw[0]
