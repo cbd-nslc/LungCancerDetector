@@ -1,7 +1,12 @@
+import os
+DSB_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+num_workers = 0
+
 config_submit = {'detector_model': 'net_detector',
-                 'detector_param': './model/detector.ckpt',
+                 'detector_param': DSB_ROOT + '/model/detector.ckpt',
                  'classifier_model': 'net_classifier',
-                 'classifier_param': './model/classifier.ckpt',
+                 'classifier_param': DSB_ROOT + '/model/classifier.ckpt',
                  'n_gpu': 1,
                  'n_worker_preprocessing': None,
                  'use_exsiting_preprocessing': False,

@@ -11,6 +11,9 @@ from torch.autograd import Variable
 from torch.nn.functional import cross_entropy,sigmoid,binary_cross_entropy
 from torch.utils.data import DataLoader
 
+from DSB2017 import config
+
+
 def get_lr(epoch,args):
     assert epoch<=args.lr_stage2[-1]
     if args.lr==None:
@@ -143,7 +146,7 @@ def test_casenet(model,testset):
         testset,
         batch_size = 4,
         shuffle = False,
-        num_workers = 32,
+        num_workers = config.num_workers,
         pin_memory=True)
     #model = model.cuda()
     model.eval()

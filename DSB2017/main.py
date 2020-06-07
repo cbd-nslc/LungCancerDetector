@@ -12,7 +12,7 @@ from torch.nn import DataParallel
 from torch.utils.data import DataLoader
 
 sys.path.append('..')
-
+from DSB2017 import config
 from DSB2017.config import config_submit
 from DSB2017.data_classifier import DataBowl3Classifier
 from DSB2017.data_detector import DataBowl3Detector, collate
@@ -20,14 +20,13 @@ from DSB2017.preprocessing.prep_testing import preprocess_mhd
 from DSB2017.split_combine import SplitComb
 from DSB2017.test_detect import test_detect
 from DSB2017.utils import *
-torch.cuda.empty_cache()
 
-parser = argparse.ArgumentParser(description='DSB2017 inference')
-parser.add_argument('--input', '-i', type=str, required=True,
-                    help='Path to mhd file or the dir that contains multiple scans')
-parser.add_argument('--output_file', '-o', type=str, default='prediction.csv',
-                    help='Path to the csv output log')
-args = parser.parse_args()
+# parser = argparse.ArgumentParser(description='DSB2017 inference')
+# parser.add_argument('--input', '-i', type=str,
+#                     help='Path to mhd file or the dir that contains multiple scans')
+# parser.add_argument('--output_file', '-o', type=str, default='prediction.csv',
+#                     help='Path to the csv output log')
+# args = parser.parse_args()
 
 skip_prep = config_submit['skip_preprocessing']
 skip_detect = config_submit['skip_detect']
@@ -38,7 +37,7 @@ def test_casenet(model, testset):
         testset,
         batch_size=1,
         shuffle=False,
-        num_workers=32,
+        num_workers=config.num_workers,
         pin_memory=True)
     # model = model.cuda()
     model.eval()
@@ -55,13 +54,17 @@ def test_casenet(model, testset):
     return predlist
 
 
-def inference(input_path=args.input):
+def inference(input_path, output_file=None):
     if os.path.isfile(input_path) and input_path.endswith('mhd'):
         prep_result_path = bbox_result_path = Path(input_path).parent
         testsplit = [input_path]
         preprocess_mhd(input_path, save_to_file=True)
+        if output_file is None:
+            output_file = os.path.join(prep_result_path, 'prediction.csv')
 
     elif os.path.isdir(input_path):
+        if output_file is None:
+            output_file = os.path.join(input_path, 'prediction.csv')
         prep_result_path = bbox_result_path = input_path
         n_worker = config_submit['n_worker_preprocessing']
         pool = Pool(n_worker)
@@ -79,7 +82,7 @@ def inference(input_path=args.input):
             raise FileNotFoundError('Found no CT scan in dir:', input_path)
         partial_preprocess = partial(preprocess_mhd, save_to_file=True)
 
-        N = len(mhd_files)
+        # N = len(mhd_files)
         _ = pool.map(partial_preprocess, mhd_files)
         pool.close()
         pool.join()
@@ -105,7 +108,7 @@ def inference(input_path=args.input):
 
         dataset = DataBowl3Detector(testsplit, config1, phase='test', split_comber=split_comber)
         test_loader = DataLoader(dataset, batch_size=1,
-                                 shuffle=False, num_workers=32, pin_memory=False, collate_fn=collate)
+                                 shuffle=False, num_workers=config.num_workers, pin_memory=False, collate_fn=collate)
 
         test_detect(test_loader, nod_net, get_pbb, bbox_result_path, config1, n_gpu=config_submit['n_gpu'])
 
@@ -127,9 +130,6 @@ def inference(input_path=args.input):
 
     print('Predictions:', predlist)
     df = pandas.DataFrame({'filepath': testsplit, 'cancer': predlist})
-    df.to_csv(args.output_file, index=False)
-    print('Output log wrote to file:', args.output_file)
+    print('Output log wrote to file:', output_file)
+    df.to_csv(output_file, index=False)
 
-
-if __name__ == "__main__":
-    inference()
