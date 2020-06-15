@@ -1,0 +1,78 @@
+{% extends "base_site.html" %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+{% endblock stylesheets %}
+
+{% block content %}
+  <div class="right_col" role="main">
+    <div class="">
+      <div class="page-title">
+        <div class="title_left">
+          <h1>Your Profile</h1>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+
+
+      <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="x_panel">
+
+            <!-- x-title -->
+            <div class="x_title">
+              <h3>Overview</h3>
+            </div>
+
+            <div class="x_content">
+              <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
+                <div class="profile_img">
+                  <div id="crop-avatar">
+                    <!-- Current avatar -->
+                    <img class="img-responsive avatar-view" src="/static/images/picture.jpg" alt="Avatar" title="Change the avatar">
+                  </div>
+                </div>
+                <h3>name</h3>
+
+
+                <ul class="list-unstyled user_data">
+                  <li><i class="fa fa-map-marker user-profile-icon"></i> address
+                  </li>
+                </ul>
+
+
+                <a href="#" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Edit Info</a>
+                <a href="#" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Upload CT Scan</a>
+                <br />
+
+                <!-- start skills -->
+                
+                <!-- end of skills -->
+              </div>
+
+
+              <div class="col-md-9 col-sm-9 col-xs-12">
+                <div class="profile_title">
+                  <div class="col-md-12">
+                    <h2>Personal Info</h2>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}
+  {{ super() }}
+  <!-- morris.js -->
+  <script src="{{ url_for('static', filename='vendors/raphael/raphael.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/morris.js/morris.min.js') }}"></script>
+{% endblock javascripts %}

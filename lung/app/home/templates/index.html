@@ -1,0 +1,169 @@
+{% extends "base_site.html" %}
+
+{% block title %} Dashboard 1 {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="right_col" role="main">
+        <!-- page title -->
+      <div class="page-title">
+        <div class="title_left">
+          <h1>Patients version <small>Lung cancer detection</small></h1>
+        </div>
+
+        <div class="title_right">
+          <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search for...">
+              <span class="input-group-btn">
+                <button class="btn btn-secondary" type="button">Go!</button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+        <!-- page title -->
+
+
+      <div class="clearfix"></div>
+
+      <!-- row -->
+      <div class="row">
+        <div class="col-md-8">
+          <div class="x_panel">
+            <!-- x_title -->
+            <div class="x_title">
+                <h3 style="display:inline-block;">List of patients</h3>
+              
+                <a href="{{ url_for('patients_blueprint.create_patients') }}" class="btn ui-btn-inline btn-info btn-lg-sm" style="float:right; background-color:#28a745;margin-top:5px;">
+                  <span class="glyphicon glyphicon-plus" style="color:white;"></span> Add Patient
+                </a>
+
+            </div>
+            <!-- x_title -->
+
+            <!-- x_content -->
+            <div class="x_content">           
+
+              <!-- table -->
+              <table class="table table-striped projects">
+                <thead>
+                  <tr>
+                    <th style="width: 5%">#</th>
+                    <th style="width: calc(95%/3)">Patient Name</th>
+                    <th style="width: calc(95%/3)">Patient ID</th>               
+                    <th style="width: calc(95%/3)">Edit</th>
+                  </tr>
+                </thead>
+
+                <!-- tbody -->
+                <tbody>
+                  <!-- when user has 0 patients -->
+                  {% if num_patients == 0 %}
+                    <tr>
+                      <td colspan="4"><p style="text-align:center; font-size:16px;">You don't have any patients in your list. Please add your patient!</p></td>
+                    </tr>
+                  <!-- when user has > 0 patients -->
+                  {% else %}
+                    {% for i, patient in patients %}
+                      <tr>
+                        <!-- num -->
+                        <td>{{ i+1 }}</td>
+                        <!-- name -->
+                        <td>
+                          <a href="{{ url_for('patients_blueprint.patients_profile', patient_id=patient.id) }}">{{ patient.first_name }} {{ patient.last_name }}</a>
+                          <br />
+                          <small>Updated {{ patient.date_updated.strftime('%d-%m-%Y') }}</small>
+                        </td>
+
+                        <!-- id -->
+                        <td>
+                          <p>{{ patient.id }}</p>
+                        </td>
+
+                        <!-- settings -->
+                        <td>
+                          <a href="{{ url_for('patients_blueprint.patients_profile', patient_id=patient.id) }}" class="btn btn-primary btn-xs"><i class="fa fa-folder"></i> View </a>
+                          <a href="{{ url_for('patients_blueprint.edit_info', patient_id=patient.id) }}" class="btn btn-info btn-xs"><i class="fa fa-pencil"></i> Edit </a>
+
+                          <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-trash-o"></i> Delete </button>
+                        </td>
+                      </tr>
+
+                      <!-- Modal -->
+                      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="deleteModalLabel">Delete Post?</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              Do you want to delete this post?
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                              <form action="{{ url_for('patients_blueprint.delete_patients', patient_id=patient.id) }}" method="POST">
+                                  <input class="btn btn-danger" type="submit" value="Delete">
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+
+                </tbody>
+                <!-- tbody -->
+
+              </table>
+              <!-- table -->
+            </div>  
+            <!-- x_content -->
+
+          </div>
+        </div>
+      </div>
+  </div>
+
+
+
+
+
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ super()}}
+  <!-- Chart.js -->
+  <script src="{{ url_for('static', filename='vendors/Chart.js/dist/Chart.min.js') }}"></script>
+  <!-- gauge.js -->
+  <script src="{{ url_for('static', filename='vendors/gauge.js/dist/gauge.min.js') }}"></script>
+  <!-- Skycons -->
+  <script src="{{ url_for('static', filename='vendors/skycons/skycons.js') }}"></script>
+  <!-- Flot -->
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.pie.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.time.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.stack.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.resize.js') }}"></script>
+  <!-- Flot plugins -->
+  <script src="{{ url_for('static', filename='vendors/flot.orderbars/js/jquery.flot.orderBars.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/flot-spline/js/jquery.flot.spline.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/flot.curvedlines/curvedLines.js') }}"></script>
+  <!-- DateJS -->
+  <script src="{{ url_for('static', filename='vendors/DateJS/build/date.js') }}"></script>
+  <!-- JQVMap -->
+  <script src="{{ url_for('static', filename='vendors/jqvmap/dist/jquery.vmap.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
+{% endblock javascripts %}
