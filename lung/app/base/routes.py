@@ -39,9 +39,6 @@ def route_errors(error):
 ## Login
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('home_blueprint.index'))
-
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -54,27 +51,31 @@ def login():
         else:
             flash('Login Unsuccessful. Please check your username and password', 'danger')
 
+    # elif current_user.is_authenticated:
+    #     return redirect(url_for('home_blueprint.index'))
+
     return render_template('login/login.html', title='Login', form=form)
 
 
 ## Registration
-@blueprint.route('/create_user', methods=['GET', 'POST'])
+@blueprint.route('/register', methods=['GET', 'POST'])
 def create_user():
-    # # if already logged in, can't go to register page
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('home_blueprint.index'))
-
     form = CreateAccountForm()
 
     # if form submit success, indicate "Account created for  " at "home" page
     if form.validate_on_submit():
         # create user
-        user = User(username=form.username.data, password=form.password.data)
+        user = User(username=form.username.data, email=form.email.data, password=form.password.data)
         # add user to database
         db.session.add(user)
         db.session.commit()
         flash(f'Your account has been created! You are now able to login', 'success')
         return redirect(url_for('base_blueprint.login'))
+
+    # if already logged in, can't go to register page
+    # if current_user.is_authenticated:
+    #     flash('Please log out to create a new account!', 'info')
+    #     return redirect(url_for('home_blueprint.index'))
 
     return render_template('login/register.html', title='Register', form=form)
 
@@ -97,9 +98,9 @@ def shutdown():
 
 # Errors
 
-@login_manager.unauthorized_handler
-def unauthorized_handler():
-    return render_template('errors/page_403.html'), 403
+# @login_manager.unauthorized_handler
+# def unauthorized_handler():
+#     return redirect()
 
 
 @blueprint.errorhandler(403)

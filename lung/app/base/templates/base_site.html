@@ -35,18 +35,8 @@
     {% endblock head %}
   </head>
 
-  <body class="{% block body_class %}nav-md {% endblock body_class %}">
-    <div class="row">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class='alert alert-{{ category }} text-center'>
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-      {% endwith %}
-    </div>
+  <body class="{% block body_class %}nav-md {% endblock body_class %}", style="overflow-x:hidden;">
+    
 
     {% block body %}
       <div class="container body">
@@ -64,9 +54,25 @@
             </div>
           {% endblock top_navigation %}
 
+          <!-- display error on index page -->
+          <div class="row" style="background-color:#F7F7F7;">
+            <div class="col-md-12">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} text-center" style="font-size:16px">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+              {% endwith %}
+            </div>
+          </div>
           {% block content %}
             <!-- {{ content }} -->
           {% endblock content %}
+
+
 
           {% block footer %}
             <footer>

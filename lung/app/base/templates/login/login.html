@@ -36,11 +36,20 @@
   <!-- Login -->
   <script src="{{ url_for('static', filename='build/js/login.js') }}"></script>
 
-  <div>
-    <a class="hiddenanchor" id="signup"></a>
-    <a class="hiddenanchor" id="signin"></a>
+    <div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class='alert alert-{{ category }} text-center' style="font-size:16px">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
 
     <div class="login_wrapper">
+           
       <div class="animate form login_form">
         <section class="login_content">
           <form data-parsley-validate method="POST">
@@ -91,6 +100,6 @@
         </section>
       </div>
     </div>
-  </div>
+
 {% endblock body %}
 

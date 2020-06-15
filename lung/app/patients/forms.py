@@ -1,31 +1,27 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, SubmitField, TextAreaField, FloatField, IntegerField, SelectField
-from wtforms.validators import DataRequired, ValidationError, NumberRange
+from wtforms.validators import DataRequired, ValidationError, NumberRange, Length
 
 
 class PatientsForm(FlaskForm):
-    first_name = StringField('First Name')
-    last_name = StringField('Last Name', validators=[DataRequired()])
-    age = IntegerField('Age', [DataRequired(), NumberRange(min=0, max=1000)])
-    sex = SelectField('Sex', validators=[DataRequired()], choices=['Male', 'Female', 'Other'])
-
-    occupation = StringField('Occupation', validators=[DataRequired()])
-
+    first_name = StringField('First Name', validators=[DataRequired(), Length(max=20)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(max=20)])
+    age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=0, max=1000)])
+    sex = SelectField('Sex', choices=['Male', 'Female', 'Other'], validate_choice=False)
+    occupation = StringField('Occupation')
     address = StringField('Address')
 
-    health_condition = TextAreaField('Health Condition', validators=[DataRequired()])
+    # weight = FloatField('Weight (kg)')
+    # height = FloatField('Height (cm)')
+    # health_condition = TextAreaField('Health Condition')
+    # diabetes = StringField('Diabetes')
+    # blood_pressure = FloatField('Blood Pressure (mmHg)')
+    # cancer_report = TextAreaField('Cancer Report')
+    # other_problems = TextAreaField('Other Problems')
 
-    weight = FloatField('Weight (kg)')
-    height = FloatField('Height (cm)')
-
-    diabetes = StringField('Diabetes', validators=[DataRequired()])
-    blood_pressure = StringField('Blood Pressure', validators=[DataRequired()])
-
-    cancer_reports = TextAreaField('Cancer Reports', validators=[DataRequired()])
-
-    CT_scan = FileField('CT Scan', validators=[FileAllowed(['jpg', 'png'])])
-
-    other_problems = TextAreaField('Other Problems')
+    # CT_scan = FileField('CT Scan', validators=[FileAllowed(['jpg', 'png', 'raw', 'mhd'])])
 
     submit = SubmitField('Save')
+    cancel = SubmitField('Cancel')
+

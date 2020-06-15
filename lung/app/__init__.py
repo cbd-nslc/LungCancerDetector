@@ -7,7 +7,6 @@ from logging import basicConfig, DEBUG, getLogger, StreamHandler
 from os import path
 
 db = SQLAlchemy()
-bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = 'base_blueprint.login'
 login_manager.login_message_category = 'info'
@@ -15,12 +14,11 @@ login_manager.login_message_category = 'info'
 
 def register_extensions(app):
     db.init_app(app)
-    bcrypt.init_app(app)
     login_manager.init_app(app)
 
 
 def register_blueprints(app):
-    for module_name in ['base', 'home', 'forms', 'additional', 'patients']:
+    for module_name in ['base', 'home', 'additional', 'patients']:
         module = import_module(f'app.{module_name}.routes')
         app.register_blueprint(module.blueprint)
 
@@ -77,6 +75,9 @@ def create_app(config, selenium=False):
     app.config.from_object(config)
     if selenium:
         app.config['LOGIN_DISABLED'] = True
+
+    from app.base import models
+
     register_extensions(app)
     register_blueprints(app)
     configure_database(app)

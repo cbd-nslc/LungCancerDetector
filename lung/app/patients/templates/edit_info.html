@@ -1,13 +1,14 @@
 {% extends "base_site.html" %}
 
-{% block title %}{% endblock title %}
+{% block title %} {{ title }} {% endblock title %}
 
 {% block content %}
   <div class="right_col" role="main">
     <div class="">
       <div class="page-title">
         <div class="title_left">
-          <h1>Patient Profile</h1>
+          <h1>Patient Profile <small>{{ heading }}</small></h1>
+          
         </div>  
       </div>
 
@@ -18,143 +19,95 @@
           <div class="x_panel">
             <div class="x_title">
               <h3>Personal Info</h3>
-
-              <ul class="nav navbar-right panel_toolbox">
-                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                </li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">Settings 1</a>
-                    </li>
-                    <li><a href="#">Settings 2</a>
-                    </li>
-                  </ul>
-                </li>         
-              </ul>
             </div>
-            
+
             <div class="x_content">
 
-              <form class="form-horizontal form-label-left" novalidate>
-                  
-                  <!-- first name -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.first_name.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.first_name(class="form-control col-md-7 col-xs-12", data_validate_length_range="1,20", required="required") }}
-                    </div>
+              <form class="form-horizontal form-label-left" action="" method="POST">
+                {{ form.hidden_tag() }}
+
+                <!-- first name -->
+                <div class="item form-group">
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.first_name.label }} <span class="required">*</span>
+                  </label>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                    {{ form.first_name(class="form-control col-md-7 col-xs-12") }}
                   </div>
-
-                  <!-- last name  -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.last_name.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.last_name(class="form-control col-md-7 col-xs-12", data_validate_length_range="1,20", required="required", type="text") }}
-                    </div>
-                  </div>          
-
-                  <!-- sex -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.sex.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-2 col-sm-2 col-xs-2">
-                      {{ form.sex(class="form-control col-md-2 col-xs-2", required="required") }}
-                    </div>
-                  </div>
-
-                  <!-- age -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.age.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.age(class="form-control col-md-7 col-xs-12", required="required", data_validate_minmax="0,1000", type="number") }}
-                    </div>
-                  </div>
-
-                  <!-- weight -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.weight.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.weight(class="form-control col-md-7 col-xs-12", required="required", data_validate_minmax="0,1000", type="number") }}
-                    </div>
-                  </div>
-
-                  <!-- height -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.height.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.height(class="form-control col-md-7 col-xs-12", required="required", data_validate_minmax="0,1000", type="number") }}
-                    </div>
-                  </div>
-
-                  <!-- occupation -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.occupation.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.occupation(class="form-control col-md-7 col-xs-12", data_validate_length_range="1,50", required="required", type="text") }}
-                    </div>
-                  </div>
-
-                  <!-- address  -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.address.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.address(class="form-control col-md-7 col-xs-12", data_validate_length_range="1,100", required="required", type="text") }}
-                    </div>
-                  </div>             
-
-                  <!-- diabetes -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.diabetes.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.diabetes(class="form-control col-md-7 col-xs-12", data_validate_length_range="1,100", required="required", type="text") }}
-                    </div>
-                  </div>
-
-                  <!-- blood_pressure -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.blood_pressure.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.blood_pressure(class="form-control col-md-7 col-xs-12", data_validate_length_range="1,100", required="required", type="text") }}
-                    </div>
-                  </div>
-
-                  <!-- cancer_reports -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.cancer_reports.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.cancer_reports(class="form-control col-md-7 col-xs-12", data_validate_length_range="1,100", required="required", type="text") }}
-                    </div>
-                  </div>
-
-                  <!-- other_problems -->
-                  <div class="item form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.other_problems.label }} <span class="required">*</span>
-                    </label>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                      {{ form.other_problems(class="form-control col-md-7 col-xs-12", data_validate_length_range="1,100", required="required", type="text") }}
-                    </div>
-                  </div>
-
-                 
-                <div class="ln_solid"></div>
-                <div class="form-group">
-                  <div class="col-md-6 col-md-offset-3">
-                    <button id="send" type="submit" class="btn btn-success">Submit</button>
-                    <button type="submit" class="btn btn-primary">Cancel</button>
-                    
+                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                    <p style="float:left;">{{ form.first_name.errors[0] }}</p>
                   </div>
                 </div>
+
+                <!-- last name -->
+                <div class="item form-group">
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.last_name.label }} <span class="required">*</span>
+                  </label>
+                  <div class="col-md-4 col-sm-4 col-xs-12">
+                    {{ form.last_name(class="form-control col-md-7 col-xs-12") }}
+                  </div>
+                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                    <p style="float:left;">{{ form.last_name.errors[0] }}</p>
+                  </div>
+                </div>
+
+                <!-- age -->
+                <div class="item form-group">
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.age.label }} <span class="required">*</span>
+                  </label>
+                  <div class="col-md-2 col-sm-2 col-xs-2">
+                    {{ form.age(class="form-control col-md-2 col-xs-2", type="number") }}
+                  </div>
+                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                    <p style="float:left;">{{ form.age.errors[0] }}</p>
+                  </div>
+                </div>
+
+                <!-- sex -->
+                <div class="item form-group">
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.sex.label }} <span class="required">*</span>
+                  </label>
+                  <div class="col-md-2 col-sm-2 col-xs-12">
+                    {{ form.sex(class="form-control col-md-7 col-xs-12") }}
+                  </div>
+                </div>
+
+                <!-- occupation -->
+                <div class="item form-group">
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.occupation.label }} <span class="required">*</span>
+                  </label>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    {{ form.occupation(class="form-control col-md-2 col-xs-2") }}
+                  </div>
+                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                    <p style="float:left;">{{ form.occupation.errors[0] }}</p>
+                  </div>
+                </div>
+
+                <!-- address -->
+                <div class="item form-group">
+                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.address.label }} <span class="required">*</span>
+                  </label>
+                  <div class="col-md-4 col-sm-4 col-xs-4">
+                    {{ form.address(class="form-control col-md-2 col-xs-2") }}
+                  </div>
+                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                    <p style="float:left;">{{ form.address.errors[0] }}</p>
+                  </div>
+                </div>
+
+
+                <div class="ln_solid"></div>
+
+                <!-- submit button -->
+                <div class="form-group">
+                  <div class="col-md-6 col-md-offset-3">
+                    {{ form.submit(class="btn btn-success") }}
+                    <button class="btn btn-primary" type="reset">Reset</button>
+                    {{ form.cancel(class="btn btn-secondary", formnovalidate=True) }}
+
+                  </div>
+                </div>
+
               </form>
             </div>
           </div>
@@ -164,8 +117,4 @@
   </div>
 {% endblock content %}
 
-{% block javascripts %}
-  {{ super() }}
-  <!-- validator -->
-  <script src="{{ url_for('static', filename='vendors/validator/validator.js') }}"></script>
-{% endblock javascripts %}
+
