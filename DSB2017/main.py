@@ -1,4 +1,3 @@
-import argparse
 import sys
 from functools import partial
 from importlib import import_module
@@ -10,6 +9,8 @@ from torch.autograd import Variable
 from torch.backends import cudnn
 from torch.nn import DataParallel
 from torch.utils.data import DataLoader
+
+from DSB2017.preprocessing.full_prep import full_prep
 
 sys.path.append('..')
 from DSB2017 import config
@@ -31,6 +32,7 @@ from DSB2017.utils import *
 skip_prep = config_submit['skip_preprocessing']
 skip_detect = config_submit['skip_detect']
 sidelen = 144
+
 
 def test_casenet(model, testset):
     data_loader = DataLoader(
@@ -70,22 +72,26 @@ def inference(input_path, output_file=None):
         pool = Pool(n_worker)
         from fnmatch import fnmatch
 
-        pattern = "*.mhd"
         mhd_files = []
+        dcm_dirs = []
+
         for path, subdirs, files in os.walk(input_path):
             for name in files:
-                if fnmatch(name, pattern):
+                if fnmatch(name, "*.mhd"):
                     mhd_files.append(os.path.join(path, name))
 
-        testsplit = mhd_files
-        if len(mhd_files) == 0:
-            raise FileNotFoundError('Found no CT scan in dir:', input_path)
-        partial_preprocess = partial(preprocess_mhd, save_to_file=True)
+        if len(mhd_files) > 0:
+            testsplit = mhd_files
+            partial_preprocess = partial(preprocess_mhd, save_to_file=True)
 
-        # N = len(mhd_files)
-        _ = pool.map(partial_preprocess, mhd_files)
-        pool.close()
-        pool.join()
+            # N = len(mhd_files)
+            _ = pool.map(partial_preprocess, mhd_files)
+            pool.close()
+            pool.join()
+
+        # Preprocess DCM files
+        testsplit = full_prep(input_path, prep_result_path, n_worker=config.num_workers)
+
     else:
         raise ValueError('Input a mhd file or a mhd directory!')
 
@@ -133,3 +139,6 @@ def inference(input_path, output_file=None):
     print('Output log wrote to file:', output_file)
     df.to_csv(output_file, index=False)
 
+
+if __name__ == "__main__":
+    inference(input_path='/home/vantuan5644/PycharmProjects/DSB3_/test')

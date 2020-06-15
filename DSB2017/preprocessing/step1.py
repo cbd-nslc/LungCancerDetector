@@ -7,12 +7,12 @@ from skimage import measure
 
 
 def load_scan(path):
-    slices = [pydicom.read_file(path + '/' + s) for s in os.listdir(path)]
+    slices = [pydicom.read_file(os.path.join(path, s)) for s in os.listdir(path)]
     slices.sort(key=lambda x: float(x.ImagePositionPatient[2]))
     if slices[0].ImagePositionPatient[2] == slices[1].ImagePositionPatient[2]:
-        sec_num = 2;
+        sec_num = 2
         while slices[0].ImagePositionPatient[2] == slices[sec_num].ImagePositionPatient[2]:
-            sec_num = sec_num + 1;
+            sec_num = sec_num + 1
         slice_num = int(len(slices) / sec_num)
         slices.sort(key=lambda x: float(x.InstanceNumber))
         slices = slices[0:slice_num]
@@ -45,8 +45,8 @@ def get_pixels_hu(slices):
 
         image[slice_number] += np.int16(intercept)
 
-    return np.array(image, dtype=np.int16), np.array([slices[0].SliceThickness] + slices[0].PixelSpacing,
-                                                     dtype=np.float32)
+    return np.array(image, dtype=np.int16), np.array(
+        [slices[0].SliceThickness, slices[0].PixelSpacing[0], slices[0].PixelSpacing[1]], dtype=np.float32)
 
 
 def binarize_per_slice(image, spacing, intensity_th=-600, sigma=1, area_th=30, eccen_th=0.99, bg_patch_size=10):
@@ -89,10 +89,9 @@ def all_slice_analysis(bw, spacing, cut_num=0, vol_limit=[0.68, 8.2], area_th=6e
     label = measure.label(bw, connectivity=1)
     # remove components access to corners
     mid = int(label.shape[2] / 2)
-    bg_label = set([label[0, 0, 0], label[0, 0, -1], label[0, -1, 0], label[0, -1, -1], \
-                    label[-1 - cut_num, 0, 0], label[-1 - cut_num, 0, -1], label[-1 - cut_num, -1, 0],
-                    label[-1 - cut_num, -1, -1], \
-                    label[0, 0, mid], label[0, -1, mid], label[-1 - cut_num, 0, mid], label[-1 - cut_num, -1, mid]])
+    bg_label = {label[0, 0, 0], label[0, 0, -1], label[0, -1, 0], label[0, -1, -1], label[-1 - cut_num, 0, 0],
+                label[-1 - cut_num, 0, -1], label[-1 - cut_num, -1, 0], label[-1 - cut_num, -1, -1], label[0, 0, mid],
+                label[0, -1, mid], label[-1 - cut_num, 0, mid], label[-1 - cut_num, -1, mid]}
     for l in bg_label:
         label[label == l] = 0
 
@@ -149,8 +148,8 @@ def fill_hole(bw):
     # fill 3d holes
     label = measure.label(~bw)
     # idendify corner components
-    bg_label = set([label[0, 0, 0], label[0, 0, -1], label[0, -1, 0], label[0, -1, -1], \
-                    label[-1, 0, 0], label[-1, 0, -1], label[-1, -1, 0], label[-1, -1, -1]])
+    bg_label = {label[0, 0, 0], label[0, 0, -1], label[0, -1, 0], label[0, -1, -1], label[-1, 0, 0], label[-1, 0, -1],
+                label[-1, -1, 0], label[-1, -1, -1]}
     bw = ~np.in1d(label, list(bg_label)).reshape(label.shape)
 
     return bw
@@ -248,7 +247,14 @@ def step1_python(case_path):
 
 
 if __name__ == '__main__':
-    INPUT_FOLDER = '/work/DataBowl3/stage1/stage1/'
+    INPUT_FOLDER = '/home/vantuan5644/PycharmProjects/DSB3_/stage1/'
+    folders = list(os.walk(INPUT_FOLDER))[1:]
+
+    for folder in folders:
+        # folder example: ('FOLDER/3', [], ['file'])
+        if not folder[2]:
+            os.rmdir(folder[0])
+
     patients = os.listdir(INPUT_FOLDER)
     patients.sort()
     case_pixels, m1, m2, spacing = step1_python(os.path.join(INPUT_FOLDER, patients[25]))
