@@ -7,7 +7,7 @@ from skimage import measure
 
 
 def load_scan(path):
-    slices = [pydicom.read_file(os.path.join(path, s)) for s in os.listdir(path)]
+    slices = [pydicom.read_file(os.path.join(path, s)) for s in os.listdir(path) if os.path.isdir(path)]
     slices.sort(key=lambda x: float(x.ImagePositionPatient[2]))
     if slices[0].ImagePositionPatient[2] == slices[1].ImagePositionPatient[2]:
         sec_num = 2

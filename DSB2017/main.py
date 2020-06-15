@@ -88,12 +88,12 @@ def inference(input_path, output_file=None):
             _ = pool.map(partial_preprocess, mhd_files)
             pool.close()
             pool.join()
-
-        # Preprocess DCM files
-        testsplit = full_prep(input_path, prep_result_path, n_worker=config.num_workers)
+        else:
+            # Preprocess DCM files
+            testsplit = full_prep(input_path, prep_result_path, n_worker=config.num_workers, use_existing=True)
 
     else:
-        raise ValueError('Input a mhd file or a mhd directory!')
+        raise ValueError('Input a mhd file or a mhd/dicom directory!')
 
     nodmodel = import_module(config_submit['detector_model'].split('.py')[0])
     config1, nod_net, loss, get_pbb = nodmodel.get_model()
