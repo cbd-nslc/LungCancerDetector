@@ -1,7 +1,7 @@
 import os
 DSB_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-num_workers = 16
+num_workers = 32
 
 config_submit = {'detector_model': 'net_detector',
                  'detector_param': DSB_ROOT + '/model/detector.ckpt',
@@ -12,7 +12,6 @@ config_submit = {'detector_model': 'net_detector',
                  'use_exsiting_preprocessing': False,
                  'skip_preprocessing': False,
                  'skip_detect': False,}
-
 config_training = {'stage1_data_path': '/work/DataBowl3/stage1/stage1/',
                    'luna_raw': '/work/DataBowl3/luna/raw/',
                    'luna_segment': '/work/DataBowl3/luna/seg-lungs-LUNA16/',

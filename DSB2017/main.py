@@ -90,7 +90,7 @@ def inference(input_path, output_file=None):
             pool.join()
         else:
             # Preprocess DCM files
-            testsplit = full_prep(input_path, prep_result_path, n_worker=config.num_workers, use_existing=True)
+            testsplit = full_prep(input_path, prep_result_path, n_worker=config.num_workers, use_existing=False)
 
     else:
         raise ValueError('Input a mhd file or a mhd/dicom directory!')
@@ -138,6 +138,7 @@ def inference(input_path, output_file=None):
     df = pandas.DataFrame({'filepath': testsplit, 'cancer': predlist})
     print('Output log wrote to file:', output_file)
     df.to_csv(output_file, index=False)
+    return predlist
 
 
 if __name__ == "__main__":
