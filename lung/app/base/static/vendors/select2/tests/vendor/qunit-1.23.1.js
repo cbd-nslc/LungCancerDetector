@@ -1391,7 +1391,7 @@ QUnit.assert = Assert.prototype = {
 		}
 
 		test.semaphore += 1;
-		test.used;
+		test.usedAsync = true;
 		pauseProcessing();
 
 		return function done() {

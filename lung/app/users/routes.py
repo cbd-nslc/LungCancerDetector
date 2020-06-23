@@ -70,7 +70,6 @@ def users_profile():
     if 'submit' in request.form:
         if form.validate_on_submit():
             if form.picture.data:
-
                 current_user.picture = save_picture(form.picture.data)
 
             current_user.username = form.username.data

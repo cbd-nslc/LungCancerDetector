@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
+from flask_wtf.file import FileField
 from wtforms import StringField, SubmitField, TextAreaField, FloatField, IntegerField, SelectField
 from wtforms.validators import DataRequired, ValidationError, NumberRange, Length
 
@@ -12,8 +12,8 @@ class PatientsForm(FlaskForm):
     occupation = StringField('Occupation')
     address = StringField('Address')
 
-    weight = FloatField('Weight (kg)', render_kw={'type': 'number', 'value': '0'})
-    height = FloatField('Height (cm)', render_kw={'type': 'number', 'value': '0'})
+    weight = FloatField('Weight (kg)', render_kw={'type': 'number'})
+    height = FloatField('Height (cm)', render_kw={'type': 'number'})
     blood_pressure = FloatField('Blood Pressure (mmHg)', render_kw={'type': 'number'})
 
     diabetes = StringField('Diabetes')

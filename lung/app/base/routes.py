@@ -52,9 +52,9 @@ def upload():
             mhd_file.save(mhd_path)
 
             import time
-            time.sleep(60)
+            # time.sleep(5)
 
-            # inference(mhd_path)
+            inference(mhd_path)
 
             return redirect(url_for('base_blueprint.result', raw_file_name=raw_file_name, mhd_file_name=mhd_file_name))
 

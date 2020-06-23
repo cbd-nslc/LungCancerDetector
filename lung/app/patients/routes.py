@@ -17,7 +17,7 @@ from app.base.models import User, Patient
 @blueprint.route("/create", methods=['GET', 'POST'])
 @login_required
 def create_patients():
-    form = PatientsForm(request.form)
+    form = PatientsForm()
 
     # The user pressed the "Submit" button
     if 'submit' in request.form:
@@ -32,7 +32,7 @@ def create_patients():
             db.session.add(patient)
             db.session.commit()
             flash('Your patient has been added!', 'success')
-            return redirect(url_for('home_blueprint.index'))
+            return redirect(url_for('patients_blueprint.patients_profile', patient_id=patient.id))
 
     # The user pressed the "Cancel" button
     if 'cancel' in request.form:
@@ -47,7 +47,7 @@ def create_patients():
 @login_required
 def edit_info(patient_id):
     patient = Patient.query.get_or_404(patient_id)
-    form = PatientsForm(request.form)
+    form = PatientsForm()
 
     # The user pressed the "Cancel" button
     if form.cancel.data:
@@ -76,8 +76,7 @@ def edit_info(patient_id):
         picture_file = url_for('static', filename='patients_pics/default.png')
     else:
         picture_file = url_for('static', filename='patients_pics/' + patient.picture)
-    
-    flash(form.picture.data)
+
     
     return render_template('edit_info.html', title='Edit', heading='Edit', form=form, picture_file=picture_file)
 
@@ -91,8 +90,6 @@ def patients_profile(patient_id):
         picture_file = url_for('static', filename='patients_pics/default.png')
     else:
         picture_file = url_for('static', filename='patients_pics/' + patient.picture)
-
-    flash(patient.picture)
 
     return render_template('patients_profile.html', title='Profile', patient=patient, form=PatientsForm(), picture_file=picture_file)
 

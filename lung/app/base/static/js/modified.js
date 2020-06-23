@@ -49,44 +49,45 @@ jQuery(function($) {
 });
 
 // loading progress bar
-jQuery(function($) {
-	$('form#ct-scan-upload').on('submit', function(e) {
-	    current_progress = 0.1,
-        step = 0.01; // the smaller this is the slower the progress bar
 
-        interval = setInterval(function() {
-            current_progress += step;
-            progress = Math.round(Math.atan(current_progress) / (Math.PI / 2) * 100 * 1000 / 1000);
+$('form#ct-scan-upload').on('submit', function(e) {
+    current_progress = 0.1;
+    step = 0.01; // the smaller this is the slower the progress bar
 
-            $('#loader').show();
-            $(".progress-bar")
-                .css("width", progress + "%")
-                .attr("aria-valuenow", progress);
+    interval = setInterval(function() {
+        current_progress += step;
+        progress = Math.round(Math.atan(current_progress) / (Math.PI / 2) * 100 * 1000 / 1000);
 
-            $('#process-percent').text(progress + "%");
+        $('#loader').show();
+        $(".progress-bar")
+            .css("width", progress + "%")
+            .attr("aria-valuenow", progress);
 
-            if (progress >= 100){
-                clearInterval(interval);
-            } else if(progress >= 70) {
-                step = 0.1
-            }
-         }, 100);
+        $('#process-percent').text(progress + "%");
 
-
-        $('#stop').on('click', function(){
-            $(".progress-bar").css("width","100%").attr("aria-valuenow", 100);
-            $('#process-percent').text("100% Complete");
-            clearInterval(interval); // Important to stop the progress bar from increasing
-        })
-        /* Stop button */
-
-        $('#reset').on('click', function() {
-            $(".progress-bar").css("width","0%").attr("aria-valuenow", 0);
-            $('#process-percent').hide();
+        if (progress >= 100){
             clearInterval(interval);
-        })
-	});
+        } else if(progress >= 70) {
+            step = 0.1
+        }
+     }, 100);
+
+
+    $('#stop').on('click', function(){
+        $(".progress-bar").css("width","100%").attr("aria-valuenow", 100);
+        $('#process-percent').text("100% Complete");
+        clearInterval(interval); // Important to stop the progress bar from increasing
+    })
+    /* Stop button */
+
+    $('#reset').on('click', function() {
+        $(".progress-bar").css("width","0%").attr("aria-valuenow", 0);
+        $('#process-percent').hide();
+        clearInterval(interval);
+    });
+
 });
+
 
 // profile picture upload
 
@@ -113,5 +114,12 @@ $(".picture-file").change(function() {
     }
   }
 });
+
+// patient-form input type number
+$('form#patient-form input[type="number"]').each(function(i, input){
+     if (input.value === ''){
+        input.value = 0;
+     };
+})
 
 
