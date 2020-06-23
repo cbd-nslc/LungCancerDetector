@@ -6,25 +6,11 @@ from flask_login import login_required, current_user
 import app
 from app import db, login_manager
 from app.patients import blueprint
+
+from app.users.utils import save_picture_patients
 from app.patients.forms import PatientsForm
 
 from app.base.models import User, Patient
-
-"""Save picture"""
-def save_CT_scan(CT_scan):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(CT_scan.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, 'static/CT_scan', picture_fn)
-
-    # resize picture
-    output_size = (125, 125)
-    resized_picture = Image.open(CT_scan)
-    resized_picture.thumbnail(output_size)
-
-    # save picture
-    resized_picture.save(picture_path)
-    return picture_fn
 
 
 """add patient"""
@@ -36,9 +22,13 @@ def create_patients():
     # The user pressed the "Submit" button
     if 'submit' in request.form:
         if form.validate_on_submit():
-            new_request = {k: v for k, v in request.form.items() if
-                           k not in ['csrf_token', 'submit', 'cancel', 'ct_scan']}
+            new_request = {k: v.capitalize() for k, v in request.form.items() if
+                           k not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture']}
+
             patient = Patient(**new_request, doctor=current_user)
+            if form.picture.data:
+                patient.picture = save_picture_patients(form.picture.data)
+
             db.session.add(patient)
             db.session.commit()
             flash('Your patient has been added!', 'success')
@@ -48,7 +38,9 @@ def create_patients():
     if 'cancel' in request.form:
         return redirect(url_for('home_blueprint.index'))
 
-    return render_template('edit_info.html', title='Create', heading='Create', form=form, request_form=request.form)
+    picture_file = url_for('static', filename='patients_pics/default.png')
+
+    return render_template('edit_info.html', title='Create', heading='Create', form=form, picture_file=picture_file)
 
 """edit patient"""
 @blueprint.route("/<int:patient_id>/edit", methods=['GET', 'POST'])
@@ -57,11 +49,18 @@ def edit_info(patient_id):
     patient = Patient.query.get_or_404(patient_id)
     form = PatientsForm(request.form)
 
+    # The user pressed the "Cancel" button
+    if form.cancel.data:
+        return redirect(url_for('home_blueprint.index'))
+
     # The user pressed the "Submit" button
-    if form.validate_on_submit():
-        if form.submit.data:
+    if form.submit.data:
+        if form.validate_on_submit():
+            if form.picture.data:
+                patient.picture = save_picture_patients(form.picture.data)
+
             for field in form:
-                if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan']:
+                if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture']:
                     setattr(patient, field.name, field.data)
 
             db.session.commit()
@@ -70,21 +69,32 @@ def edit_info(patient_id):
 
     elif request.method == 'GET':
         for field in form:
-            if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan']:
+            if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture']:
                 field.data = getattr(patient, field.name)
-
-    # The user pressed the "Cancel" button
-    if form.cancel.data:
-        return redirect(url_for('home_blueprint.index'))
-
-    return render_template('edit_info.html', title='Edit', heading='Edit', form=form)
+    
+    if patient.picture == '':
+        picture_file = url_for('static', filename='patients_pics/default.png')
+    else:
+        picture_file = url_for('static', filename='patients_pics/' + patient.picture)
+    
+    flash(form.picture.data)
+    
+    return render_template('edit_info.html', title='Edit', heading='Edit', form=form, picture_file=picture_file)
 
 """view patients"""
 @blueprint.route("/<int:patient_id>/profile", methods=['GET', 'POST'])
 @login_required
 def patients_profile(patient_id):
     patient = Patient.query.get_or_404(patient_id)
-    return render_template('patients_profile.html', title='Profile', patient=patient, form=PatientsForm())
+
+    if patient.picture == '':
+        picture_file = url_for('static', filename='patients_pics/default.png')
+    else:
+        picture_file = url_for('static', filename='patients_pics/' + patient.picture)
+
+    flash(patient.picture)
+
+    return render_template('patients_profile.html', title='Profile', patient=patient, form=PatientsForm(), picture_file=picture_file)
 
 """delete patient"""
 @blueprint.route("/<int:patient_id>/delete", methods=['POST'])

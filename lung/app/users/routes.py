@@ -6,8 +6,8 @@ from app import db, login_manager
 from app.base.models import User
 
 from app.users import blueprint
-from app.users.forms import LoginForm, CreateAccountForm
-
+from app.users.utils import save_picture
+from app.users.forms import LoginForm, CreateAccountForm, UpdateAccountForm
 
 
 ## Login
@@ -25,8 +25,9 @@ def login():
         else:
             flash('Login Unsuccessful. Please check your username and password', 'danger')
 
-    # elif current_user.is_authenticated:
-    #     return redirect(url_for('home_blueprint.index'))
+    if current_user.is_authenticated:
+        flash('You are already logged in', 'info')
+        return redirect(url_for('home_blueprint.index'))
 
     return render_template('login.html', title='Login', form=form)
 
@@ -43,11 +44,11 @@ def create_user():
         # add user to database
         db.session.add(user)
         db.session.commit()
-        flash(f'Your account has been created! You are now able to homepage', 'success')
+        flash(f'Your account has been created! You are now able to login', 'success')
         return redirect(url_for('users_blueprint.login'))
 
     # if already logged in, can't go to register page
-    # if current_user.is_authenticated:
+    # elif current_user.is_authenticated:
     #     flash('Please log out to create a new account!', 'info')
     #     return redirect(url_for('home_blueprint.index'))
 
@@ -61,11 +62,32 @@ def logout():
     return redirect(url_for('users_blueprint.login'))
 
 
-@blueprint.route('/profile')
+@blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
 def users_profile():
-    return render_template('users_profile.html', title='Your Profile')
+    form = UpdateAccountForm()
 
+    if 'submit' in request.form:
+        if form.validate_on_submit():
+            if form.picture.data:
+
+                current_user.picture = save_picture(form.picture.data)
+
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+
+            db.session.commit()
+            flash('Your account has been updated!', 'success')
+            return redirect(url_for('users_blueprint.users_profile'))
+
+    if 'cancel' in request.form:
+        return redirect(url_for('users_blueprint.users_profile'))
+
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+
+    return render_template('users_profile.html', title='Your Profile', form=form)
 
 
 @blueprint.route('/shutdown')
@@ -79,9 +101,11 @@ def shutdown():
 
 # Errors
 
-# @login_manager.unauthorized_handler
-# def unauthorized_handler():
-#     return redirect()
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    if 'submit' not in request.form:
+        flash('Please login to access this page', 'info')
+    return redirect(url_for('users_blueprint.login'))
 
 
 @blueprint.errorhandler(403)

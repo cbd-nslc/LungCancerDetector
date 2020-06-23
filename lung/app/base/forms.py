@@ -7,7 +7,8 @@ from wtforms.validators import DataRequired, ValidationError
 
 
 class AnonymousForm(FlaskForm):
-    ct_scan = FileField('CT Scan', validators=[DataRequired(), FileAllowed(['jpg', 'png', 'raw', 'mhd'])])
+    raw_file = FileField('RAW', validators=[DataRequired()])
+    mhd_file = FileField('MHD', validators=[DataRequired()])
 
     submit = SubmitField('Upload')
     cancel = SubmitField('Cancel')

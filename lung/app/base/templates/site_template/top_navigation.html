@@ -7,8 +7,11 @@
     <ul class="nav navbar-nav navbar-right">
       <li class="">
         <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-          <img src="/static/images/img.jpg" alt="">{{ current_user.username }}
-          <span class=" fa fa-angle-down"></span>
+          {% if current_user.picture %}
+            <img src="{{ url_for('static', filename='profile_pics/' + current_user.picture) }}" alt="...">{{ current_user.username }}<span class=" fa fa-angle-down"></span>
+          {% else %}
+            <img src="{{ url_for('static', filename='profile_pics/default.png') }}">{{ current_user.username }}<span class=" fa fa-angle-down"></span>
+          {% endif %}
         </a>
         <ul class="dropdown-menu dropdown-usermenu pull-right">
           <li><a href="{{ url_for('users_blueprint.users_profile') }}"> Profile</a></li>

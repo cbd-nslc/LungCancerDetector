@@ -29,6 +29,9 @@
   <!-- Template Main CSS File -->
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
+  <!-- style.css -> dropzone -->
+  <link href="{{ url_for('static', filename='css/modified.css') }}" rel="stylesheet"/>
+
   {% block stylesheets %} {% endblock %}
 
   <!-- =======================================================
@@ -59,7 +62,7 @@
         <div class="row align-items-center">
 
           <div class="col-6 col-lg-2">
-            <h1 class="mb-0 site-logo"><a href="{{ url_for('base_blueprint.home') }}" class="mb-0">LuCa</a></h1>
+            <h1 class="mb-0 site-logo"><a href="{{ url_for('base_blueprint.home') }}" class="mb-0">LuCa    <small style="color:white; font-size:12px">Doctor</small></a></h1>
           </div>
 
           <div class="col-12 col-md-10 d-none d-lg-block">
@@ -201,6 +204,9 @@
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
   <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+
+  <!-- modified.js -->
+  <script src="{{ url_for('static', filename='js/modified.js') }}"></script>
 
 
 

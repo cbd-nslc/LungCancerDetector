@@ -4,26 +4,6 @@
 * License: https://bootstrapmade.com/license/
 */
 
-/* dropzone */
-jQuery(function($) {
-  $('input[type="file"]').change(function() {
-    if ($(this).val()) {
-	    error = false;
-
-      var filename = $(this).val().split('\\').pop();
-			$(this).closest('.dropzone').find('.file-name').html(filename);
-
-      if (error) {
-        parent.addClass('error').prepend.after('<div class="alert alert-error">' + error + '</div>');
-      }
-    }
-  });
-});
-
-
-
-
-
 (function ($) {
   "use strict";
 

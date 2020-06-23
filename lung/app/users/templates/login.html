@@ -40,7 +40,7 @@
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class='alert alert-{{ category }} text-center' style="font-size:16px">
+                <div class='alert alert-{{ category }} text-center flash-message' style="font-size:16px">
                     {{ message }}
                 </div>
             {% endfor %}
@@ -78,7 +78,7 @@
             </div><br>
 
             <!-- submit -->
-            <div class="col-md-12">
+            <div class="row">
               {{ form.submit(class="btn btn-primary center-block") }}
 			</div>
 
@@ -105,6 +105,9 @@
         </section>
       </div>
     </div>
+
+    <!-- modified.js -->
+    <script src="{{ url_for('static', filename='js/modified.js') }}"></script>
 
 {% endblock body %}
 

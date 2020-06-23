@@ -28,40 +28,68 @@
             </div>
 
             <div class="x_content">
-              <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
-                <div class="profile_img">
-                  <div id="crop-avatar">
-                    <!-- Current avatar -->
-                    <img class="img-responsive avatar-view" src="/static/images/picture.jpg" alt="Avatar" title="Change the avatar">
+              <form class="form-horizontal form-label-left" id="users-profile" action="" method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
+                  <!-- validate picture -->
+                  <div class="text-center" class="picture-error" style="color:red; display:none; margin: 5px;">Wrong extension. Please select ".png" or ".jpg" extension</div>
+
+                  <div class="picture-upload">
+                    <img class="picture-now" src="{{ url_for('static', filename='profile_pics/' + current_user.picture) }}" alt="{{ current_user.picture }}"/>
+                    {{ form.picture(class="picture-file") }}
                   </div>
-                </div>
-                <h3>name</h3>
+
+                  <h2 class="text-center">Profile Picture</h2>
 
 
-                <ul class="list-unstyled user_data">
-                  <li><i class="fa fa-map-marker user-profile-icon"></i> address
-                  </li>
-                </ul>
-
-
-                <a href="#" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Edit Info</a>
-                <a href="#" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Upload CT Scan</a>
-                <br />
-
-                <!-- start skills -->
-                
-                <!-- end of skills -->
-              </div>
-
-
-              <div class="col-md-9 col-sm-9 col-xs-12">
-                <div class="profile_title">
-                  <div class="col-md-12">
-                    <h2>Personal Info</h2>
-                  </div>
                 </div>
 
-              </div>
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                  <div class="profile_title">
+                    <div class="col-md-12">
+                      <h2>Personal Info</h2>
+                    </div>
+                  </div>
+                  <div class="ln_solid"></div>
+
+
+                  <!-- username -->
+                  <div class="item form-group" >
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.username.label }} <span class="required">*</span>
+                    </label>
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                      {{ form.username(class="form-control col-md-7 col-xs-12") }}
+                    </div>
+                    <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                      <p style="float:left; color:red">{{ form.username.errors[0] }}</p>
+                    </div>
+                  </div>
+
+                  <!-- email -->
+                  <div class="item form-group" >
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.email.label }} <span class="required">*</span>
+                    </label>
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                      {{ form.email(class="form-control col-md-7 col-xs-12") }}
+                    </div>
+                    <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                      <p style="float:left; color:red">{{ form.email.errors[0] }}</p>
+                    </div>
+                  </div>
+
+                  <div class="ln_solid"></div>
+
+                  <!-- submit button -->
+                  <div class="form-group">
+                    <div class="col-md-6 col-md-offset-3">
+                      {{ form.submit(class="btn btn-success") }}
+                      <button class="btn btn-primary" type="reset">Reset</button>
+                      {{ form.cancel(class="btn btn-secondary", formnovalidate=True) }}
+
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -75,4 +103,6 @@
   <!-- morris.js -->
   <script src="{{ url_for('static', filename='vendors/raphael/raphael.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendors/morris.js/morris.min.js') }}"></script>
+
+
 {% endblock javascripts %}

@@ -25,6 +25,8 @@ class User(db.Model, UserMixin):
     username = Column(String(20), unique=True, nullable=False)
     email = Column(String(50), unique=True, nullable=False)
     password = Column(String(60), nullable=False)
+    picture = Column(String(20), nullable=False, default='default.jpg')
+
     patients = db.relationship('Patient', backref='doctor', lazy=True)
 
     def __init__(self, **kwargs):
@@ -49,19 +51,20 @@ class Patient(db.Model):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     age = db.Column(db.Integer, nullable=False)
-    sex = db.Column(db.String)
+    sex = db.Column(db.String, nullable=False)
     occupation = db.Column(db.String)
     address = db.Column(db.String)
 
-    # weight = db.Column(db.Integer)
-    # height = db.Column(db.Integer)
-    # health_condition = db.Column(db.String)
-    # diabetes = db.Column(db.String)
-    # blood_pressure = db.Column(db.Integer)
-    # cancer_report = db.Column(db.String)
-    # other_problems = db.Column(db.String)
+    weight = db.Column(db.Integer)
+    height = db.Column(db.Integer)
+    health_condition = db.Column(db.String)
+    diabetes = db.Column(db.String)
+    blood_pressure = db.Column(db.Integer)
+    cancer_report = db.Column(db.String)
+    other_problems = db.Column(db.String)
 
-    # ct_scan = db.Column(db.String)
+    picture = Column(String(20), nullable=False, default='default.png')
+    ct_scan = db.Column(db.String)
 
     date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     # id of user

@@ -1,6 +1,6 @@
 <div class="left_col scroll-view">
   <div class="navbar nav_title" style="border: 0;">
-    <a href="" class="site_title"><i class="fa fa-spinner"></i> <span>Patients Page</span></a>
+    <a href="{{ url_for('home_blueprint.index') }}" class="site_title"><i class="fa fa-spinner"></i> <span>Patients Page</span></a>
   </div>
 
   <div class="clearfix"></div>
@@ -8,7 +8,11 @@
   <!-- menu profile quick info -->
   <div class="profile clearfix">
     <div class="profile_pic">
-      <img src="/static/images/img.jpg" alt="..." class="img-circle profile_img">
+      {% if current_user.picture %}
+        <img src="{{ url_for('static', filename='profile_pics/' + current_user.picture) }}" alt="..." class="img-circle profile_img">
+      {% else %}
+        <img src="{{ url_for('static', filename='profile_pics/default.png') }}" class="img-circle profile_img">
+      {% endif %}
     </div>
     <div class="profile_info">
       <span>Welcome,</span>
@@ -24,24 +28,17 @@
     <div class="menu_section">
       <h3>General</h3>
       <ul class="nav side-menu">
-        <li><a href="/home/index"><i class="fa fa-home"></i> Home </a>
+        <li><a href="/home/index"><i class="fa fa-home"></i> Your Patients </a>
         <li><a href="{{ url_for('users_blueprint.users_profile') }}"><i class="fa fa-user"></i> Your Profile </a>
-        <li><a href="{{ url_for('base_blueprint.home') }}"><i class="fa fa-home"></i> Luca Page </a>
+
       </ul>
     </div>
 
     <div class="menu_section">
-      <h3>Additional</h3>
+      <h3>LuCa</h3>
       <ul class="nav side-menu">
-        <li><a><i class="fa fa-bug"></i> Additional Pages <span class="fa fa-chevron-down"></span></a>
-          <ul class="nav child_menu">
-            <li><a href="/additional/ecommerce">E-commerce</a></li>
-            <li><a href="/additional/projects">Projects</a></li>
-            <li><a href="/additional/project_detail">Project Detail</a></li>
-            <li><a href="/additional/contacts">Contacts</a></li>
-            <li><a href="/additional/profile">Profile</a></li>
-            <li><a href="/additional/pricing">Pricing Tables</a></li>
-          </ul>
+        <li><a href="{{ url_for('base_blueprint.home') }}"><i class="fa fa-arrow-left"></i> Luca Page </a>
+
         </li>
       </ul>
     </div>

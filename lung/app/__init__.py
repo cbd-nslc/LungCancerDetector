@@ -1,5 +1,6 @@
 from flask import Flask, url_for
 from flask_login import LoginManager
+from flask_mail import Mail
 
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
@@ -8,8 +9,8 @@ from os import path
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-login_manager.login_view = 'base_blueprint.homepage'
-login_manager.login_message_category = 'info'
+mail = Mail()
+
 
 
 def register_extensions(app):

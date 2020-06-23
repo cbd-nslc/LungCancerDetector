@@ -18,93 +18,89 @@
         <div class="col-md-12 col-sm-12 col-xs-12">
           <div class="x_panel">
             <div class="x_title">
-              <h3>Personal Info</h3>
+              <h3>Overview</h3>
             </div>
 
             <div class="x_content">
 
-              <form class="form-horizontal form-label-left" action="" method="POST">
+              <form class="form-horizontal form-label-left" action="" method="POST" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
 
-                <!-- first name -->
-                <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.first_name.label }} <span class="required">*</span>
-                  </label>
-                  <div class="col-md-4 col-sm-4 col-xs-12">
-                    {{ form.first_name(class="form-control col-md-7 col-xs-12") }}
+                <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
+                  <!-- validate picture -->
+                  <div class="text-center" class="picture-error" style="color:red; display:none; margin: 5px;">Wrong extension. Please select ".png" or ".jpg" extension</div>
+
+                  <div class="picture-upload">
+                    <img class="picture-now" src="{{ picture_file }}" alt="{{ picture_file }}"/>
+                    {{ form.picture(class="picture-file") }}
                   </div>
-                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
-                    <p style="float:left;">{{ form.first_name.errors[0] }}</p>
-                  </div>
+
+                  <h2 class="text-center">Profile Picture</h2>
+
+
                 </div>
 
-                <!-- last name -->
-                <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.last_name.label }} <span class="required">*</span>
-                  </label>
-                  <div class="col-md-4 col-sm-4 col-xs-12">
-                    {{ form.last_name(class="form-control col-md-7 col-xs-12") }}
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                  <div class="profile_title">
+                    <div class="col-md-12">
+                      <h2>Personal Info</h2>
+                    </div>
                   </div>
-                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
-                    <p style="float:left;">{{ form.last_name.errors[0] }}</p>
-                  </div>
-                </div>
 
-                <!-- age -->
-                <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.age.label }} <span class="required">*</span>
-                  </label>
-                  <div class="col-md-2 col-sm-2 col-xs-2">
-                    {{ form.age(class="form-control col-md-2 col-xs-2", type="number") }}
-                  </div>
-                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
-                    <p style="float:left;">{{ form.age.errors[0] }}</p>
-                  </div>
-                </div>
+                  <div class="ln_solid"></div>
 
-                <!-- sex -->
-                <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.sex.label }} <span class="required">*</span>
-                  </label>
-                  <div class="col-md-2 col-sm-2 col-xs-12">
-                    {{ form.sex(class="form-control col-md-7 col-xs-12") }}
+                  <!-- personal info -->
+                  <div class="row">
+                    {% for field in form %}
+                      {% if field.name in ['first_name', 'last_name', 'age', 'sex', 'occupation', 'address'] %}
+                        <div class="item form-group" >
+                          <label class="control-label col-md-2 col-sm-2 col-xs-12">{{ field.label }} <span class="required">*</span>
+                          </label>
+                          <div class="col-md-4 col-sm-4 col-xs-12">
+                            {{ field(class="form-control col-md-7 col-xs-12") }}
+                          </div>
+                          <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                            <p style="float:left; color:red">{{ field.errors[0] }}</p>
+                          </div>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
                   </div>
-                </div>
 
-                <!-- occupation -->
-                <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.occupation.label }} <span class="required">*</span>
-                  </label>
-                  <div class="col-md-4 col-sm-4 col-xs-4">
-                    {{ form.occupation(class="form-control col-md-2 col-xs-2") }}
+                  <div class="ln_solid"></div>
+                  <div class="profile_title">
+                    <div class="col-md-12">
+                      <h2>Health Info</h2>
+                    </div>
                   </div>
-                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
-                    <p style="float:left;">{{ form.occupation.errors[0] }}</p>
+
+                  <div class="ln_solid"></div>
+
+                  <!-- health info -->
+                  <div class="row">
+                    {% for field in form %}
+                      {% if field.name in ['weight', 'height', 'blood_pressure', 'diabetes', 'health_condition', 'cancer_report', other_problems] %}
+                        <div class="item form-group" >
+                          <label class="control-label col-md-2 col-sm-2 col-xs-12">{{ field.label }}</label>
+                          <div class="col-md-4 col-sm-4 col-xs-12">
+                            {{ field(class="form-control col-md-7 col-xs-12") }}
+                          </div>
+                          <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                            <p style="float:left; color:red">{{ field.errors[0] }}</p>
+                          </div>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
                   </div>
-                </div>
 
-                <!-- address -->
-                <div class="item form-group">
-                  <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ form.address.label }} <span class="required">*</span>
-                  </label>
-                  <div class="col-md-4 col-sm-4 col-xs-4">
-                    {{ form.address(class="form-control col-md-2 col-xs-2") }}
-                  </div>
-                  <div class="control-label col-md-5 col-sm-5 col-xs-12">
-                    <p style="float:left;">{{ form.address.errors[0] }}</p>
-                  </div>
-                </div>
+                  <!-- submit button -->
+                  <div class="form-group">
+                    <div class="col-md-6 col-md-offset-3">
+                      {{ form.submit(class="btn btn-success") }}
+                      <button class="btn btn-primary" type="reset">Reset</button>
+                      {{ form.cancel(class="btn btn-secondary", formnovalidate=True) }}
 
-
-                <div class="ln_solid"></div>
-
-                <!-- submit button -->
-                <div class="form-group">
-                  <div class="col-md-6 col-md-offset-3">
-                    {{ form.submit(class="btn btn-success") }}
-                    <button class="btn btn-primary" type="reset">Reset</button>
-                    {{ form.cancel(class="btn btn-secondary", formnovalidate=True) }}
-
+                    </div>
                   </div>
                 </div>
 

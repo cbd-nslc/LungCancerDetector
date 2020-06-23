@@ -32,24 +32,23 @@
                 <div class="profile_img">
                   <div id="crop-avatar">
                     <!-- Current avatar -->
-                    <img class="img-responsive avatar-view" src="/static/images/picture.jpg" alt="Avatar" title="Change the avatar">
+                    <img class="img-responsive avatar-view" src="{{ picture_file }}" alt="Avatar" title="Change the avatar">
                   </div>
                 </div>
                 <h3>{{ patient.first_name }} {{patient.last_name}}</h3>
 
 
                 <ul class="list-unstyled user_data">
-                  <li><i class="fa fa-map-marker user-profile-icon"></i> {{ patient.address }}
+                  <li><i class="fa fa-venus-mars"></i>&nbsp; {{ patient.sex }} &emsp;&emsp;&emsp;&emsp;&emsp;
+                    {{ patient.age }} years old
                   </li>
 
-<!--                  <li>-->
-<!--                    <i class="fa fa-briefcase user-profile-icon"></i> Software Engineer-->
-<!--                  </li>-->
+                  <li><i class="fa fa-briefcase user-profile-icon"></i>&nbsp; {{ patient.occupation }}
+                  </li>
 
-<!--                  <li class="m-top-xs">-->
-<!--                    <i class="fa fa-external-link user-profile-icon"></i>-->
-<!--                    <a href="http://www.kimlabs.com/profile/" target="_blank">www.kimlabs.com</a>-->
-<!--                  </li>-->
+                  <li><i class="fa fa-map-marker user-profile-icon"></i>&nbsp;  {{ patient.address }}
+                  </li>
+
                 </ul>
 
 
