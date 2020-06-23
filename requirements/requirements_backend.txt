@@ -1,0 +1,9 @@
+torch
+pandas
+numpy
+scipy
+scikit-image
+matplotlib
+jupyter
+h5py
+SimpleITK

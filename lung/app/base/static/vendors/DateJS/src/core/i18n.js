@@ -377,7 +377,7 @@
 						}
 					} else if (Date.Config && Date.Config.i18n) {
 						// we know the location of the files, so lets load them					
-						async = true;
+						;
 						loadI18nScript(code).done(function(){
 							lang = code;
 							Date.CultureStrings = Date.CultureStrings || {};

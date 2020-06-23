@@ -1,0 +1,6 @@
+Flask_Bcrypt
+Flask
+WTForms
+Flask_Login
+Flask_WTF
+Flask_SQLAlchemy

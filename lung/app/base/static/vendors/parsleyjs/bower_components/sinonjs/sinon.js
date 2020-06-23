@@ -1982,7 +1982,7 @@ if (!this.sinon && commonJSModule) {
                 !method.match(/Async/)) {
                 proto[method + 'Async'] = (function (syncFnName) {
                     return function () {
-                        this.callbackAsync = true;
+                        this.callback;
                         return this[syncFnName].apply(this, arguments);
                     };
                 })(method);
