@@ -44,7 +44,11 @@
             <!-- -->
             <div class="col-md-6" data-aos="fade-up">
               <h2>Upload Form</h2>
-              <p class="mb-0">Upload</p>
+              <ul>
+                <li><p class="mb-0">&emsp;Upload 2 files of ".raw" and ".mhd" extension</p></li>
+                <li><p class="mb-0">&emsp;Both files must have the same name</p></li>
+              </ul>
+
             </div>
 
           </div>
@@ -59,16 +63,9 @@
                 </div>
 
                 <div class="row-md-12">
-                  {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} text-center" style="font-size:16px">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                  {% endwith %}
-
+                  <div class="text-danger text-center" id="error-raw-mhd" style="font-size:16px; display:none;">
+                    Your ".raw" and ".mhd" file are not the same. Please reupload them.
+                  </div>
                 </div>
 
                 <div id="dropzone-box">
@@ -97,7 +94,7 @@
 
                   <div class="row dropzone-error">
                     <div class="col-md-6 text-center">
-                      <div class='text-danger' id='raw-file-error' style="display:none">Wrong extension. Please select ".zraw" extension.</div>
+                      <div class='text-danger' id='raw-file-error' style="display:none">Wrong extension. Please select ".raw" extension.</div>
                     </div>
 
                     <div class="col-md-6 text-center">

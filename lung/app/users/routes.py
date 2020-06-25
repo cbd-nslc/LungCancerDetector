@@ -25,7 +25,7 @@ def login():
         else:
             flash('Login Unsuccessful. Please check your username and password', 'danger')
 
-    if current_user.is_authenticated:
+    elif current_user.is_authenticated:
         flash('You are already logged in', 'info')
         return redirect(url_for('home_blueprint.index'))
 
