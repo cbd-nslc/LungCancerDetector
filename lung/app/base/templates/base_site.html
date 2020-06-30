@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head %}
+      {% block meta %}
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!-- Meta, title, CSS, favicons, etc. -->
+        <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/ico" />
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      {% endblock meta %}
+
+      <title>LuCa! | {% block title %}{% endblock %}</title>
+
+      {% block stylesheets %}
+
+        <!-- Line Awesome -->
+        <link href="{{ url_for('static', filename='vendor/line-awesome/css/line-awesome.min.css') }}" rel="stylesheet">
+
+        <!-- Bootstrap -->
+        <link href="{{ url_for('static', filename='vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+        <!-- Font Awesome -->
+        <link href="{{ url_for('static', filename='vendors/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+        <!-- NProgress -->
+        <link href="{{ url_for('static', filename='vendors/nprogress/nprogress.css') }}" rel="stylesheet">
+        <!-- bootstrap-daterangepicker -->
+        <link href="{{ url_for('static', filename='vendors/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
+        <!-- iCheck -->
+        <link href="{{ url_for('static', filename='vendors/iCheck/skins/flat/green.css') }}" rel="stylesheet">
+        <!-- bootstrap-progressbar -->
+        <link href="{{ url_for('static', filename='vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css') }}" rel="stylesheet">
+        <!-- JQVMap -->
+        <link href="{{ url_for('static', filename='vendors/jqvmap/dist/jqvmap.min.css') }}" rel="stylesheet"/>
+
+        <!-- style.css -> profile picture upload -->
+        <link href="{{ url_for('static', filename='css/modified.css') }}" rel="stylesheet"/>
+
+      {% endblock stylesheets %}
+      <!-- Custom Theme Style -->
+      <link href="{{ url_for('static', filename='build/css/custom.css') }}" rel="stylesheet">
+    {% endblock head %}
+  </head>
+
+  <body class="{% block body_class %}nav-md {% endblock body_class %}", style="overflow-x:hidden;">
+    {% block body %}
+      <div class="container body">
+        <div class="main_container">
+
+          {% block sidebar %}
+            <div class="col-md-3 left_col {% block sidebar_class %} {% endblock sidebar_class %}">
+              {% include "site_template/sidebar.html" %}
+            </div>
+          {% endblock sidebar %}
+
+          {% block top_navigation %}
+            <div class="top_nav">
+              {% include "site_template/top_navigation.html" %}
+            </div>
+          {% endblock top_navigation %}
+
+          <!-- display error on index page -->
+          <div class="row" style="background-color:#F7F7F7;">
+            <div class="col-md-12" style="width:100%">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} text-center flash-message" style="font-size:16px">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+          {% block content %}
+            <!-- {{ content }} -->
+          {% endblock content %}
+
+
+
+          {% block footer %}
+            <footer>
+              {% include "site_template/footer.html" %}
+            </footer>
+          {% endblock footer %}
+        </div>
+      </div>
+
+      {% block javascripts %}
+        <!-- jQuery -->
+        <script src="{{ url_for('static', filename='vendors/jquery/dist/jquery.min.js') }}"></script>
+        <!-- Bootstrap -->
+        <script src="{{ url_for('static', filename='vendors/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <!-- FastClick -->
+        <script src="{{ url_for('static', filename='vendors/fastclick/lib/fastclick.js') }}"></script>
+        <!-- NProgress -->
+        <script src="{{ url_for('static', filename='vendors/nprogress/nprogress.js') }}"></script>
+        <!-- bootstrap-progressbar -->
+        <script src="{{ url_for('static', filename='vendors/bootstrap-progressbar/bootstrap-progressbar.min.js') }}"></script>
+        <!-- iCheck -->
+        <script src="{{ url_for('static', filename='vendors/iCheck/icheck.min.js') }}"></script>
+        <!-- bootstrap-daterangepicker -->
+        <script src="{{ url_for('static', filename='vendors/moment/min/moment.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+        <!-- bootstrap-wysiwyg -->
+        <script src="{{ url_for('static', filename='vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/jquery.hotkeys/jquery.hotkeys.js') }}"></script>
+        <script src="{{ url_for('static', filename='vendors/google-code-prettify/src/prettify.js') }}"></script>
+        <!-- jQuery Tags Input -->
+        <script src="{{ url_for('static', filename='vendors/jquery.tagsinput/src/jquery.tagsinput.js') }}"></script>
+        <!-- Switchery -->
+        <script src="{{ url_for('static', filename='vendors/switchery/dist/switchery.min.js') }}"></script>
+        <!-- Select2 -->
+        <script src="{{ url_for('static', filename='vendors/select2/dist/js/select2.full.min.js') }}"></script>
+        <!-- Autosize -->
+        <script src="{{ url_for('static', filename='vendors/autosize/dist/autosize.min.js') }}"></script>
+        <!-- jQuery autocomplete -->
+        <script src="{{ url_for('static', filename='vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js') }}"></script>
+        <!-- starrr -->
+        <script src="{{ url_for('static', filename='vendors/starrr/dist/starrr.js') }}"></script>
+
+        <!-- modified.js -->
+        <script src="{{ url_for('static', filename='js/modified.js') }}"></script>
+
+      {% endblock %}
+      <!-- Custom Theme Scripts -->
+      <script src="{{ url_for('static', filename='build/js/custom.js') }}"></script>
+    {% endblock body %}
+  </body>
+</html>

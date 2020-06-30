@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %} {{ title }} {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+{% endblock stylesheets %}
+
+
+{% block main %}
+    <main id="main">
+      <div class="hero-section inner-page">
+        <div class="wave">
+
+          <svg width="1920px" height="265px" viewBox="0 0 1920 265" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                  <g id="Apple-TV" transform="translate(0.000000, -402.000000)" fill="#FFFFFF">
+                      <path d="M0,439.134243 C175.04074,464.89273 327.944386,477.771974 458.710937,477.771974 C654.860765,477.771974 870.645295,442.632362 1205.9828,410.192501 C1429.54114,388.565926 1667.54687,411.092417 1920,477.771974 L1920,667 L1017.15166,667 L0,667 L0,439.134243 Z" id="Path"></path>
+                  </g>
+              </g>
+          </svg>
+
+        </div>
+
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-12">
+              <div class="row justify-content-center">
+                <div class="col-md-7 text-center hero-text">
+                  <h1 data-aos="fade-up" data-aos-delay="">Step 1</h1>
+                  <p class="mb-5" data-aos="fade-up"  data-aos-delay="100">Upload your CT Scan</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="site-section">
+        <div class="container">
+          <div class="row mb-5 align-items-end">
+            <!-- -->
+            <div class="col-md-6" data-aos="fade-up">
+              <h2>Upload Form</h2>
+              <p class="mb-0">Upload</p>
+            </div>
+
+          </div>
+
+            <!-- form --> <!-- modified in lung/app/base/static/js/main.js -->
+            <form class="row mb-12 align-items-end" id="ct-scan-upload" method="POST" enctype="multipart/form-data">
+              {{ form.hidden_tag() }}
+              <!-- center box -->
+              <div class="center box">
+                <div class="title">
+                    <h1>Click inside the box to upload</h1>
+                </div>
+
+                <div class="row-md-12">
+                  {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} text-center" style="font-size:16px">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                  {% endwith %}
+
+                </div>
+
+                <div id="dropzone-box">
+                  <!-- dropzone -->
+                  <div class="row dropzone-title">
+                    <div class="col-md-6 text-center"><h5>.raw</h5></div>
+                    <div class="col-md-6 text-center"><h5>.mhd</h5></div>
+                  </div>
+
+                  <div class="row dropzone-content">
+                    <div class="col-md-6">
+                      <div id="dropzone">
+                        {{ form.raw_file(class="upload-ct-scan", id="raw-file") }}
+                        <span><p class="file-name">Browse</p></span>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div id="dropzone1" class="center-block">
+                        {{ form.mhd_file(class="upload-ct-scan", id="mhd-file") }}
+                        <span><p class="file-name">Browse</p></span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="row dropzone-error">
+                    <div class="col-md-6 text-center">
+                      <div class='text-danger' id='raw-file-error' style="display:none">Wrong extension. Please select ".zraw" extension.</div>
+                    </div>
+
+                    <div class="col-md-6 text-center">
+                      <div class='text-danger' id='mhd-file-error' style="display:none">Wrong extension. Please select ".mhd" extension.</div>
+
+                    </div>
+                  </div>
+                  <!-- end dropzone -->
+                </div>
+
+              </div>
+              <!-- center box -->
+
+              <div class="col-md-12 text-center">
+                {{ form.submit(class='btn btn-primary') }}
+
+                {{ form.cancel(class="btn btn-secondary", formnovalidate=True) }}
+
+              </div>
+            </form>
+        </div>
+      </div>
+
+      <!-- loading page --> <!-- modified in lung/app/base/static/js/main.js -->
+      <div id="loader">
+        <p id="loader-text">Your file is being processed. This might take a few minutes!</p>
+        <div class="progress" id="progress">
+          <div id="progress-bar" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div id="process-percent"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+{% endblock main %}

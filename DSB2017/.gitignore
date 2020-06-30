@@ -1,0 +1,5 @@
+*.pyc
+*.ipynb*
+training/.flag*
+prediction*.csv
+.ipynb_checkpoints
