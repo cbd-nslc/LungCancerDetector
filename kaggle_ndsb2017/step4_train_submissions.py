@@ -10,8 +10,8 @@ import xgboost
 from sklearn.metrics import log_loss
 from sklearn.model_selection import train_test_split
 
-import helpers
-import settings
+from kaggle_ndsb2017 import helpers
+from kaggle_ndsb2017 import settings
 
 
 def combine_nodule_predictions(dirs, train_set=True, nodule_th=0.5, extensions=None):

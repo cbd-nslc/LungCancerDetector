@@ -16,8 +16,8 @@ from keras.metrics import binary_accuracy, binary_crossentropy, mean_absolute_er
 from keras.models import Model
 from keras.optimizers import SGD
 
-import helpers
-import settings
+from kaggle_ndsb2017 import helpers
+from kaggle_ndsb2017 import settings
 
 # config = tf.ConfigProto()
 # config.gpu_options.per_process_gpu_memory_fraction = 0.5

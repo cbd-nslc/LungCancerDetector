@@ -16,8 +16,8 @@ from keras.optimizers import SGD
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
 
-import helpers
-import settings
+from kaggle_ndsb2017 import helpers
+from kaggle_ndsb2017 import settings
 
 MEAN_FRAME_COUNT = 1
 CHANNEL_COUNT = 1

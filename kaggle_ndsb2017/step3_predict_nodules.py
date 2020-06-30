@@ -10,9 +10,9 @@ import tensorflow as tf
 from keras import backend as K
 from keras.backend.tensorflow_backend import set_session
 
-import helpers
-import settings
-import step2_train_nodule_detector
+from kaggle_ndsb2017 import helpers
+from kaggle_ndsb2017 import settings
+from kaggle_ndsb2017 import step2_train_nodule_detector
 
 config = tf.compat.v1.ConfigProto(log_device_placement=False)
 config.gpu_options.per_process_gpu_memory_fraction = 0.7
