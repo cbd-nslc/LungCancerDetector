@@ -5,6 +5,7 @@ from multiprocessing import Pool
 from pathlib import Path
 
 import pandas
+
 from torch.autograd import Variable
 from torch.backends import cudnn
 from torch.nn import DataParallel
@@ -29,6 +30,24 @@ from DSB2017.utils import *
 #                     help='Path to the csv output log')
 # args = parser.parse_args()
 
+import os
+os.environ["LRU_CACHE_CAPACITY"] = "1"
+
+use_gpu = config_submit['n_gpu'] > 0
+if not use_gpu:
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print('Using device:', device)
+
+# Additional Info when using cuda
+if device.type == 'cuda':
+    print(torch.cuda.get_device_name(0))
+    print('Memory Usage:')
+    print('Allocated:', round(torch.cuda.memory_allocated(0)/1024**3,1), 'GB')
+    print('Cached:   ', round(torch.cuda.memory_cached(0)/1024**3,1), 'GB')
+
+
 skip_prep = config_submit['skip_preprocessing']
 skip_detect = config_submit['skip_detect']
 sidelen = 144
@@ -40,15 +59,20 @@ def test_casenet(model, testset):
         batch_size=1,
         shuffle=False,
         num_workers=config.num_workers,
-        pin_memory=True)
-    # model = model.cuda()
+        pin_memory=use_gpu)
+    if use_gpu:
+        model = model.cuda()
     model.eval()
     predlist = []
 
-    #     weight = torch.from_numpy(np.ones_like(y).float().cuda()
+    # weight = torch.from_numpy(np.ones_like(y).float().cuda()
     for i, (x, coord) in enumerate(data_loader):
-        coord = Variable(coord).cuda()
-        x = Variable(x).cuda()
+
+        coord = Variable(coord)
+        x = Variable(x)
+        if use_gpu:
+            coord = coord.cuda()
+            x = x.cuda()
         nodulePred, casePred, _ = model(x, coord)
         predlist.append(casePred.data.cpu().numpy())
         # print([i,data_loader.dataset.split[i,1],casePred.data.cpu().numpy()])
@@ -73,7 +97,6 @@ def inference(input_path, output_file=None):
         from fnmatch import fnmatch
 
         mhd_files = []
-        dcm_dirs = []
 
         for path, subdirs, files in os.walk(input_path):
             for name in files:
@@ -100,9 +123,10 @@ def inference(input_path, output_file=None):
     checkpoint = torch.load(config_submit['detector_param'])
     nod_net.load_state_dict(checkpoint['state_dict'])
 
-    torch.cuda.set_device(0)
-    nod_net = nod_net.cuda()
-    cudnn.benchmark = True
+    if use_gpu:
+        torch.cuda.set_device(0)
+        nod_net = nod_net.cuda()
+        cudnn.benchmark = True
     nod_net = DataParallel(nod_net)
 
     if not skip_detect:
@@ -114,7 +138,7 @@ def inference(input_path, output_file=None):
 
         dataset = DataBowl3Detector(testsplit, config1, phase='test', split_comber=split_comber)
         test_loader = DataLoader(dataset, batch_size=1,
-                                 shuffle=False, num_workers=config.num_workers, pin_memory=False, collate_fn=collate)
+                                 shuffle=False, num_workers=config.num_workers, pin_memory=use_gpu, collate_fn=collate)
 
         test_detect(test_loader, nod_net, get_pbb, bbox_result_path, config1, n_gpu=config_submit['n_gpu'])
 
@@ -124,9 +148,10 @@ def inference(input_path, output_file=None):
     checkpoint = torch.load(config_submit['classifier_param'], encoding='latin1')
     casenet.load_state_dict(checkpoint['state_dict'])
 
-    torch.cuda.set_device(0)
-    casenet = casenet.cuda()
-    cudnn.benchmark = True
+    if use_gpu:
+        torch.cuda.set_device(0)
+        casenet = casenet.cuda()
+        cudnn.benchmark = True
     casenet = DataParallel(casenet)
     config2['bboxpath'] = bbox_result_path
     config2['datadir'] = prep_result_path
@@ -142,4 +167,4 @@ def inference(input_path, output_file=None):
 
 
 if __name__ == "__main__":
-    inference(input_path='/home/vantuan5644/PycharmProjects/DSB3_/test')
+    inference(input_path='/home/vantuan5644/PycharmProjects/dataset/dataset_ndsb/test')

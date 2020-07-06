@@ -138,7 +138,7 @@ def main():
         batch_size=args.batch_size,
         shuffle=True,
         num_workers=args.workers,
-        pin_memory=True)
+        pin_memory=False)
 
     dataset = data.DataBowl3Detector(
         datadir,
@@ -150,7 +150,7 @@ def main():
         batch_size=args.batch_size,
         shuffle=False,
         num_workers=args.workers,
-        pin_memory=True)
+        pin_memory=False)
 
     optimizer = torch.optim.SGD(
         net.parameters(),

@@ -1,17 +1,19 @@
 import os
+
 DSB_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-num_workers = 32
+num_workers = 12
 
 config_submit = {'detector_model': 'net_detector',
                  'detector_param': DSB_ROOT + '/model/detector.ckpt',
                  'classifier_model': 'net_classifier',
                  'classifier_param': DSB_ROOT + '/model/classifier.ckpt',
-                 'n_gpu': 1,
+                 'n_gpu': 0,
                  'n_worker_preprocessing': None,
                  'use_exsiting_preprocessing': False,
                  'skip_preprocessing': False,
-                 'skip_detect': False,}
+                 'skip_detect': False, }
+
 config_training = {'stage1_data_path': '/work/DataBowl3/stage1/stage1/',
                    'luna_raw': '/work/DataBowl3/luna/raw/',
                    'luna_segment': '/work/DataBowl3/luna/seg-lungs-LUNA16/',

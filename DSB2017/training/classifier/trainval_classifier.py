@@ -147,7 +147,7 @@ def test_casenet(model,testset):
         batch_size = 4,
         shuffle = False,
         num_workers = config.num_workers,
-        pin_memory=True)
+        pin_memory=False)
     #model = model.cuda()
     model.eval()
     predlist = []

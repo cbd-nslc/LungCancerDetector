@@ -1,24 +1,13 @@
-import argparse
-import os
 import time
-import numpy as np
-from importlib import import_module
-import shutil
-
-from DSB2017.utils import *
-import sys
-from DSB2017.split_combine import SplitComb
 
 import torch
-from torch.nn import DataParallel
-from torch.backends import cudnn
-from torch.utils.data import DataLoader
-from torch import optim
 from torch.autograd import Variable
 
-from DSB2017.layers import acc
+from DSB2017.config import config_submit
+from DSB2017.utils import *
 
 sidelen = 144
+use_gpu = config_submit['n_gpu'] > 0
 
 
 def test_detect(data_loader, net, get_pbb, save_dir, config, n_gpu):
@@ -41,18 +30,26 @@ def test_detect(data_loader, net, get_pbb, save_dir, config, n_gpu):
                 isfeat = True
         n_per_run = n_gpu
         print(data.size())
-        splitlist = range(0, len(data) + 1, n_gpu)
+        if use_gpu:
+            splitlist = range(0, len(data) + 1, n_gpu)
+        else:
+            splitlist = range(0, len(data) + 1)
         if splitlist[-1] != len(data):
             splitlist.append(len(data))
         outputlist = []
         featurelist = []
         with torch.no_grad():
             for i in range(len(splitlist) - 1):
-                input = Variable(data[splitlist[i]:splitlist[i + 1]]).cuda()
-                inputcoord = Variable(coord[splitlist[i]:splitlist[i + 1]]).cuda()
+                input = Variable(data[splitlist[i]:splitlist[i + 1]])
+                inputcoord = Variable(coord[splitlist[i]:splitlist[i + 1]])
+                if use_gpu:
+                    input = input.cuda()
+                    inputcoord = inputcoord.cuda()
+
                 if isfeat:
                     output, feature = net(input, inputcoord)
                     featurelist.append(feature.data.cpu().numpy())
+
                 else:
                     output = net(input, inputcoord)
                 outputlist.append(output.data.cpu().numpy())

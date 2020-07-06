@@ -188,11 +188,11 @@ def main():
 
     dataset = DataBowl3Detector(trainsplit,config1,phase = 'train')
     train_loader_nod = DataLoader(dataset,batch_size = args.batch_size,
-        shuffle = True,num_workers = args.workers,pin_memory=True)
+        shuffle = True,num_workers = args.workers,pin_memory=False)
 
     dataset = DataBowl3Detector(valsplit,config1,phase = 'val')
     val_loader_nod = DataLoader(dataset,batch_size = args.batch_size,
-        shuffle = False,num_workers = args.workers,pin_memory=True)
+        shuffle = False,num_workers = args.workers,pin_memory=False)
 
     optimizer = torch.optim.SGD(nod_net.parameters(),
         args.lr,momentum = 0.9,weight_decay = args.weight_decay)
@@ -200,15 +200,15 @@ def main():
     trainsplit = np.load('full.npy')
     dataset = DataBowl3Classifier(trainsplit,config2,phase = 'train')
     train_loader_case = DataLoader(dataset,batch_size = args.batch_size2,
-        shuffle = True,num_workers = args.workers,pin_memory=True)
+        shuffle = True,num_workers = args.workers,pin_memory=False)
     
     dataset = DataBowl3Classifier(valsplit,config2,phase = 'val')
     val_loader_case = DataLoader(dataset,batch_size = max([args.batch_size2,1]),
-        shuffle = False,num_workers = args.workers,pin_memory=True)
+        shuffle = False,num_workers = args.workers,pin_memory=False)
 
     dataset = DataBowl3Classifier(trainsplit,config2,phase = 'val')
     all_loader_case = DataLoader(dataset,batch_size = max([args.batch_size2,1]),
-        shuffle = False,num_workers = args.workers,pin_memory=True)
+        shuffle = False,num_workers = args.workers,pin_memory=False)
 
     optimizer2 = torch.optim.SGD(case_net.parameters(),
         args.lr,momentum = 0.9,weight_decay = args.weight_decay)
