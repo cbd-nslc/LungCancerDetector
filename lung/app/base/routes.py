@@ -54,16 +54,18 @@ def upload():
             import time
             # time.sleep(5)
 
-            inference(mhd_path)
+            # result = inference(mhd_path)
 
-            return redirect(url_for('base_blueprint.result', raw_file_name=raw_file_name, mhd_file_name=mhd_file_name))
+            result = 70
+
+            return redirect(url_for('base_blueprint.result', raw_file_name=raw_file_name, mhd_file_name=mhd_file_name, result=result))
 
     return render_template('homepage/upload.html', title="Upload", form=form)
 
 
-@blueprint.route('/result/<path:raw_file_name>/<path:mhd_file_name>', methods=['GET', 'POST'])
-def result(raw_file_name, mhd_file_name):
+@blueprint.route('/result/<path:raw_file_name>/<path:mhd_file_name>/<int:result_percent>', methods=['GET', 'POST'])
+def result(raw_file_name, mhd_file_name, result_percent):
     raw = url_for('static', filename=f'uploaded_ct_scan/{raw_file_name}')
     mhd = url_for('static', filename=f'uploaded_ct_scan/{mhd_file_name}')
 
-    return render_template('homepage/result.html', title="Upload", ct_scan_files=[raw, mhd])
+    return render_template('homepage/result.html', title="Upload", ct_scan_files=[raw, mhd], result_percent=result_percent)
