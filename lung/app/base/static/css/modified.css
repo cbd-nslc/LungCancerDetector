@@ -16,6 +16,13 @@
   position:relative;
 }
 
+#loader-text{
+  color:#3d3d3d;
+  margin-top: 22rem;
+  text-align:center;
+  font-size: 30px;
+}
+
 #progress{
   position: absolute;
   left: 50%;
@@ -30,25 +37,12 @@
 }
 
 #process-percent{
-  font-size: 30px;
-
-  color: #ececec;
-
-}
-
-#loader-text{
-  color:#3d3d3d;
-  margin-top: 22rem;
-  text-align:center;
-  font-size: 30px;
-}
-
-#loader-percent{
-    font-size: 20px;
-    margin-left:20px;
-    margin-top:12px;
-
-    color:#3E4142;
+  position: absolute;
+    font-size: 30px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color:#ececec;
 }
 
 /*--------------------------------------------------------------

@@ -5,6 +5,9 @@ from DSB2017.main import inference
 
 from app.base import blueprint
 from app.base.forms import AnonymousForm
+
+from app.users.utils import token_hex_ct_scan
+
 from flask import flash, render_template, redirect, request, url_for, current_app
 from werkzeug.utils import secure_filename
 
@@ -42,8 +45,8 @@ def upload():
         mhd_file = form.mhd_file.data
 
         if raw_file and mhd_file:
-            raw_file_name = secure_filename(raw_file.filename)
-            mhd_file_name = secure_filename(mhd_file.filename)
+            raw_file_name = token_hex_ct_scan(secure_filename(raw_file.filename))
+            mhd_file_name = token_hex_ct_scan(secure_filename(mhd_file.filename))
 
             raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_file_name)
             mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_file_name)
@@ -52,9 +55,9 @@ def upload():
             mhd_file.save(mhd_path)
 
             import time
-            # time.sleep(5)
+            time.sleep(5)
 
-            inference(mhd_path)
+            # inference(mhd_path)
 
             return redirect(url_for('base_blueprint.result', raw_file_name=raw_file_name, mhd_file_name=mhd_file_name))
 

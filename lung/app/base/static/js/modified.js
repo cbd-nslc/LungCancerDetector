@@ -8,45 +8,64 @@ jQuery(function($){
 
 
 /* dropzone */
-// zraw file
-jQuery(function($) {
-  $('input#raw-file').change(function() {
-    if ($(this).val()) {
-      var filename = $(this).val().split('\\').pop();
-      var file_extension = filename.split('.').pop().toLowerCase();
 
-      if (file_extension === 'raw'){
-          $(this).closest('#dropzone').find('.file-name').html(filename);
-          $('#raw-file-error').hide();
+$('form#ct-scan-upload input').on('change', function() {
+    var rawInput = $('input#raw-file');
+    var mhdInput = $('input#mhd-file');
 
-      } else {
-          $(this).val('');
-          $(this).closest('#dropzone').find('.file-name').html('');
-          $('#raw-file-error').show();
-      }
+    var rawFullName = rawInput.val().split('\\').pop();
+    var rawFullNameSplit = rawFullName.split('.');
+    var rawExtension = rawFullNameSplit.pop().toLowerCase();
+    var rawName = rawFullNameSplit.join('');
+
+    var mhdFullName = mhdInput.val().split('\\').pop();
+    var mhdFullNameSplit = mhdFullName.split('.');
+    var mhdExtension = mhdFullNameSplit.pop().toLowerCase();
+    var mhdName = mhdFullNameSplit.join('');
+
+    // check extension of raw file
+    if (rawInput.val()) {
+        if (rawExtension === 'raw'){
+            $(this).closest('#dropzone').find('.file-name').html(rawFullName);
+            $('#raw-file-error').hide();
+        } else {
+            $(this).val('');
+            $(this).closest('#dropzone').find('.file-name').html('');
+            $('#raw-file-error').show();
+            $('#error-raw-mhd').hide();
+        }
     }
-  });
-});
 
-// mhd file
-jQuery(function($) {
-  $('input#mhd-file').change(function() {
-    if ($(this).val()) {
-
-      var filename = $(this).val().split('\\').pop();
-      var file_extension = filename.split('.').pop().toLowerCase();
-
-      if (file_extension === 'mhd') {
-          $(this).closest('#dropzone1').find('.file-name').html(filename);
-          $('#mhd-file-error').hide();
-      } else {
-          $(this).val('');
-          $(this).closest('#dropzone1').find('.file-name').html('');
-          $('#mhd-file-error').show();
-      }
+    // check extension of mhd file
+    if (mhdInput.val()) {
+        if (mhdExtension === 'mhd') {
+            $(this).closest('#dropzone1').find('.file-name').html(mhdFullName);
+            $('#mhd-file-error').hide();
+        } else {
+            $(this).val('');
+            $(this).closest('#dropzone1').find('.file-name').html('');
+            $('#mhd-file-error').show();
+            $('#error-raw-mhd').hide();
+        }
     }
-  });
-});
+
+    // check if raw file and mhd file match
+    if ( rawInput.val() && mhdInput.val() ) {
+        if (rawName !== mhdName) {
+            $('#raw-file').val('');
+            $('#raw-file').closest('#dropzone').find('.file-name').html('');
+
+            $('#mhd-file').val('');
+            $('#mhd-file').closest('#dropzone1').find('.file-name').html('');
+
+            $('#error-raw-mhd').show();
+
+        } else {
+            $('#error-raw-mhd').hide();
+        }
+    }
+})
+
 
 // loading progress bar
 

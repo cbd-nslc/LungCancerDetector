@@ -64,7 +64,7 @@ class Patient(db.Model):
     other_problems = db.Column(db.String)
 
     picture = Column(String(20), nullable=False, default='default.png')
-    ct_scan = db.Column(db.String)
+    ct_scan = Column(String)
 
     date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     # id of user
