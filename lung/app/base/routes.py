@@ -5,6 +5,9 @@ from DSB2017.main import inference
 
 from app.base import blueprint
 from app.base.forms import AnonymousForm
+
+from app.users.utils import token_hex_ct_scan
+
 from flask import flash, render_template, redirect, request, url_for, current_app
 from werkzeug.utils import secure_filename
 
@@ -42,8 +45,8 @@ def upload():
         mhd_file = form.mhd_file.data
 
         if raw_file and mhd_file:
-            raw_file_name = secure_filename(raw_file.filename)
-            mhd_file_name = secure_filename(mhd_file.filename)
+            raw_file_name = token_hex_ct_scan(secure_filename(raw_file.filename))
+            mhd_file_name = token_hex_ct_scan(secure_filename(mhd_file.filename))
 
             raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_file_name)
             mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_file_name)
@@ -52,20 +55,18 @@ def upload():
             mhd_file.save(mhd_path)
 
             import time
-            # time.sleep(5)
+            time.sleep(5)
 
-            # result = inference(mhd_path)
+            # inference(mhd_path)
 
-            result = 70
-
-            return redirect(url_for('base_blueprint.result', raw_file_name=raw_file_name, mhd_file_name=mhd_file_name, result=result))
+            return redirect(url_for('base_blueprint.result', raw_file_name=raw_file_name, mhd_file_name=mhd_file_name))
 
     return render_template('homepage/upload.html', title="Upload", form=form)
 
 
-@blueprint.route('/result/<path:raw_file_name>/<path:mhd_file_name>/<int:result_percent>', methods=['GET', 'POST'])
-def result(raw_file_name, mhd_file_name, result_percent):
+@blueprint.route('/result/<path:raw_file_name>/<path:mhd_file_name>', methods=['GET', 'POST'])
+def result(raw_file_name, mhd_file_name):
     raw = url_for('static', filename=f'uploaded_ct_scan/{raw_file_name}')
     mhd = url_for('static', filename=f'uploaded_ct_scan/{mhd_file_name}')
 
-    return render_template('homepage/result.html', title="Upload", ct_scan_files=[raw, mhd], result_percent=result_percent)
+    return render_template('homepage/result.html', title="Upload", ct_scan_files=[raw, mhd])

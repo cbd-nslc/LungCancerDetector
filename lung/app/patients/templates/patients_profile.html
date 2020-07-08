@@ -32,7 +32,7 @@
                 <div class="profile_img">
                   <div id="crop-avatar">
                     <!-- Current avatar -->
-                    <img class="img-responsive avatar-view" src="{{ picture_file }}" alt="Avatar" title="Change the avatar">
+                    <img class="img-responsive avatar-view" src="{{ picture_file }}" alt="Avatar" title="Change the avatar" style="width:60%; height:60%">
                   </div>
                 </div>
                 <h3>{{ patient.first_name }} {{patient.last_name}}</h3>
@@ -50,10 +50,10 @@
                   </li>
 
                 </ul>
-
+                <br>
 
                 <a href="{{ url_for('patients_blueprint.edit_info', patient_id=patient.id) }}" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Edit Info</a>
-                <a href="{{ url_for('base_blueprint.upload') }}" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Upload CT Scan</a>
+
                 <br />
 
                 <!-- start skills -->
@@ -73,7 +73,7 @@
                 <div class="" role="tabpanel" data-example-id="togglable-tabs">
                   <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
 
-                    <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">User Info (details)</a>
+                    <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Health Info (details)</a>
                     </li>
                     <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Upload CT Scan</a>
                     </li>
@@ -84,8 +84,8 @@
                   <div id="myTabContent" class="tab-content">
                     <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
 
-                      <!-- start recent activity -->
-                      {% for field in form if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan'] %}
+                      <!-- start health info -->
+                      {% for field in form if field.name in ['weight', 'height', 'blood_pressure', 'diabetes', 'health_condition', 'cancer_report', other_problems] %}
                         <div class="item-form-group">
                           <div class="col-md-3">
                             <label class="control-label">{{ field.label.text }}:
@@ -98,70 +98,13 @@
                         <br><br>
 
                       {% endfor %}
-                      <!-- end recent activity -->
+                      <!-- end health info -->
 
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+                      {{ patient.ct_scan }}
 
-                      <!-- start user projects -->
-                      <table class="data table table-striped no-margin">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Project Name</th>
-                            <th>Client Company</th>
-                            <th class="hidden-phone">Hours Spent</th>
-                            <th>Contribution</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>1</td>
-                            <td>New Company Takeover Review</td>
-                            <td>Deveint Inc</td>
-                            <td class="hidden-phone">18</td>
-                            <td class="vertical-align-mid">
-                              <div class="progress">
-                                <div class="progress-bar progress-bar-success" data-transitiongoal="35"></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>2</td>
-                            <td>New Partner Contracts Consultanci</td>
-                            <td>Deveint Inc</td>
-                            <td class="hidden-phone">13</td>
-                            <td class="vertical-align-mid">
-                              <div class="progress">
-                                <div class="progress-bar progress-bar-danger" data-transitiongoal="15"></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>3</td>
-                            <td>Partners and Inverstors report</td>
-                            <td>Deveint Inc</td>
-                            <td class="hidden-phone">30</td>
-                            <td class="vertical-align-mid">
-                              <div class="progress">
-                                <div class="progress-bar progress-bar-success" data-transitiongoal="45"></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>4</td>
-                            <td>New Company Takeover Review</td>
-                            <td>Deveint Inc</td>
-                            <td class="hidden-phone">28</td>
-                            <td class="vertical-align-mid">
-                              <div class="progress">
-                                <div class="progress-bar progress-bar-success" data-transitiongoal="75"></div>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <!-- end user projects -->
+                      <a href="{{ url_for('base_blueprint.upload') }}" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Upload CT Scan</a>
 
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
