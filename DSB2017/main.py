@@ -4,13 +4,15 @@ from importlib import import_module
 from multiprocessing import Pool
 from pathlib import Path
 
+import cv2
+import matplotlib.pyplot as plt
 import pandas
-
 from torch.autograd import Variable
 from torch.backends import cudnn
 from torch.nn import DataParallel
 from torch.utils.data import DataLoader
 
+from DSB2017.layers import nms
 from DSB2017.preprocessing.full_prep import full_prep
 
 sys.path.append('..')
@@ -31,6 +33,7 @@ from DSB2017.utils import *
 # args = parser.parse_args()
 
 import os
+
 os.environ["LRU_CACHE_CAPACITY"] = "1"
 
 use_gpu = config_submit['n_gpu'] > 0
@@ -44,9 +47,8 @@ print('Using device:', device)
 if device.type == 'cuda':
     print(torch.cuda.get_device_name(0))
     print('Memory Usage:')
-    print('Allocated:', round(torch.cuda.memory_allocated(0)/1024**3,1), 'GB')
-    print('Cached:   ', round(torch.cuda.memory_cached(0)/1024**3,1), 'GB')
-
+    print('Allocated:', round(torch.cuda.memory_allocated(0) / 1024 ** 3, 1), 'GB')
+    print('Cached:   ', round(torch.cuda.memory_cached(0) / 1024 ** 3, 1), 'GB')
 
 skip_prep = config_submit['skip_preprocessing']
 skip_detect = config_submit['skip_detect']
@@ -81,16 +83,18 @@ def test_casenet(model, testset):
 
 
 def inference(input_path, output_file=None):
+    output_filename = os.path.splitext(os.path.basename(input_path))[0] if output_file is None else output_file
+
     if os.path.isfile(input_path) and input_path.endswith('mhd'):
         prep_result_path = bbox_result_path = Path(input_path).parent
         testsplit = [input_path]
         preprocess_mhd(input_path, save_to_file=True)
         if output_file is None:
-            output_file = os.path.join(prep_result_path, 'prediction.csv')
+            output_file = os.path.join(prep_result_path, f'{output_filename}.csv')
 
     elif os.path.isdir(input_path):
         if output_file is None:
-            output_file = os.path.join(input_path, 'prediction.csv')
+            output_file = os.path.join(input_path, f'{output_filename}.csv')
         prep_result_path = bbox_result_path = input_path
         n_worker = config_submit['n_worker_preprocessing']
         pool = Pool(n_worker)
@@ -166,5 +170,29 @@ def inference(input_path, output_file=None):
     return predlist
 
 
+def make_bb_image(slice_mat, bb_mat, output_img_file=None):
+    img = np.load(slice_mat)
+    pbb = np.load(bb_mat)
+
+    pbb = pbb[pbb[:, 0] > -1]
+
+    pbb = nms(pbb, 0.05)
+    box = pbb[0].astype('int')[1:]
+
+    single_slice = img[0, box[0]]
+    # print(single_slice.shape)
+    single_slice = cv2.rectangle(single_slice, (box[2] - box[3], box[1] - box[3]), (box[2] + box[3], box[1] + box[3]),
+                                 color=(0, 0, 255))
+    plt.imshow(single_slice, cmap='binary')
+
+    output_img_file = os.path.splitext(os.path.basename(bb_mat))[0] if output_img_file is None else output_img_file
+    plt.imsave(os.path.join(Path(slice_mat).parent, output_img_file.replace('_pbb', '') + '.png'), single_slice, cmap='binary')
+    print('Write bb to img:', output_img_file)
+    return output_img_file
+
+
 if __name__ == "__main__":
-    inference(input_path='/home/vantuan5644/PycharmProjects/dataset/dataset_ndsb/test')
+
+    mhd = ['/home/vantuan5644/PycharmProjects/dataset/dataset_luna/', '1.3.6.1.4.1.14519.5.2.1.6279.6001.100684836163890911914061745866', '.mhd']
+    inference(input_path=''.join(mhd))
+    make_bb_image(''.join([mhd[0], mhd[1], '_clean.npy']), ''.join([mhd[0], mhd[1], '_pbb.npy']))
