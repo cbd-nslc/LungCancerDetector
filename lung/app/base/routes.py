@@ -48,10 +48,10 @@ def upload():
             raw_name = secure_filename(raw_file.filename)
             mhd_name = secure_filename(mhd_file.filename)
 
-            raw_hex_name, mhd_hex_name = token_hex_ct_scan(raw_name, mhd_name)
+            raw_name, mhd_name = token_hex_ct_scan(raw_name, mhd_name)
 
-            raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_hex_name)
-            mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_hex_name)
+            raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_name)
+            mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_name)
 
             raw_file.save(raw_path)
             mhd_file.save(mhd_path)
@@ -59,7 +59,8 @@ def upload():
             # import time
             # time.sleep(5)
 
-            result_percent = 70
+            print(mhd_path)
+            print(raw_path)
             result_percent = inference(mhd_path)
 
             return redirect(url_for('base_blueprint.result', result_percent=result_percent))
