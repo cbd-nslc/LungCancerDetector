@@ -45,28 +45,29 @@ def upload():
         mhd_file = form.mhd_file.data
 
         if raw_file and mhd_file:
-            raw_file_name = token_hex_ct_scan(secure_filename(raw_file.filename))
-            mhd_file_name = token_hex_ct_scan(secure_filename(mhd_file.filename))
+            raw_name = secure_filename(raw_file.filename)
+            mhd_name = secure_filename(mhd_file.filename)
 
-            raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_file_name)
-            mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_file_name)
+            raw_hex_name, mhd_hex_name = token_hex_ct_scan(raw_name, mhd_name)
+
+            raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_hex_name)
+            mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_hex_name)
 
             raw_file.save(raw_path)
             mhd_file.save(mhd_path)
 
-            import time
-            time.sleep(5)
+            # import time
+            # time.sleep(5)
 
-            # inference(mhd_path)
+            result_percent = 70
+            result_percent = inference(mhd_path)
 
-            return redirect(url_for('base_blueprint.result', raw_file_name=raw_file_name, mhd_file_name=mhd_file_name))
+            return redirect(url_for('base_blueprint.result', result_percent=result_percent))
 
     return render_template('homepage/upload.html', title="Upload", form=form)
 
 
-@blueprint.route('/result/<path:raw_file_name>/<path:mhd_file_name>', methods=['GET', 'POST'])
-def result(raw_file_name, mhd_file_name):
-    raw = url_for('static', filename=f'uploaded_ct_scan/{raw_file_name}')
-    mhd = url_for('static', filename=f'uploaded_ct_scan/{mhd_file_name}')
+@blueprint.route('/result/<int:result_percent>', methods=['GET', 'POST'])
+def result(result_percent):
 
-    return render_template('homepage/result.html', title="Upload", ct_scan_files=[raw, mhd])
+    return render_template('homepage/result.html', title="Upload", result_percent=result_percent)

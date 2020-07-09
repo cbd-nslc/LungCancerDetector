@@ -32,12 +32,16 @@ def save_picture_patients(form_picture):
 
     return picture_fn
 
-def token_hex_ct_scan(ct_scan):
+def token_hex_ct_scan(raw, mhd):
     random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(ct_scan)
-    picture_fn = random_hex + f_ext
 
-    return picture_fn
+    _, raw_f_ext = os.path.splitext(raw)
+    _, mhd_f_ext = os.path.splitext(mhd)
+
+    raw_hex_name = random_hex + raw_f_ext
+    mhd_hex_name = random_hex + mhd_f_ext
+
+    return raw_hex_name, mhd_hex_name
 
 
 def send_reset_email(user):
