@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, url_for
 from flask_login import LoginManager
 from flask_mail import Mail
@@ -76,8 +78,9 @@ def apply_themes(app):
         return response
 
 def create_app(config, selenium=False):
-    app = Flask(__name__, static_folder='base/static')
-    UPLOAD_FOLDER = path.join(app.root_path, 'base/static/uploaded_ct_scan')
+    # static_folder = path.join('.', 'base', 'static')
+    app = Flask(__name__, static_folder=path.join('base', 'static'))
+    UPLOAD_FOLDER = path.join(app.static_folder, 'uploaded_ct_scan')
 
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

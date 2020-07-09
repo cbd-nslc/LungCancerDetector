@@ -203,3 +203,50 @@
   margin-right: auto;
   margin-left: auto;
 }
+
+/*--------------------------------------------------------------
+ result page
+--------------------------------------------------------------*/
+
+#result-page-title {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(to left, #274685 20%, #3db3c5 100%);
+  border-radius: .25rem;
+
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+}
+
+#result-page-text{
+  position: absolute;
+  font-size: 30px;
+  color: white;
+
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%)
+}
+
+#result-page-icon{
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 25px;
+}
+
+
+
+.modified-nav-link{
+  font-size:20px;
+  margin-bottom: 5px;
+  background: #F4EFEC;
+}
+
+.modified-nav-link.active{
+  background: linear-gradient(to right, #274685 0%, #3db3c5 100%) !important;
+}
