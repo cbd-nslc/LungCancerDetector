@@ -78,7 +78,6 @@ def apply_themes(app):
         return response
 
 def create_app(config, selenium=False):
-    # static_folder = path.join('.', 'base', 'static')
     app = Flask(__name__, static_folder=path.join('base', 'static'))
     UPLOAD_FOLDER = path.join(app.static_folder, 'uploaded_ct_scan')
 
