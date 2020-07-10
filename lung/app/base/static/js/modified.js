@@ -71,7 +71,7 @@ $('form#ct-scan-upload input').on('change', function() {
 
 $('form#ct-scan-upload').on('submit', function(e) {
     current_progress = 0.1;
-    step = 0.01; // the smaller this is the slower the progress bar
+    step = 0.006; // the smaller this is the slower the progress bar
 
     interval = setInterval(function() {
         current_progress += step;
@@ -84,10 +84,11 @@ $('form#ct-scan-upload').on('submit', function(e) {
 
         $('#process-percent').text(progress + "%");
 
-        if (progress >= 100){
+        if (progress >= 99){
+            progress = 99
             clearInterval(interval);
         } else if(progress >= 70) {
-            step = 0.1
+            step = 0.06
         }
      }, 100);
 

@@ -17,10 +17,13 @@
 }
 
 #loader-text{
+  position: absolute;
   color:#3d3d3d;
-  margin-top: 22rem;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
   text-align:center;
-  font-size: 30px;
+  font-size: 1.8vw;
 }
 
 #progress{
@@ -30,7 +33,7 @@
   transform: translate(-50%, -50%);
 
   width: 40%;
-  height: 6em;
+  height: 7.5%;
   background-color: #3E4142;
   border-radius: 10em;
   color: black;
@@ -38,7 +41,7 @@
 
 #process-percent{
   position: absolute;
-    font-size: 30px;
+    font-size: 2vw;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
@@ -240,7 +243,6 @@
 }
 
 
-
 .modified-nav-link{
   font-size:20px;
   margin-bottom: 5px;
@@ -249,4 +251,14 @@
 
 .modified-nav-link.active{
   background: linear-gradient(to right, #274685 0%, #3db3c5 100%) !important;
+}
+
+/*--------------------------------------------------------------
+ pbb image
+--------------------------------------------------------------*/
+
+#pbb-image{
+  width: 60%;
+  height: 60%;
+  border-radius: 10px;
 }

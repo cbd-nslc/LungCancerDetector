@@ -1,7 +1,7 @@
 import os, sys
 sys.path.append("..")
 sys.path.append('../DSB2017')
-from DSB2017.main import inference
+from DSB2017.main import inference, make_bb_image
 
 from app.base import blueprint
 from app.base.forms import AnonymousForm
@@ -53,22 +53,30 @@ def upload():
             raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_name)
             mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_name)
 
+            base_name = os.path.basename(raw_path).replace('.raw', '')
+
             raw_file.save(raw_path)
             mhd_file.save(mhd_path)
 
             # import time
-            # time.sleep(5)
+            # time.sleep(2)
 
-            print(mhd_path)
-            print(raw_path)
-            result_percent = inference(mhd_path)
+            result_percent = 60
+            # result_percent = inference(mhd_path)
 
-            return redirect(url_for('base_blueprint.result', result_percent=result_percent))
+            return redirect(url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
 
     return render_template('homepage/upload.html', title="Upload", form=form)
 
 
-@blueprint.route('/result/<int:result_percent>', methods=['GET', 'POST'])
-def result(result_percent):
+@blueprint.route('/result/<path:base_name>/<int:result_percent>', methods=['GET', 'POST'])
+def result(base_name, result_percent):
+    # clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
+    # pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
 
-    return render_template('homepage/result.html', title="Upload", result_percent=result_percent)
+    clean_path = os.path.join(current_app.static_folder, 'uploaded_ct_scan/9701825afd07df53_clean.npy')
+    pbb_path = os.path.join(current_app.static_folder, 'uploaded_ct_scan/9701825afd07df53_pbb.npy')
+
+    bbox_basename = make_bb_image(clean_path, pbb_path)
+
+    return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename, result_percent=result_percent)

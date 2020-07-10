@@ -74,7 +74,8 @@
 
             <!-- visualization -->
             <div aria-labelledby="v-pills-profile-tab" class="tab-pane fade" id="v-pills-profile"
-                 role="tabpanel"><img src="{{ url_for('static', filename='patients_pics/default.png') }}">
+                 role="tabpanel">
+                  <img id="pbb-image" src="{{ url_for('static', filename='uploaded_ct_scan/' + bbox_basename) }}">
             </div>
 
             <!-- treatment -->
