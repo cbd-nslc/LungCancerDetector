@@ -186,7 +186,11 @@ def make_bb_image(slice_mat, bb_mat, output_img_file=None):
     plt.imshow(single_slice, cmap='binary')
 
     output_img_file = os.path.splitext(os.path.basename(bb_mat))[0] if output_img_file is None else output_img_file
-    plt.imsave(os.path.join(Path(slice_mat).parent, output_img_file.replace('_pbb', '') + '.png'), single_slice, cmap='binary')
+    output_img_file = output_img_file.replace('_pbb', '') + '.png'
+
+    output_img_file_path = os.path.join(Path(slice_mat).parent, output_img_file)
+
+    plt.imsave(output_img_file_path, single_slice, cmap='binary')
     print('Write bb to img:', output_img_file)
     return output_img_file
 
