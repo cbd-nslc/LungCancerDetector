@@ -59,6 +59,8 @@ def upload():
             raw_file.save(raw_path)
             mhd_file.save(mhd_path)
 
+            print(mhd_path)
+
             result_matrix = inference(mhd_path)
             result_percent = int(np.average(result_matrix))
 
