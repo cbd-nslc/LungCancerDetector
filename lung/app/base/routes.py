@@ -49,7 +49,7 @@ def upload():
             raw_name = secure_filename(raw_file.filename)
             mhd_name = secure_filename(mhd_file.filename)
 
-            raw_name, mhd_name = token_hex_ct_scan(raw_name, mhd_name)
+            # raw_name, mhd_name = token_hex_ct_scan(raw_name, mhd_name)
 
             raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_name)
             mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_name)

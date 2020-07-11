@@ -41,8 +41,11 @@ def token_hex_ct_scan(raw, mhd):
     _, raw_f_ext = os.path.splitext(raw)
     _, mhd_f_ext = os.path.splitext(mhd)
 
-    raw_hex_name = random_hex + raw_f_ext
-    mhd_hex_name = random_hex + mhd_f_ext
+    # raw_hex_name = random_hex + raw_f_ext
+    # mhd_hex_name = random_hex + mhd_f_ext
+
+    raw_hex_name = '111' + raw_f_ext
+    mhd_hex_name = '111' + mhd_f_ext
 
     return raw_hex_name, mhd_hex_name
 
