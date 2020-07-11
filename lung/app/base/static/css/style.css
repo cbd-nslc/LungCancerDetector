@@ -718,12 +718,12 @@ figure figcaption {
 
 .lung{
   position: absolute;
-  top: -50%;
+  top: -10%;
   overflow: hidden;
   left: 0;
   box-shadow: 0 15px 50px 0 rgba(0, 0, 0, 0.3);
   border-radius: 30px;
-  width: 700px;
+  width: 100%;
 }
 
 .hero-section .iphone-wrap .phone-2,

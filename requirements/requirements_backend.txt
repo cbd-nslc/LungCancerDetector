@@ -7,3 +7,5 @@ matplotlib
 jupyter
 h5py
 SimpleITK
+pydicom
+opencv-python
