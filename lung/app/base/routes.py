@@ -2,6 +2,7 @@ import os, sys
 sys.path.append("..")
 sys.path.append('../DSB2017')
 from DSB2017.main import inference, make_bb_image
+import numpy as np
 
 from app.base import blueprint
 from app.base.forms import AnonymousForm
@@ -58,11 +59,8 @@ def upload():
             raw_file.save(raw_path)
             mhd_file.save(mhd_path)
 
-            # import time
-            # time.sleep(2)
-
-            result_percent = 60
-            # result_percent = inference(mhd_path)
+            result_matrix = inference(mhd_path)
+            result_percent = int(np.average(result_matrix))
 
             return redirect(url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
 
@@ -71,11 +69,8 @@ def upload():
 
 @blueprint.route('/result/<path:base_name>/<int:result_percent>', methods=['GET', 'POST'])
 def result(base_name, result_percent):
-    # clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
-    # pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
-
-    clean_path = os.path.join(current_app.static_folder, 'uploaded_ct_scan/9701825afd07df53_clean.npy')
-    pbb_path = os.path.join(current_app.static_folder, 'uploaded_ct_scan/9701825afd07df53_pbb.npy')
+    clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
+    pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
 
     bbox_basename = make_bb_image(clean_path, pbb_path)
 
