@@ -6,7 +6,6 @@ jQuery(function($){
   }, 4000)
 });
 
-
 /* dropzone */
 
 $('form#ct-scan-upload input').on('change', function() {
@@ -64,6 +63,12 @@ $('form#ct-scan-upload input').on('change', function() {
             $('#error-raw-mhd').hide();
         }
     }
+})
+
+/* cancel-button */
+$('#cancel-button').on('click', function() {
+    $('#raw-file').closest('#dropzone').find('.file-name').html('Browse');
+    $('#mhd-file').closest('#dropzone1').find('.file-name').html('Browse');
 })
 
 

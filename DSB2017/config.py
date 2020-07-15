@@ -2,7 +2,7 @@ import os
 
 DSB_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-num_workers = 2
+num_workers = 12
 
 config_submit = {'detector_model': 'net_detector',
                  'detector_param': DSB_ROOT + '/model/detector.ckpt',

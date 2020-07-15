@@ -111,7 +111,8 @@
               <div class="col-md-12 text-center">
                 {{ form.submit(class='btn btn-primary') }}
 
-                {{ form.cancel(class="btn btn-secondary", formnovalidate=True) }}
+<!--                {{ form.cancel(class="btn btn-secondary", formnovalidate=True) }}-->
+                <button class="btn btn-secondary" id="cancel-button" type="reset" formnovalidate=True>Cancel</button>
 
               </div>
             </form>

@@ -59,7 +59,7 @@
                   <span class="icon fa fa-user"></span>
                 </div>
                 <h3 class="mb-3">Patients</h3>
-                <p>Patients patients patients patients patients patients</p>
+                <p>Predict your ct scan and save your medical records</p>
               </div>
             </div>
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
@@ -68,7 +68,7 @@
                   <span class="icon fa fa-user-md"></span>
                 </div>
                 <h3 class="mb-3">Doctors</h3>
-                <p>Doctors Doctors Doctors Doctors Doctors Doctors Doctors</p>
+                <p>Predict your patients' ct scan and save their medical records </p>
               </div>
             </div>
             <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
@@ -77,7 +77,7 @@
                   <span class="icon la la-users"></span>
                 </div>
                 <h3 class="mb-3">Anyone</h3>
-                <p>Anyone Anyone Anyone Anyone Anyone Anyone Anyone Anyone</p>
+                <p>Predict your ct scan without saving</p>
               </div>
             </div>
           </div>
@@ -158,34 +158,47 @@
           </div>
 
           <div class="row">
-            <div class="col-md-4">
-              <div class="step">
-                <span class="number">01</span>
-                <h3>Sign Up</h3><br>
-                <a href="{{ url_for('users_blueprint.create_user') }}" class="btn btn-primary">Sign up now</a>
+            {% if current_user.is_authenticated %}
+              <div class="col-md-4">
+                <div class="step">
+                  <span class="number">01</span>
+                  <h3>Visit Patient Page</h3><br>
+                  <a href="{{ url_for('home_blueprint.index') }}" class="btn btn-primary">Patient Page</a>
+                </div>
               </div>
-            </div>
-            <div class="col-md-4">
-              <div class="step">
-                <span class="number">02</span>
-                <h3>Create patients list</h3>
-                <ul>
-                  <li><p><p>Personal information of patients</p></p></li>
-                  <li><p>Health conditions</p></li>
-                </ul>
+            {% else %}
+              <div class="col-md-4">
+                <div class="step">
+                  <span class="number">01</span>
+                  <h3>Sign Up</h3><br>
+                  <a href="{{ url_for('users_blueprint.create_user') }}" class="btn btn-primary">Sign up now</a>
+                </div>
               </div>
-            </div>
+
+            {% endif %}
             <div class="col-md-4">
-              <div class="step">
-                <span class="number">03</span>
-                <h3>Save patients info</h3>
-                <ul>
-                  <li><p><p>CT scan of patients' lungs</p></p></li>
-                  <li><p>Treatment results</p></li>
-                </ul>
+                <div class="step">
+                  <span class="number">02</span>
+                  <h3>Create patients list</h3>
+                  <ul>
+                    <li><p>Personal information of patients</p></li><br>
+                    <li><p>Health conditions</p></li>
+                  </ul>
+                </div>
               </div>
-            </div>
+              <div class="col-md-4">
+                <div class="step">
+                  <span class="number">03</span>
+                  <h3>Save patients info</h3>
+                  <ul>
+                    <li><p>CT scan of patients' lungs</p></li><br>
+                    <li><p>Treatment results</p></li>
+                  </ul>
+                </div>
+              </div>
+
           </div>
+
         </div>
       </div> <!-- .site-section -->
 

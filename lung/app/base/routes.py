@@ -4,14 +4,15 @@ sys.path.append('../DSB2017')
 from DSB2017.main import inference, make_bb_image
 import numpy as np
 
-from app.base import blueprint
-from app.base.forms import AnonymousForm
-
 from app.users.utils import token_hex_ct_scan
 
 from flask import flash, render_template, redirect, request, url_for, current_app
+from flask_login import current_user
 from werkzeug.utils import secure_filename
 
+from app.base import blueprint
+from app.base.forms import AnonymousForm
+from app.patients.forms import PatientsForm
 
 # default page
 @blueprint.route('/')
@@ -38,8 +39,8 @@ def contact():
 def upload():
     form = AnonymousForm()
 
-    if form.cancel.data:
-        return redirect(request.url)
+    # if form.cancel.data:
+    #     return redirect(request.url)
 
     if form.submit.data and form.validate_on_submit():
         raw_file = form.raw_file.data
@@ -59,10 +60,8 @@ def upload():
             raw_file.save(raw_path)
             mhd_file.save(mhd_path)
 
-            print(mhd_path)
-
             result_matrix = inference(mhd_path)
-            result_percent = int(np.average(result_matrix))
+            result_percent = int(result_matrix*100)
 
             return redirect(url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
 
