@@ -77,8 +77,8 @@
                 <!-- Home -->
                 <li><a href="{{ url_for('base_blueprint.home') }}" class="nav-link">Home</a></li>
 
-                <!-- Demo -->
-                <li><a href="{{ url_for('base_blueprint.upload') }}" class="nav-link">Demo</a></li>
+                <!-- Product -->
+                <li><a href="{{ url_for('base_blueprint.upload') }}" class="nav-link">Product</a></li>
 
                 <!-- About -->
                 <li><a href="{{ url_for('base_blueprint.about') }}" class="nav-link">About</a></li>
@@ -160,7 +160,7 @@
                 <h3>NAVIGATION</h3>
                 <ul class="list-unstyled">
                   <li><a href="{{ url_for('base_blueprint.home') }}">Home</a></li>
-                  <li><a href="{{ url_for('base_blueprint.upload') }}">Demo</a></li>
+                  <li><a href="{{ url_for('base_blueprint.upload') }}">Product</a></li>
 
                   {% if current_user.is_authenticated %}
                     <li><a href="{{ url_for('home_blueprint.index') }}">Patient Page</a></li>

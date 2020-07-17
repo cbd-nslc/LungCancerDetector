@@ -77,19 +77,16 @@ def apply_themes(app):
         return response
 
 def create_app(config, selenium=False):
-    app = Flask(__name__, static_folder=path.join('base', 'static'))
+    app = Flask(__name__, static_folder='base/static')
     UPLOAD_FOLDER = path.join(app.static_folder, 'uploaded_ct_scan')
 
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
     app.config.from_object(config)
 
     if selenium:
         app.config['LOGIN_DISABLED'] = True
-
-    from app.base import models
 
     register_extensions(app)
     register_blueprints(app)
