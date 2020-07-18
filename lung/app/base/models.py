@@ -74,8 +74,8 @@ class Patient(db.Model):
         return f"Patients('{self.first_name}', '{self.last_name}')"
 
 class CTScan(db.Model):
-    id = Column(Integer, primary_key=True)
-    mhd_path = db.Column(db.String, nullable=False)
+    id = db.Column(Integer, primary_key=True)
+    filename = db.Column(db.String, nullable=False)
     md5 = db.Column(db.String, nullable=False)
     result_percent = db.Column(db.Integer, nullable=False)
 

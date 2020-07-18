@@ -53,10 +53,13 @@ def upload():
             raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_name)
             mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_name)
 
+            raw_file.save(raw_path)
+            mhd_file.save(mhd_path)
             md5 = hashlib.md5(open(mhd_path, 'rb').read()).hexdigest()
+            print(md5)
 
             # check if the file exists in db by md5 code
-            ct_scan = CTScan.query.filter_by(md5=md5)
+            ct_scan = CTScan.query.filter_by(md5=md5).first()
 
             # if yes, load the ct_scan in the db
             if ct_scan:
@@ -69,15 +72,12 @@ def upload():
             else:
                 base_name = os.path.basename(mhd_path).replace('.mhd', '')
 
-                raw_file.save(raw_path)
-                mhd_file.save(mhd_path)
-
                 # run the model
                 result_matrix = inference(mhd_path)
                 result_percent = int(result_matrix*100)
 
                 ct_scan = CTScan()
-                ct_scan.file_path = mhd_path
+                ct_scan.filename = mhd_path
                 ct_scan.md5 = md5
                 ct_scan.result_percent = result_percent
 
