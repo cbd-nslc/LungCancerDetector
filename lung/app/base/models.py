@@ -73,22 +73,11 @@ class Patient(db.Model):
     def __repr__(self):
         return f"Patients('{self.first_name}', '{self.last_name}')"
 
-    # @property
-    # def serialize(self):
-    #     """Return object data in easily serializable format"""
-    #     return {
-    #         'id': self.id,
-    #         # This is an example how to deal with Many2Many relations
-    #         'many2many': self.serialize_many2many
-    #     }
-    #
-    # @property
-    # def serialize_many2many(self):
-    #     """
-    #     Return object's relations in easily serializable format.
-    #     NB! Calls many2many's serialize property.
-    #     """
-    #     return [item.serialize for item in self.many2many]
+class CTScan(db.Model):
+    id = Column(Integer, primary_key=True)
+    mhd_path = db.Column(db.String, nullable=False)
+    md5 = db.Column(db.String, nullable=False)
+    result_percent = db.Column(db.Integer, nullable=False)
 
 
 
