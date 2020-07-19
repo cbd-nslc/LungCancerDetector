@@ -1,7 +1,8 @@
 from datetime import datetime
+
 from bcrypt import gensalt, hashpw
 from flask_login import UserMixin
-from sqlalchemy import Binary, Column, Integer, String
+from sqlalchemy import Column, Integer, String
 
 from app import db, login_manager
 
@@ -17,8 +18,8 @@ def request_loader(request):
     user = User.query.filter_by(username=username).first()
     return user if user else None
 
-class User(db.Model, UserMixin):
 
+class User(db.Model, UserMixin):
     __tablename__ = 'User'
 
     id = Column(Integer, primary_key=True)
@@ -43,6 +44,7 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return str(self.username)
+
 
 class Patient(db.Model):
     # id of patient
@@ -73,15 +75,11 @@ class Patient(db.Model):
     def __repr__(self):
         return f"Patients('{self.first_name}', '{self.last_name}')"
 
+
 class CTScan(db.Model):
     id = db.Column(Integer, primary_key=True)
-    filename = db.Column(db.String, nullable=False)
-    md5 = db.Column(db.String, nullable=False)
-    result_percent = db.Column(db.Integer, nullable=False)
-
-
-
-
-
+    mhd_name = db.Column(db.String, nullable=False)
+    mhd_md5 = db.Column(db.String, nullable=False)
+    prediction = db.Column(db.Float, nullable=False)
 
 

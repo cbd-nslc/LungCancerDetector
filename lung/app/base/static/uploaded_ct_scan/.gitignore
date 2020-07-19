@@ -1,5 +1,5 @@
-# Ignore everything in this directory
-*
+*.mhd
+*.raw
 # Except this file
 !.gitignore
 

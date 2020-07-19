@@ -1,13 +1,11 @@
-import os
+from importlib import import_module
+from logging import basicConfig, DEBUG, getLogger, StreamHandler
+from os import path
 
 from flask import Flask, url_for
 from flask_login import LoginManager
 from flask_mail import Mail
-
 from flask_sqlalchemy import SQLAlchemy
-from importlib import import_module
-from logging import basicConfig, DEBUG, getLogger, StreamHandler
-from os import path
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -75,6 +73,7 @@ def apply_themes(app):
     def add_header(response):
         response.cache_control.max_age = 0
         return response
+
 
 def create_app(config, selenium=False):
     app = Flask(__name__, static_folder='base/static')

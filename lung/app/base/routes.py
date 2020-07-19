@@ -1,4 +1,7 @@
 import os, sys, hashlib
+
+from app import db
+
 sys.path.append("..")
 sys.path.append('../DSB2017')
 from DSB2017.main import inference, make_bb_image
@@ -55,31 +58,36 @@ def upload():
 
             raw_file.save(raw_path)
             mhd_file.save(mhd_path)
+            print('mhd_path:', mhd_path)
             md5 = hashlib.md5(open(mhd_path, 'rb').read()).hexdigest()
-            print(md5)
+            print('mhd_md5:', md5)
 
             # check if the file exists in db by md5 code
-            ct_scan = CTScan.query.filter_by(md5=md5).first()
+            ct_scan = CTScan.query.filter_by(mhd_md5=md5).first()
 
             # if yes, load the ct_scan in the db
             if ct_scan:
-                result_percent = ct_scan.result_percent
-                base_name = os.path.basename(ct_scan.mhd_path).replace('.mhd', '')
+                print('Pre-computed')
+                result_percent = int(ct_scan.prediction * 100)
+                base_name = ct_scan.mhd_name.replace('.mhd', '')
 
                 return redirect(url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
 
             # if no, save the file and run the model
             else:
+                print('Not pre-computed, calling model')
                 base_name = os.path.basename(mhd_path).replace('.mhd', '')
 
                 # run the model
-                result_matrix = inference(mhd_path)
-                result_percent = int(result_matrix*100)
+                prediction_result = inference(mhd_path)
+                result_percent = int(prediction_result * 100)
 
                 ct_scan = CTScan()
-                ct_scan.filename = mhd_path
-                ct_scan.md5 = md5
-                ct_scan.result_percent = result_percent
+                ct_scan.mhd_name = mhd_name
+                ct_scan.mhd_md5 = md5
+                ct_scan.prediction = prediction_result
+                db.session.add(ct_scan)
+                db.session.commit()
 
                 return redirect(url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
 

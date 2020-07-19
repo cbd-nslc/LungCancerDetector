@@ -1,4 +1,5 @@
 import os
+import torch
 
 DSB_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -8,7 +9,7 @@ config_submit = {'detector_model': 'net_detector',
                  'detector_param': DSB_ROOT + '/model/detector.ckpt',
                  'classifier_model': 'net_classifier',
                  'classifier_param': DSB_ROOT + '/model/classifier.ckpt',
-                 'n_gpu': 0,
+                 'n_gpu': torch.cuda.device_count(),
                  'n_worker_preprocessing': None,
                  'use_exsiting_preprocessing': False,
                  'skip_preprocessing': False,
