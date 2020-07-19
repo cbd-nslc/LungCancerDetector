@@ -196,10 +196,15 @@ def make_bb_image(slice_mat, bb_mat, output_img_file=None):
 
 
 if __name__ == "__main__":
+    import os
+    from fnmatch import fnmatch
+    base_path = '/home/vantuan5644/PycharmProjects/LungCancerDetector/lung/app/base/static/uploaded_ct_scan'
+    pattern = "*.mhd"
 
-    mhd = ['/home/vantuan5644/PycharmProjects/dataset/dataset_luna/', '1.3.6.1.4.1.14519.5.2.1.6279.6001.100684836163890911914061745866', '.mhd']
-    inference(input_path=''.join(mhd))
-
-    # sao cai file mhd bi hard code o day?
-    # cai main nay ko chay dau thay. cai nay la de test thoi a. em imort tu main r call cai ham inference
-    make_bb_image(''.join([mhd[0], mhd[1], '_clean.npy']), ''.join([mhd[0], mhd[1], '_pbb.npy']))
+    images_list = []
+    for path, subdirs, files in os.walk(base_path):
+        for name in files:
+            if fnmatch(name, pattern):
+                basename = os.path.splitext(name)[0]
+                inference(os.path.join(path, name))
+                make_bb_image(os.path.join(base_path, f'{basename}_clean.npy'), os.path.join(base_path, f'{basename}_pbb.npy'))

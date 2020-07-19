@@ -1,22 +1,20 @@
-import os, sys, hashlib
+import hashlib
+import os
+import sys
 
 from app import db
 
 sys.path.append("..")
 sys.path.append('../DSB2017')
 from DSB2017.main import inference, make_bb_image
-import numpy as np
 
-from app.users.utils import token_hex_ct_scan
-
-from flask import flash, render_template, redirect, request, url_for, current_app
-from flask_login import current_user
+from flask import render_template, redirect, url_for, current_app
 from werkzeug.utils import secure_filename
 
 from app.base import blueprint
 from app.base.models import CTScan
 from app.base.forms import AnonymousForm
-from app.patients.forms import PatientsForm
+
 
 # default page
 @blueprint.route('/')
@@ -41,6 +39,23 @@ def contact():
 
 @blueprint.route('/upload', methods=['GET', 'POST'])
 def upload():
+    def call_model():
+        print('Not pre-computed, calling model')
+        base_name = os.path.basename(mhd_path).replace('.mhd', '')
+
+        # run the model
+        prediction_result = inference(mhd_path)
+        result_percent = int(prediction_result * 100)
+
+        ct_scan = CTScan()
+        ct_scan.mhd_name = mhd_name
+        ct_scan.mhd_md5 = md5
+        ct_scan.prediction = prediction_result
+        db.session.add(ct_scan)
+        db.session.commit()
+
+        return redirect(url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
+
     form = AnonymousForm()
 
     if form.submit.data and form.validate_on_submit():
@@ -71,25 +86,16 @@ def upload():
                 result_percent = int(ct_scan.prediction * 100)
                 base_name = ct_scan.mhd_name.replace('.mhd', '')
 
-                return redirect(url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
-
+                clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
+                pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
+                if os.path.exists(clean_path) and os.path.exists(pbb_path):
+                    return redirect(
+                        url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
+                else:
+                    return call_model()
             # if no, save the file and run the model
             else:
-                print('Not pre-computed, calling model')
-                base_name = os.path.basename(mhd_path).replace('.mhd', '')
-
-                # run the model
-                prediction_result = inference(mhd_path)
-                result_percent = int(prediction_result * 100)
-
-                ct_scan = CTScan()
-                ct_scan.mhd_name = mhd_name
-                ct_scan.mhd_md5 = md5
-                ct_scan.prediction = prediction_result
-                db.session.add(ct_scan)
-                db.session.commit()
-
-                return redirect(url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
+                return call_model()
 
     return render_template('homepage/upload.html', title="Upload", form=form)
 
@@ -101,4 +107,5 @@ def result(base_name, result_percent):
 
     bbox_basename = make_bb_image(clean_path, pbb_path)
 
-    return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename, result_percent=result_percent)
+    return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
+                           result_percent=result_percent)
