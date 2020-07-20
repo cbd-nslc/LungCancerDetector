@@ -2,11 +2,11 @@ import hashlib
 import os
 import sys
 
-from DSB2017.utils import get_binary_prediction
 from app import db
 
 sys.path.append("..")
 sys.path.append('../DSB2017')
+from DSB2017.utils import get_binary_prediction
 from DSB2017.main import inference, make_bb_image
 
 from flask import render_template, redirect, url_for, current_app
