@@ -1,4 +1,5 @@
 import os
+
 import torch
 
 DSB_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -30,3 +31,6 @@ config_training = {'stage1_data_path': '/work/DataBowl3/stage1/stage1/',
                    'bbox_path': '../detector/results/res18/bbox/',
                    'preprocessing_backend': 'python'
                    }
+
+config_prediction = {'negative': 0.103024,
+                     'positive': 0.675820}

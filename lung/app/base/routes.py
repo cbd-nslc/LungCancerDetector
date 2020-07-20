@@ -2,6 +2,7 @@ import hashlib
 import os
 import sys
 
+from DSB2017.utils import get_binary_prediction
 from app import db
 
 sys.path.append("..")
@@ -84,6 +85,8 @@ def upload():
             if ct_scan:
                 print('Pre-computed')
                 result_percent = int(ct_scan.prediction * 100)
+                # Return 0 if negative, 1 if positive, and keep the probability if unsure
+                # get_binary_prediction(ct_scan.prediction)
                 base_name = ct_scan.mhd_name.replace('.mhd', '')
 
                 clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
