@@ -57,19 +57,29 @@
             <a aria-controls="v-pills-home" aria-selected="true" class="nav-link modified-nav-link active" data-toggle="pill"
                href="#v-pills-home" id="v-pills-home-tab" role="tab">1. &emsp;Status </a>
             <a aria-controls="v-pills-profile" aria-selected="false" class="nav-link modified-nav-link" data-toggle="pill"
-               href="#v-pills-profile" id="v-pills-profile-tab" role="tab">2. &emsp;Visualization </a>
+               href="#v-pills-profile" id="v-pills-profile-tab" role="tab">2. &emsp;Visualization of tumors </a>
             <a aria-controls="v-pills-messages" aria-selected="false" class="nav-link modified-nav-link" data-toggle="pill"
-               href="#v-pills-messages" id="v-pills-messages-tab" role="tab">3. &emsp;Treatment</a>
+               href="#v-pills-messages" id="v-pills-messages-tab" role="tab">3. &emsp;Treatment Recommendation</a>
             <a aria-controls="v-pills-settings" aria-selected="false" class="nav-link modified-nav-link" data-toggle="pill"
-               href="#v-pills-settings" id="v-pills-settings-tab" role="tab">4. &emsp;Medicine</a>
+               href="#v-pills-settings" id="v-pills-settings-tab" role="tab">4. &emsp;Medicine Recommendation</a>
           </div>
         </div>
 
-        <div class="col-md-8" style="text-align: center;">
+        <div class="col-md-8" style="text-align: center;" id="result">
           <div class="tab-content" id="v-pills-tabContent">
             <!-- status -->
             <div aria-labelledby="v-pills-home-tab" class="tab-pane fade show active" id="v-pills-home"
-                 role="tabpanel"><p style="font-size:20px; color:black;">You have {{ result_percent }}% chance of having lung cancer
+                 role="tabpanel">
+              {% if result_percent == 0 %}
+                <h2>YOU DON'T HAVE LUNG CANCER</h2>
+                <p>Your CT Scan was predicted that you have NOT been diagnosed with lung cancer</p>
+              {% elif result_percent == 1 %}
+                <h2>YOU HAVE LUNG CANCER</h2>
+                <p>Your CT Scan was predicted that you have been diagnosed with lung cancer</p>
+              {% else %}
+                <p>You have {{ result_percent }}% chance of having lung cancer
+              {% endif %}
+
               </p>
             </div>
 
@@ -81,7 +91,16 @@
 
             <!-- treatment -->
             <div aria-labelledby="v-pills-messages-tab" class="tab-pane fade" id="v-pills-messages"
-                 role="tabpanel"><h2>This is treatment</h2>
+                 role="tabpanel">
+                <p>If you have stage I NSCLC, surgery may be the only treatment you need. This may be done either by taking out the lobe of the lung that has the tumor (lobectomy) or by taking out a smaller piece of the lung (sleeve resection, segmentectomy, or wedge resection). At least some lymph nodes in the lung and in the space between the lungs will also be removed and checked for cancer.</p>
+
+                <p>Segmentectomy or wedge resection is generally an option only for very small stage I cancers and for patients with other health problems that make removing the entire lobe dangerous. Still, most surgeons believe it is better to do a lobectomy if the patient can tolerate it, as it offers the best chance for cure.</p>
+
+                <p>For people with stage I NSCLC that has a higher risk of coming back (based on size, location, or other factors), adjuvant chemotherapy after surgery may lower the risk that cancer will return. But doctors aren’t always sure how to determine which people are likely to be helped by chemo. New lab tests that look at the patterns of certain genes in the cancer cells may help with this. Studies are now being done to see if these tests are accurate.</p>
+
+                <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen (called positive margins). This could mean that some cancer has been left behind, so a second surgery might be done to try to ensure that all the cancer has been removed. (This might be followed by chemotherapy as well.) Another option might be to use radiation therapy after surgery.</p>
+
+                <p>If you have serious health problems that prevent you from having surgery, you may get stereotactic body radiation therapy (SBRT) or another type of radiation therapy as your main treatment. Radiofrequency ablation (RFA) may be another option if the tumor is small and in the outer part of the lung.</p>
             </div>
 
             <!-- medicine -->

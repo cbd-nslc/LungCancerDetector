@@ -6,8 +6,9 @@ from app import db
 
 sys.path.append("..")
 sys.path.append('../DSB2017')
-from DSB2017.utils import get_binary_prediction
+
 from DSB2017.main import inference, make_bb_image
+from DSB2017.utils import get_binary_prediction
 
 from flask import render_template, redirect, url_for, current_app
 from werkzeug.utils import secure_filename
@@ -47,6 +48,7 @@ def upload():
         # run the model
         prediction_result = inference(mhd_path)
         result_percent = int(prediction_result * 100)
+        binary_prediction1 = get_binary_prediction(prediction_result)
 
         ct_scan = CTScan()
         ct_scan.mhd_name = mhd_name
@@ -55,7 +57,7 @@ def upload():
         db.session.add(ct_scan)
         db.session.commit()
 
-        return redirect(url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
+        return redirect(url_for('base_blueprint.result', result_percent=binary_prediction1, base_name=base_name))
 
     form = AnonymousForm()
 
