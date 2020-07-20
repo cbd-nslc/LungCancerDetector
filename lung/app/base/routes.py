@@ -85,15 +85,17 @@ def upload():
             if ct_scan:
                 print('Pre-computed')
                 result_percent = int(ct_scan.prediction * 100)
+
                 # Return 0 if negative, 1 if positive, and keep the probability if unsure
-                # get_binary_prediction(ct_scan.prediction)
+                binary_prediction = get_binary_prediction(ct_scan.prediction)
+
                 base_name = ct_scan.mhd_name.replace('.mhd', '')
 
                 clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
                 pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
                 if os.path.exists(clean_path) and os.path.exists(pbb_path):
                     return redirect(
-                        url_for('base_blueprint.result', result_percent=result_percent, base_name=base_name))
+                        url_for('base_blueprint.result', result_percent=binary_prediction, base_name=base_name))
                 else:
                     return call_model()
             # if no, save the file and run the model
