@@ -259,12 +259,18 @@
 --------------------------------------------------------------*/
 
 #pbb-image{
-  width: 60%;
-  height: 60%;
+  width: 70%;
+
   border-radius: 10px;
+  margin: auto;
+  display: block;
 }
 
 #result p{
-    font-size:20px;
-    color:black;
+    font-size:18px;
+    color:#2F4F4F;
+}
+
+#result h2{
+   font-weight: 500;
 }

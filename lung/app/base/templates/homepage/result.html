@@ -41,10 +41,6 @@
   <div class="site-section">
     <div class="container">
 
-<!--      <div class="row mb-5 align-items-end" data-aos="fade-up">-->
-<!--          <h2>Result Form</h2>-->
-<!--      </div>-->
-
       <div class="row mb-5" data-aos="fade-up">
         <!-- tab panel -->
         <div class="col-md-4">
@@ -65,22 +61,20 @@
           </div>
         </div>
 
-        <div class="col-md-8" style="text-align: center;" id="result">
+        <div class="col-md-8" id="result">
           <div class="tab-content" id="v-pills-tabContent">
             <!-- status -->
-            <div aria-labelledby="v-pills-home-tab" class="tab-pane fade show active" id="v-pills-home"
-                 role="tabpanel">
+            <div aria-labelledby="v-pills-home-tab" class="tab-pane fade show active" id="v-pills-home" role="tabpanel" style="text-align: center;">
               {% if result_percent == 0 %}
-                <h2>YOU DON'T HAVE LUNG CANCER</h2>
+                <h2>YOU DON'T HAVE LUNG CANCER</h2><br>
                 <p>Your CT Scan was predicted that you have NOT been diagnosed with lung cancer</p>
               {% elif result_percent == 1 %}
-                <h2>YOU HAVE LUNG CANCER</h2>
+                <h2>YOU HAVE LUNG CANCER</h2><br>
                 <p>Your CT Scan was predicted that you have been diagnosed with lung cancer</p>
               {% else %}
-                <p>You have {{ result_percent }}% chance of having lung cancer
+              <p>You have {{ result_percent }}% chance of having lung cancer</p>
               {% endif %}
 
-              </p>
             </div>
 
             <!-- visualization -->
@@ -96,8 +90,6 @@
 
                 <p>Segmentectomy or wedge resection is generally an option only for very small stage I cancers and for patients with other health problems that make removing the entire lobe dangerous. Still, most surgeons believe it is better to do a lobectomy if the patient can tolerate it, as it offers the best chance for cure.</p>
 
-                <p>For people with stage I NSCLC that has a higher risk of coming back (based on size, location, or other factors), adjuvant chemotherapy after surgery may lower the risk that cancer will return. But doctors aren’t always sure how to determine which people are likely to be helped by chemo. New lab tests that look at the patterns of certain genes in the cancer cells may help with this. Studies are now being done to see if these tests are accurate.</p>
-
                 <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen (called positive margins). This could mean that some cancer has been left behind, so a second surgery might be done to try to ensure that all the cancer has been removed. (This might be followed by chemotherapy as well.) Another option might be to use radiation therapy after surgery.</p>
 
                 <p>If you have serious health problems that prevent you from having surgery, you may get stereotactic body radiation therapy (SBRT) or another type of radiation therapy as your main treatment. Radiofrequency ablation (RFA) may be another option if the tumor is small and in the outer part of the lung.</p>
@@ -111,7 +103,7 @@
 
                 <p>CYRAMZA + erlotinib was studied in a clinical trial for the initial treatment of people with metastatic NSCLC with certain EGFR mutations. Of the 449 people included in the trial, 224 people received CYRAMZA + erlotinib and 225 people received placebo + erlotinib.</p>
 
-                <p>In a clinical study, CYRAMZA + erlotinib provided more time without disease progression than placebo + erlotinib for people with metastatic NSCLC with certain types of EGFR mutations. On average, people taking CYRAMZA + erlotinib lived 19 months without disease progression compared with 12 months for those taking placebo + erlotinib</p>
+                <p>In a clinical study, CYRAMZA + erlotinib provided more time without disease progression than placebo + erlotinib for people with metastatic NSCLC with certain types of EGFR mutations. On average, people taking CYRAMZA + erlotinib lived 19 months without disease progression compared with 12 months for those taking placebo + erlotinib</p><br>
 
 
               <h2>CYRAMZA + DOCETAXEL </h2>

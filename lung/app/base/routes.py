@@ -47,7 +47,6 @@ def upload():
 
         # run the model
         prediction_result = inference(mhd_path)
-        result_percent = int(prediction_result * 100)
         binary_prediction1 = get_binary_prediction(prediction_result)
 
         ct_scan = CTScan()
