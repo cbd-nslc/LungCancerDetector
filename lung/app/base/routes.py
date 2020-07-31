@@ -41,22 +41,23 @@ def contact():
 
 @blueprint.route('/upload', methods=['GET', 'POST'])
 def upload():
-    def call_model():
+    def call_model(path):
         print('Not pre-computed, calling model')
-        base_name = os.path.basename(mhd_path).replace('.mhd', '')
+        new_base_name = os.path.basename(path).replace('.mhd', '')
 
         # run the model
-        prediction_result = inference(mhd_path)
-        binary_prediction1 = get_binary_prediction(prediction_result)
+        prediction_result = inference(path)
+        new_binary_prediction = get_binary_prediction(prediction_result)
+        new_diameter = 20
 
-        ct_scan = CTScan()
-        ct_scan.mhd_name = mhd_name
-        ct_scan.mhd_md5 = md5
-        ct_scan.prediction = prediction_result
-        db.session.add(ct_scan)
+        new_ct_scan = CTScan()
+        new_ct_scan.mhd_name = mhd_name
+        new_ct_scan.mhd_md5 = md5
+        new_ct_scan.prediction = prediction_result
+        db.session.add(new_ct_scan)
         db.session.commit()
 
-        return redirect(url_for('base_blueprint.result', result_percent=binary_prediction1, base_name=base_name))
+        return redirect(url_for('base_blueprint.result', result_percent=new_binary_prediction, base_name=new_base_name, diameter=new_diameter))
 
     form = AnonymousForm()
 
@@ -85,10 +86,10 @@ def upload():
             # if yes, load the ct_scan in the db
             if ct_scan:
                 print('Pre-computed')
-                result_percent = int(ct_scan.prediction * 100)
 
                 # Return 0 if negative, 1 if positive, and keep the probability if unsure
                 binary_prediction = get_binary_prediction(ct_scan.prediction)
+                diameter = 20
 
                 base_name = ct_scan.mhd_name.replace('.mhd', '')
 
@@ -96,22 +97,22 @@ def upload():
                 pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
                 if os.path.exists(clean_path) and os.path.exists(pbb_path):
                     return redirect(
-                        url_for('base_blueprint.result', result_percent=binary_prediction, base_name=base_name))
+                        url_for('base_blueprint.result', result_percent=binary_prediction, base_name=base_name, diameter=diameter))
                 else:
-                    return call_model()
+                    return call_model(mhd_path)
             # if no, save the file and run the model
             else:
-                return call_model()
+                return call_model(mhd_path)
 
     return render_template('homepage/upload.html', title="Upload", form=form)
 
 
-@blueprint.route('/result/<path:base_name>/<int:result_percent>', methods=['GET', 'POST'])
-def result(base_name, result_percent):
+@blueprint.route('/result/<path:base_name>/<int:result_percent>/<int:diameter>', methods=['GET', 'POST'])
+def result(base_name, result_percent, diameter):
     clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
     pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
 
     bbox_basename = make_bb_image(clean_path, pbb_path)
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
-                           result_percent=result_percent)
+                           result_percent=result_percent, diameter=diameter)

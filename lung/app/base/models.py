@@ -80,6 +80,7 @@ class CTScan(db.Model):
     id = db.Column(Integer, primary_key=True)
     mhd_name = db.Column(db.String, nullable=False)
     mhd_md5 = db.Column(db.String, nullable=False)
+    # diameter = db.Column(db.Float, nullable=False)
     prediction = db.Column(db.Float, nullable=False)
 
 

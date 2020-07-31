@@ -65,12 +65,21 @@
           <div class="tab-content" id="v-pills-tabContent">
             <!-- status -->
             <div aria-labelledby="v-pills-home-tab" class="tab-pane fade show active" id="v-pills-home" role="tabpanel" style="text-align: center;">
+              <!-- no lung cancer -->
               {% if result_percent == 0 %}
                 <h2>YOU DON'T HAVE LUNG CANCER</h2><br>
                 <p>Your CT Scan was predicted that you have NOT been diagnosed with lung cancer</p>
+              <!-- have lung cancer -->
               {% elif result_percent == 1 %}
                 <h2>YOU HAVE LUNG CANCER</h2><br>
-                <p>Your CT Scan was predicted that you have been diagnosed with lung cancer</p>
+                <!-- stage 1 -->
+                {% if diameter <= 20 %}
+                  <p>Your CT Scan was predicted that you have been diagnosed with lung cancer stage I</p>
+                <!-- stage 2 -->
+                {% else %}
+                  <p>Your CT Scan was predicted that you have been diagnosed with lung cancer stage II</p>
+                {% endif %}
+
               {% else %}
                 <p>You have {{ result_percent }}% chance of having lung cancer</p>
               {% endif %}
@@ -89,16 +98,34 @@
             <div aria-labelledby="v-pills-messages-tab" class="tab-pane fade" id="v-pills-messages"
                  role="tabpanel">
               <h2 style="text-align:center;"><i class="icon la la-file-text"></i> TREATMENT RECOMMENDATION </h2><br><br>
+              <!-- no lung cancer -->
               {% if result_percent == 0 %}
                 <p style="text-align: center;">No treatment required</p>
+
+              <!-- have lung cancer -->
               {% else %}
-                <p>If you have stage I NSCLC, surgery may be the only treatment you need. This may be done either by taking out the lobe of the lung that has the tumor (lobectomy) or by taking out a smaller piece of the lung (sleeve resection, segmentectomy, or wedge resection). At least some lymph nodes in the lung and in the space between the lungs will also be removed and checked for cancer.</p>
+                <!-- stage 1 -->
+                {% if diameter <= 20 %}
+                  <p>If you have stage I NSCLC, surgery may be the only treatment you need. This may be done either by taking out the lobe of the lung that has the tumor (lobectomy) or by taking out a smaller piece of the lung (sleeve resection, segmentectomy, or wedge resection). At least some lymph nodes in the lung and in the space between the lungs will also be removed and checked for cancer.</p>
 
-                <p>Segmentectomy or wedge resection is generally an option only for very small stage I cancers and for patients with other health problems that make removing the entire lobe dangerous. Still, most surgeons believe it is better to do a lobectomy if the patient can tolerate it, as it offers the best chance for cure.</p>
+                  <p>Segmentectomy or wedge resection is generally an option only for very small stage I cancers and for patients with other health problems that make removing the entire lobe dangerous. Still, most surgeons believe it is better to do a lobectomy if the patient can tolerate it, as it offers the best chance for cure.</p>
 
-                <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen (called positive margins). This could mean that some cancer has been left behind, so a second surgery might be done to try to ensure that all the cancer has been removed. (This might be followed by chemotherapy as well.) Another option might be to use radiation therapy after surgery.</p>
+                  <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen (called positive margins). This could mean that some cancer has been left behind, so a second surgery might be done to try to ensure that all the cancer has been removed. (This might be followed by chemotherapy as well.) Another option might be to use radiation therapy after surgery.</p>
 
-                <p>If you have serious health problems that prevent you from having surgery, you may get stereotactic body radiation therapy (SBRT) or another type of radiation therapy as your main treatment. Radiofrequency ablation (RFA) may be another option if the tumor is small and in the outer part of the lung.</p>
+                  <p>If you have serious health problems that prevent you from having surgery, you may get stereotactic body radiation therapy (SBRT) or another type of radiation therapy as your main treatment. Radiofrequency ablation (RFA) may be another option if the tumor is small and in the outer part of the lung.</p>
+                <!-- stage 2 -->
+                {% else %}
+                  <p>People who have stage II NSCLC and are healthy enough for surgery usually have the cancer removed by lobectomy or sleeve resection. Sometimes removing the whole lung (pneumonectomy) is needed.</p>
+
+                  <p>Any lymph nodes likely to have cancer in them are also removed. The extent of lymph node involvement and whether or not cancer cells are found at the edges of the removed tissues are important factors when planning the next step of treatment.</p>
+
+                  <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen. This might mean that some cancer has been left behind, so a second surgery might be done to try to remove any remaining cancer. This may be followed by chemotherapy (chemo). Another option is to treat with radiation, sometimes with chemo.</p>
+
+                  <p>Even if positive margins are not found, chemo is usually recommended after surgery to try to destroy any cancer cells that might have been left behind. As with stage I cancers, newer lab tests now being studied may help doctors find out which patients need this adjuvant treatment and which are less likely to benefit from it.</p>
+
+                  <p>If you have serious medical problems that would keep you from having surgery, you may get only radiation therapy as your main treatment.</p>
+                {% endif %}
+
 
               {% endif %}
             </div>
