@@ -74,10 +74,10 @@
                 <h2>YOU HAVE LUNG CANCER</h2><br>
                 <!-- stage 1 -->
                 {% if diameter <= 20 %}
-                  <p>Your CT Scan was predicted that you have been diagnosed with lung cancer stage I</p>
+                  <p>Your CT Scan was predicted that you have been diagnosed with lung cancer STAGE I</p>
                 <!-- stage 2 -->
                 {% else %}
-                  <p>Your CT Scan was predicted that you have been diagnosed with lung cancer stage II</p>
+                  <p>Your CT Scan was predicted that you have been diagnosed with lung cancer STAGE II</p>
                 {% endif %}
 
               {% else %}
@@ -91,6 +91,7 @@
                  role="tabpanel">
               <h2 style="text-align:center;"><i class="icon fas fa-lungs"></i> VISUALIZATION</h2><br><br>
               <p style="text-align:center;">Tumors can be visualized within the white bounding box</p>
+              <p style="text-align:center;">Diameter of tumor: {{ diameter }} mm</p>
               <img id="pbb-image" src="{{ url_for('static', filename='uploaded_ct_scan/' + bbox_basename) }}">
             </div>
 

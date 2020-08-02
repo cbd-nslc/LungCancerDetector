@@ -1,4 +1,5 @@
 import sys
+import math
 from functools import partial
 from importlib import import_module
 from multiprocessing import Pool
@@ -181,8 +182,24 @@ def make_bb_image(slice_mat, bb_mat, output_img_file=None):
 
     single_slice = img[0, box[0]]
     # print(single_slice.shape)
-    single_slice = cv2.rectangle(single_slice, (box[2] - box[3], box[1] - box[3]), (box[2] + box[3], box[1] + box[3]),
-                                 color=(0, 0, 255))
+
+    start_point = (box[2] - box[3], box[1] - box[3])
+    end_point = (box[2] + box[3], box[1] + box[3])
+
+    # not sure if this is correct or not =))
+    # assume voxel size = (0.25, 0.25)
+
+    diameter = math.sqrt((((box[2] + box[3]) - (box[2] - box[3])) * 0.25) ** 2
+                         + (((box[1] + box[3]) - (box[1] - box[3])) * 0.25) ** 2
+                         )
+    diameter = round(diameter, 2)
+
+    print('start_point', start_point)
+    print('end_point', end_point)
+    print('diameter', diameter)
+
+    single_slice = cv2.rectangle(single_slice, start_point, end_point, color=(0, 0, 255))
+
     plt.imshow(single_slice, cmap='binary')
 
     output_img_file = os.path.splitext(os.path.basename(bb_mat))[0] if output_img_file is None else output_img_file
@@ -192,12 +209,13 @@ def make_bb_image(slice_mat, bb_mat, output_img_file=None):
 
     plt.imsave(output_img_file_path, single_slice, cmap='binary')
     print('Write bb to img:', output_img_file)
-    return output_img_file
+    return output_img_file, diameter
 
 
 if __name__ == "__main__":
     import os
     from fnmatch import fnmatch
+
     base_path = '/home/vantuan5644/PycharmProjects/LungCancerDetector/lung/app/base/static/uploaded_ct_scan'
     pattern = "*.mhd"
 
@@ -207,4 +225,5 @@ if __name__ == "__main__":
             if fnmatch(name, pattern):
                 basename = os.path.splitext(name)[0]
                 inference(os.path.join(path, name))
-                make_bb_image(os.path.join(base_path, f'{basename}_clean.npy'), os.path.join(base_path, f'{basename}_pbb.npy'))
+                make_bb_image(os.path.join(base_path, f'{basename}_clean.npy'),
+                              os.path.join(base_path, f'{basename}_pbb.npy'))

@@ -57,7 +57,7 @@ def upload():
         db.session.add(new_ct_scan)
         db.session.commit()
 
-        return redirect(url_for('base_blueprint.result', result_percent=new_binary_prediction, base_name=new_base_name, diameter=new_diameter))
+        return redirect(url_for('base_blueprint.result', result_percent=new_binary_prediction, base_name=new_base_name))
 
     form = AnonymousForm()
 
@@ -97,7 +97,7 @@ def upload():
                 pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
                 if os.path.exists(clean_path) and os.path.exists(pbb_path):
                     return redirect(
-                        url_for('base_blueprint.result', result_percent=binary_prediction, base_name=base_name, diameter=diameter))
+                        url_for('base_blueprint.result', result_percent=binary_prediction, base_name=base_name))
                 else:
                     return call_model(mhd_path)
             # if no, save the file and run the model
@@ -107,12 +107,12 @@ def upload():
     return render_template('homepage/upload.html', title="Upload", form=form)
 
 
-@blueprint.route('/result/<path:base_name>/<int:result_percent>/<int:diameter>', methods=['GET', 'POST'])
-def result(base_name, result_percent, diameter):
+@blueprint.route('/result/<path:base_name>/<int:result_percent>', methods=['GET', 'POST'])
+def result(base_name, result_percent):
     clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
     pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
 
-    bbox_basename = make_bb_image(clean_path, pbb_path)
+    bbox_basename, diameter = make_bb_image(clean_path, pbb_path)
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
                            result_percent=result_percent, diameter=diameter)
