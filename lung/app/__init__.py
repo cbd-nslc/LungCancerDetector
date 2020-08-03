@@ -16,7 +16,6 @@ def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
 
-
 def register_blueprints(app):
     for module_name in ['base', 'home', 'patients', 'users']:
         module = import_module(f'app.{module_name}.routes')
