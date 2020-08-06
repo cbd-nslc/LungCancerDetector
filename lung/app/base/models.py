@@ -47,8 +47,6 @@ class User(db.Model, UserMixin):
 
 
 class Patient(db.Model):
-    __tablename__ = 'patient'
-
     # id of patient
     id = db.Column(db.Integer, primary_key=True)
 
@@ -68,6 +66,7 @@ class Patient(db.Model):
     other_problems = db.Column(db.String)
 
     picture = Column(String(20), nullable=False, default='default.png')
+    ct_scan = Column(String)
 
     date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
