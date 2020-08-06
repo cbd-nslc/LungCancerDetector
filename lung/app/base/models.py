@@ -47,6 +47,8 @@ class User(db.Model, UserMixin):
 
 
 class Patient(db.Model):
+    __tablename__ = 'patient'
+
     # id of patient
     id = db.Column(db.Integer, primary_key=True)
 
@@ -66,11 +68,14 @@ class Patient(db.Model):
     other_problems = db.Column(db.String)
 
     picture = Column(String(20), nullable=False, default='default.png')
-    ct_scan = Column(String)
 
     date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
     # id of user
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+
+    # ct_scan
+    # ct_scan = db.relationship('CTScan', backref='patient', lazy=True)
 
     def __repr__(self):
         return f"Patients('{self.first_name}', '{self.last_name}')"
@@ -80,7 +85,8 @@ class CTScan(db.Model):
     id = db.Column(Integer, primary_key=True)
     mhd_name = db.Column(db.String, nullable=False)
     mhd_md5 = db.Column(db.String, nullable=False)
-    # diameter = db.Column(db.Float, nullable=False)
     prediction = db.Column(db.Float, nullable=False)
+    # patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
+
 
 

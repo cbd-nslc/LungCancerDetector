@@ -15,7 +15,7 @@ from werkzeug.utils import secure_filename
 
 from app.base import blueprint
 from app.base.models import CTScan
-from app.base.forms import AnonymousForm
+from app.base.forms import CTScanForm
 
 
 # default page
@@ -39,27 +39,24 @@ def contact():
     return render_template('homepage/contact.html', title='Contact')
 
 
-@blueprint.route('/upload', methods=['GET', 'POST'])
-def upload():
-    def call_model(path):
-        print('Not pre-computed, calling model')
-        new_base_name = os.path.basename(path).replace('.mhd', '')
+def call_model(path, name, md5):
+    print('Not pre-computed, calling model')
 
-        # run the model
-        prediction_result = inference(path)
-        new_binary_prediction = get_binary_prediction(prediction_result)
-        new_diameter = 20
+    # run the model
+    new_prediction = inference(path)
 
-        new_ct_scan = CTScan()
-        new_ct_scan.mhd_name = mhd_name
-        new_ct_scan.mhd_md5 = md5
-        new_ct_scan.prediction = prediction_result
-        db.session.add(new_ct_scan)
-        db.session.commit()
+    new_ct_scan = CTScan()
+    new_ct_scan.mhd_name = name
+    new_ct_scan.mhd_md5 = md5
+    new_ct_scan.prediction = new_prediction
+    db.session.add(new_ct_scan)
+    db.session.commit()
 
-        return redirect(url_for('base_blueprint.result', result_percent=new_binary_prediction, base_name=new_base_name))
+    return new_ct_scan
 
-    form = AnonymousForm()
+@blueprint.route('/upload/<int:patient_id>', methods=['GET', 'POST'])
+def upload(patient_id):
+    form = CTScanForm()
 
     if form.submit.data and form.validate_on_submit():
         raw_file = form.raw_file.data
@@ -76,43 +73,48 @@ def upload():
 
             raw_file.save(raw_path)
             mhd_file.save(mhd_path)
-            print('mhd_path:', mhd_path)
-            md5 = hashlib.md5(open(mhd_path, 'rb').read()).hexdigest()
-            print('mhd_md5:', md5)
+
+            mhd_md5 = hashlib.md5(open(mhd_path, 'rb').read()).hexdigest()
 
             # check if the file exists in db by md5 code
-            ct_scan = CTScan.query.filter_by(mhd_md5=md5).first()
+            ct_scan = CTScan.query.filter_by(mhd_md5=mhd_md5).first()
 
             # if yes, load the ct_scan in the db
             if ct_scan:
                 print('Pre-computed')
 
                 # Return 0 if negative, 1 if positive, and keep the probability if unsure
-                binary_prediction = get_binary_prediction(ct_scan.prediction)
-                diameter = 20
-
                 base_name = ct_scan.mhd_name.replace('.mhd', '')
 
                 clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
                 pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
+
+                # check if file is not saved due to some error
                 if os.path.exists(clean_path) and os.path.exists(pbb_path):
-                    return redirect(
-                        url_for('base_blueprint.result', result_percent=binary_prediction, base_name=base_name))
+                    return redirect(url_for('base_blueprint.result', mhd_md5=mhd_md5))
+
                 else:
-                    return call_model(mhd_path)
+                    new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5)
+                    return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5))
+
             # if no, save the file and run the model
             else:
-                return call_model(mhd_path)
+                new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5)
+                return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5))
 
     return render_template('homepage/upload.html', title="Upload", form=form)
 
 
-@blueprint.route('/result/<path:base_name>/<int:result_percent>', methods=['GET', 'POST'])
-def result(base_name, result_percent):
+@blueprint.route('/result/<mhd_md5>/', methods=['GET', 'POST'])
+def result(mhd_md5):
+    ct_scan = CTScan.query.filter_by(mhd_md5=mhd_md5).first()
+    base_name = ct_scan.mhd_name.replace('.mhd', '')
+    binary_prediction = get_binary_prediction(ct_scan.prediction)
+
     clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
     pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
 
     bbox_basename, diameter = make_bb_image(clean_path, pbb_path)
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
-                           result_percent=result_percent, diameter=diameter)
+                           result_percent=binary_prediction, diameter=diameter)

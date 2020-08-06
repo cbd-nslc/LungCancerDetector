@@ -77,7 +77,6 @@ def edit_info(patient_id):
     else:
         picture_file = url_for('static', filename='patients_pics/' + patient.picture)
 
-    
     return render_template('edit_info.html', title='Edit', heading='Edit', form=form, picture_file=picture_file)
 
 """view patients"""
