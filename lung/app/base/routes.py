@@ -10,11 +10,12 @@ sys.path.append('../DSB2017')
 from DSB2017.main import inference, make_bb_image
 from DSB2017.utils import get_binary_prediction
 
-from flask import render_template, redirect, url_for, current_app
+from flask import render_template, redirect, url_for, current_app, flash
+from flask_login import current_user
 from werkzeug.utils import secure_filename
 
 from app.base import blueprint
-from app.base.models import CTScan
+from app.base.models import CTScan, Patient
 from app.base.forms import CTScanForm
 
 
@@ -54,9 +55,22 @@ def call_model(path, name, md5):
 
     return new_ct_scan
 
-@blueprint.route('/upload/<int:patient_id>', methods=['GET', 'POST'])
+@blueprint.route('/upload', defaults={'patient_id': None}, methods=['GET', 'POST'])
+@blueprint.route('/upload/patient_id:<int:patient_id>', methods=['GET', 'POST'])
 def upload(patient_id):
-    form = CTScanForm()
+    form = CTScanForm(patient_id=patient_id)
+    print(patient_id)
+    # if patient_id available, not show the patient list
+    if patient_id:
+        patients_list = None
+        patient = Patient.query.filter_by(id=patient_id).first()
+    else:
+        if current_user.is_authenticated:
+            patients_list = Patient.query.filter_by(doctor=current_user).all()
+            patient = None
+        else:
+            patients_list = None
+            patient = None
 
     if form.submit.data and form.validate_on_submit():
         raw_file = form.raw_file.data
@@ -102,11 +116,12 @@ def upload(patient_id):
                 new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5)
                 return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5))
 
-    return render_template('homepage/upload.html', title="Upload", form=form)
+    return render_template('homepage/upload.html', title="Upload", form=form, patients_list=patients_list, patient=patient)
 
 
-@blueprint.route('/result/<mhd_md5>/', methods=['GET', 'POST'])
-def result(mhd_md5):
+@blueprint.route('/result/<mhd_md5>/', defaults={'patient_id': None}, methods=['GET', 'POST'])
+@blueprint.route('/result/<mhd_md5>/<int:patient_id>', methods=['GET', 'POST'])
+def result(mhd_md5, patient_id):
     ct_scan = CTScan.query.filter_by(mhd_md5=mhd_md5).first()
     base_name = ct_scan.mhd_name.replace('.mhd', '')
     binary_prediction = get_binary_prediction(ct_scan.prediction)

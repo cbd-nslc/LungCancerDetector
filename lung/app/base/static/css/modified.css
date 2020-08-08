@@ -1,3 +1,12 @@
+/*--------------------------------------------------------------
+# upload page table
+--------------------------------------------------------------*/
+#table-patients tbody .row-patients:hover{
+  background: linear-gradient(to right, #274685 0%, #3db3c5 100%);
+  color: white;
+  cursor: pointer;
+}
+
 
 /*--------------------------------------------------------------
 # loader

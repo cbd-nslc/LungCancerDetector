@@ -1,0 +1,78 @@
+
+<div class="row mb-5 align-items-end">
+  <!-- -->
+  <div class="col-md-6" data-aos="fade-up">
+
+    <h2>Upload as anonymous user. Your upload will not be saved</h2>
+
+
+    <ul>
+      <li><p class="mb-0" style="color:black;">&emsp;Upload 2 files of ".raw" and ".mhd" extension</p></li>
+      <li><p class="mb-0" style="color:black;">&emsp;Both files must have the same name</p></li>
+    </ul>
+
+  </div>
+
+</div>
+
+<!-- form --> <!-- modified in lung/app/base/static/js/main.js -->
+<form class="row mb-12 align-items-end" id="ct-scan-upload" method="POST" enctype="multipart/form-data" data-aos="fade-up">
+  {{ form.hidden_tag() }}
+  <!-- center box -->
+  <div class="center box">
+    <div class="title">
+        <h1>Click inside the box to upload</h1>
+    </div>
+
+    <div class="row-md-12">
+      <div class="text-danger text-center" id="error-raw-mhd" style="font-size:16px; display:none;">
+        Your ".raw" and ".mhd" file are not the same. Please reupload them.
+      </div>
+    </div>
+
+    <div id="dropzone-box">
+      <!-- dropzone -->
+      <div class="row dropzone-title">
+        <div class="col-md-6 text-center"><h5>.raw</h5></div>
+        <div class="col-md-6 text-center"><h5>.mhd</h5></div>
+      </div>
+
+      <div class="row dropzone-content">
+        <div class="col-md-6">
+          <div id="dropzone">
+            {{ form.raw_file(class="upload-ct-scan", id="raw-file") }}
+            <span><p class="file-name">Browse</p></span>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div id="dropzone1" class="center-block">
+            {{ form.mhd_file(class="upload-ct-scan", id="mhd-file") }}
+            <span><p class="file-name">Browse</p></span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row dropzone-error">
+        <div class="col-md-6 text-center">
+          <div class='text-danger' id='raw-file-error' style="display:none">Wrong extension. Please select ".raw" extension.</div>
+        </div>
+
+        <div class="col-md-6 text-center">
+          <div class='text-danger' id='mhd-file-error' style="display:none">Wrong extension. Please select ".mhd" extension.</div>
+
+        </div>
+      </div>
+      <!-- end dropzone -->
+    </div>
+
+  </div>
+  <!-- end center box -->
+
+  <div class="col-md-12 text-center">
+    {{ form.submit(class='btn btn-primary') }}
+    <button class="btn btn-secondary" id="cancel-button" type="reset" formnovalidate=True>Cancel</button>
+  </div>
+</form>
+

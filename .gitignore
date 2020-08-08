@@ -132,3 +132,7 @@ dmypy.json
 .pyre/
 /.idea/
 /kaggle_ndsb2017/trained_models.rar
+
+# lung
+/lung/migrations/
+/lung/app/base/static/uploaded_ct_scan/

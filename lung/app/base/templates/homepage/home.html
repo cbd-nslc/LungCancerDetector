@@ -27,8 +27,15 @@
                 <div class="col-lg-6 text-center text-lg-left">
                   <h1 data-aos="fade-right">Lung Cancer Detection</h1>
                   <p class="mb-5" data-aos="fade-right" data-aos-delay="100">Simple process, high-accurate results. Try now!</p>
-                  <p data-aos="fade-right" data-aos-delay="200" data-aos-offset="-500"><a href="{{ url_for('base_blueprint.upload') }}"
+
+                  {% if current_user.is_authenticated %}
+                    <p data-aos="fade-right" data-aos-delay="200" data-aos-offset="-500"><a href="{{ url_for('base_blueprint.upload') }}"
                       class="btn btn-outline-white">Get started</a></p>
+                  {% else %}
+                    <p data-aos="fade-right" data-aos-delay="200" data-aos-offset="-500"><a href="{{ url_for('base_blueprint.upload') }}"
+                      class="btn btn-outline-white">Get started</a></p>
+                  {% endif %}
+
                 </div>
                 <div class="col-lg-6">
 

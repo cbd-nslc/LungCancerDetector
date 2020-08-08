@@ -1,0 +1,44 @@
+<h2>Please choose a patient</h2>
+<br>
+<table class="table table-striped projects" id="table-patients" style="width: 80%; ">
+  <thead>
+    <tr>
+      <th style="width: 5%">#</th>
+      <th style="width: calc(95%/3)">First Name</th>
+      <th style="width: calc(95%/3)">Last Name</th>
+      <th style="width: calc(95%/3)">CT Scan</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% if patients_list|length == 0 %}
+      <!-- when user cannot seach for patient -->
+      <tr>
+        <td colspan="4">
+          <p style="text-align:center; font-size:16px;">You don't have any patients in your list. Please add your patient!</p>
+          <div style="text-align:center">
+            <a href="{{ url_for('patients_blueprint.create_patients') }}" class="btn btn-primary">Add</a>
+          </div>
+        </td>
+      </tr>
+
+    <!-- when user has > 0 patients -->
+    {% else %}
+      {% for patient in patients_list %}
+        <tr href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="row-patients">
+          <!-- num -->
+          <td>{{ loop.index }}</td>
+
+          <!-- first name -->
+          <td>{{ patient.first_name }}</td>
+
+          <!-- first name -->
+          <td>{{ patient.last_name }}</td>
+
+          <!-- id -->
+          <td>{{ patient.id }}</td>
+        </tr>
+      {% endfor %}
+    {% endif %}
+  </tbody>
+</table>

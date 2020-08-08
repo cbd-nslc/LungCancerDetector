@@ -6,8 +6,15 @@ jQuery(function($){
   }, 4000)
 });
 
-/* dropzone */
+/* upload page */
 
+$('#table-patients tbody .row-patients').click(function(){
+    window.location = $(this).attr('href');
+    return false;
+});
+
+
+// dropzone
 $('form#ct-scan-upload input').on('change', function() {
     var rawInput = $('input#raw-file');
     var mhdInput = $('input#mhd-file');

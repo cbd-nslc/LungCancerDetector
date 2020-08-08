@@ -7,7 +7,6 @@
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 {% endblock stylesheets %}
 
-
 {% block main %}
     <main id="main">
       <div class="hero-section inner-page">
@@ -20,7 +19,6 @@
                   </g>
               </g>
           </svg>
-
         </div>
 
         <div class="container">
@@ -35,99 +33,32 @@
             </div>
           </div>
         </div>
-
       </div>
 
       <div class="site-section">
+        <!-- upload form -->
         <div class="container">
-<!--          {% if current_user.is_authenticated %}-->
-<!--            <div class="row">-->
-<!--              <div class="col-md-offset-1 col-md-6 col-sm-4">-->
 
-<!--              </div>-->
-<!--            </div>-->
-<!--          {% else %}-->
-<!--          {% endif %}-->
+          {% if current_user.is_authenticated %}
+            <!-- if patient_id not available, show patients_list table -->
+            {% if patients_list %}
+              {% include "homepage/FC_patient_table.html" %}
 
-          <div class="row mb-5 align-items-end">
-            <!-- -->
-            <div class="col-md-6" data-aos="fade-up">
-              <h2>Upload Form</h2>
-              <ul>
-                <li><p class="mb-0">&emsp;Upload 2 files of ".raw" and ".mhd" extension</p></li>
-                <li><p class="mb-0">&emsp;Both files must have the same name</p></li>
-              </ul>
+            <!-- if patient_id available, show upload form -->
+            {% else %}
+              <h2>Upload CT Scan for patient </h2>
+              <br>
+              {% include "homepage/FC_dropzone.html" %}
+            {% endif %}
 
-            </div>
-
-          </div>
-
-          <!-- form --> <!-- modified in lung/app/base/static/js/main.js -->
-          <form class="row mb-12 align-items-end" id="ct-scan-upload" method="POST" enctype="multipart/form-data" data-aos="fade-up">
-            {{ form.hidden_tag() }}
-            <!-- center box -->
-            <div class="center box">
-              <div class="title">
-                  <h1>Click inside the box to upload</h1>
-              </div>
-
-              <div class="row-md-12">
-                <div class="text-danger text-center" id="error-raw-mhd" style="font-size:16px; display:none;">
-                  Your ".raw" and ".mhd" file are not the same. Please reupload them.
-                </div>
-              </div>
-
-              <div id="dropzone-box">
-                <!-- dropzone -->
-                <div class="row dropzone-title">
-                  <div class="col-md-6 text-center"><h5>.raw</h5></div>
-                  <div class="col-md-6 text-center"><h5>.mhd</h5></div>
-                </div>
-
-                <div class="row dropzone-content">
-                  <div class="col-md-6">
-                    <div id="dropzone">
-                      {{ form.raw_file(class="upload-ct-scan", id="raw-file") }}
-                      <span><p class="file-name">Browse</p></span>
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
-                    <div id="dropzone1" class="center-block">
-                      {{ form.mhd_file(class="upload-ct-scan", id="mhd-file") }}
-                      <span><p class="file-name">Browse</p></span>
-                    </div>
-                  </div>
-
-                </div>
-
-                <div class="row dropzone-error">
-                  <div class="col-md-6 text-center">
-                    <div class='text-danger' id='raw-file-error' style="display:none">Wrong extension. Please select ".raw" extension.</div>
-                  </div>
-
-                  <div class="col-md-6 text-center">
-                    <div class='text-danger' id='mhd-file-error' style="display:none">Wrong extension. Please select ".mhd" extension.</div>
-
-                  </div>
-                </div>
-                <!-- end dropzone -->
-              </div>
-
-            </div>
-            <!-- end center box -->
-
-            <div class="col-md-12 text-center">
-              {{ form.submit(class='btn btn-primary') }}
-<!--                {{ form.cancel(class="btn btn-secondary", formnovalidate=True) }}-->
-              <button class="btn btn-secondary" id="cancel-button" type="reset" formnovalidate=True>Cancel</button>
-            </div>
-          </form>
-
-
+          {% else %}
+            {% include "homepage/FC_dropzone.html" %}
+          {% endif %}
 
         </div>
       </div>
+
+
 
       <!-- loading page --> <!-- modified in lung/app/base/static/js/main.js -->
       <div id="loader">

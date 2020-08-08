@@ -104,7 +104,7 @@
                     <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
                       {{ patient.ct_scan }}
 
-                      <a href="{{ url_for('base_blueprint.upload') }}" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Upload CT Scan</a>
+                      <a href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Upload CT Scan</a>
 
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
