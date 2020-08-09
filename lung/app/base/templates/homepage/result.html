@@ -40,6 +40,15 @@
 
   <div class="site-section">
     <div class="container">
+      <div data-aos="fade-up">
+        {% if ct_scan.patient %}
+          {% if current_user.is_authenticated %}
+            <h2>Patient "{{ ct_scan.patient.first_name }} {{ ct_scan.patient.last_name }}"</h2>
+          {% endif %}
+        {% endif %}
+        <br>
+      </div>
+
 
       <div class="row mb-5" data-aos="fade-up">
         <!-- tab panel -->

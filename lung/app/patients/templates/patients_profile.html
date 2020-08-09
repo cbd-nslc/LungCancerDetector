@@ -52,7 +52,7 @@
                 </ul>
                 <br>
 
-                <a href="{{ url_for('patients_blueprint.edit_info', patient_id=patient.id) }}" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Edit Info</a>
+                <a href="{{ url_for('patients_blueprint.edit_info', patient_id=patient.id) }}" class="btn btn-success" style="padding: 10px 20px;"><i class="fa fa-edit m-right-xs"></i>&nbsp;Edit Info</a>
 
                 <br />
 
@@ -69,7 +69,7 @@
                   </div>
                 </div>
                 
-
+                <!-- tab header -->
                 <div class="" role="tabpanel" data-example-id="togglable-tabs">
                   <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
 
@@ -77,13 +77,13 @@
                     </li>
                     <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Upload CT Scan</a>
                     </li>
-                    <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Medical History</a>
+                    <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Cancer Report</a>
                     </li>
-                    
                   </ul>
+
+                  <!-- tab content -->
                   <div id="myTabContent" class="tab-content">
                     <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
-
                       <!-- start health info -->
                       {% for field in form if field.name in ['weight', 'height', 'blood_pressure', 'diabetes', 'health_condition', 'cancer_report', other_problems] %}
                         <div class="item-form-group">
@@ -99,17 +99,41 @@
 
                       {% endfor %}
                       <!-- end health info -->
-
                     </div>
+
+                    <!-- CT Scan -->
                     <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
-                      {{ patient.ct_scan }}
+                      {% if patient.ctscan %}
+                        <p style="font-size: 25px;">View or change the CT Scan</p><br><br>
+                        <div class="col-md-12">
+                          <a href="{{ url_for('base_blueprint.result', mhd_md5=patient.ctscan.mhd_md5, patient_id=patient.id) }}" class="btn btn-success" style="padding: 10px 20px; margin-right: 10px;"><i class="fas fa-x-ray"></i>&nbsp;View</a>
 
-                      <a href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Upload CT Scan</a>
+                          <a href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="btn btn-info" style="padding: 10px 20px;"><i class="fa fa-edit m-right-xs" ></i>&nbsp;Reupload</a>
+                        </div>
+
+                      {% else %}
+                        <p style="font-size: 20px;">You have not uploaded a CT Scan for patient {{ patient.first_name}} {{ patient.last_name }}</p><br><br>
+                        <a href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="btn btn-success"style="padding: 10px 20px;"><i class="fa fa-edit m-right-xs"></i>&nbsp;Upload</a>
+                      {% endif %}
 
                     </div>
+
                     <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
-                      <p>xxFood truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui
-                        photo booth letterpress, commodo enim craft beer mlkshk </p>
+                      {% if patient.ctscan %}
+                        {% if patient.ctscan.diameter <= 20 %}
+                          <p style="font-size: 20px;">Patient "{{ patient.first_name }} {{ patient.last_name }}" was detected having Lung cancer with stage I</p>
+                        {% else %}
+                          <p style="font-size: 20px;">Patient "{{ patient.first_name }} {{ patient.last_name }}" was detected having Lung cancer with stage II</p>
+                        {% endif %}
+                        <p style="font-size: 20px;">The size of tumor is {{ patient.ctscan.diameter }} mm in diameter</p>
+
+                        <br><br>
+                        <p style="font-size: 15px;">Uploaded {{ patient.ctscan.date_uploaded.strftime('%d-%m-%Y') }}</p>
+
+                      {% else %}
+                        <p style="font-size: 20px;">Patient "{{ patient.first_name }} {{ patient.last_name }}" has no cancer report</p>
+                      {% endif %}
+
                     </div>
                   </div>
                 </div>

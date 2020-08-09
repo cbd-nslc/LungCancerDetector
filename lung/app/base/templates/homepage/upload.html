@@ -46,7 +46,7 @@
 
             <!-- if patient_id available, show upload form -->
             {% else %}
-              <h2>Upload CT Scan for patient </h2>
+              <h2>Upload CT Scan for patient "{{ patient.first_name }} {{ patient.last_name }}"</h2>
               <br>
               {% include "homepage/FC_dropzone.html" %}
             {% endif %}
@@ -57,8 +57,6 @@
 
         </div>
       </div>
-
-
 
       <!-- loading page --> <!-- modified in lung/app/base/static/js/main.js -->
       <div id="loader">

@@ -3,6 +3,7 @@ from datetime import datetime
 from bcrypt import gensalt, hashpw
 from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import backref
 
 from app import db, login_manager
 
@@ -73,7 +74,7 @@ class Patient(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
 
     # ct_scan
-    ctscan = db.relationship('CTScan', backref='patient', lazy=True)
+    ctscan = db.relationship('CTScan', backref='patient', uselist=False, lazy=True)
 
     def __repr__(self):
         return f"Patients('{self.first_name}', '{self.last_name}')"
@@ -84,6 +85,8 @@ class CTScan(db.Model):
     mhd_name = db.Column(db.String, nullable=False)
     mhd_md5 = db.Column(db.String, nullable=False)
     prediction = db.Column(db.Float, nullable=False)
+    diameter = db.Column(db.Float)
+    date_uploaded = db.Column(db.DateTime, default=datetime.utcnow)
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=True)
 
 

@@ -1,9 +1,21 @@
 
+
+
 // disable flash message after 4s
 jQuery(function($){
   setTimeout(function(){
       $('.flash-message').hide();
   }, 4000)
+});
+
+// patient profile upload ct scan
+$(function(){
+    var hash = location.hash;
+    if (hash !='') {
+        // show the tab
+        $('#myTab a[href="' + hash + '"]').tab('show');
+    }
+    console.log(hash)
 });
 
 /* upload page */

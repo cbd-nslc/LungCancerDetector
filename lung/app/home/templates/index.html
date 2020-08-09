@@ -100,9 +100,14 @@
                         <!-- settings -->
                         <td>
                           <a href="{{ url_for('patients_blueprint.patients_profile', patient_id=patient.id) }}" class="btn btn-primary btn-xs"><i class="fa fa-folder"></i> View </a>
-                          <a href="{{ url_for('patients_blueprint.edit_info', patient_id=patient.id) }}" class="btn btn-info btn-xs"><i class="fa fa-pencil"></i> Edit </a>
 
-                          <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-trash-o"></i> Delete </button>
+                          {% if patient.ctscan %}
+                            <a href="{{ url_for('base_blueprint.result', mhd_md5=patient.ctscan.mhd_md5, patient_id=patient.id) }}" class="btn btn-info btn-xs"><i class="fas fa-x-ray"></i> CT Scan </a>
+                          {% else %}
+                            <a href="{{ url_for('patients_blueprint.patients_profile', patient_id=patient.id, _anchor='tab_content2') }}" id="index-page-upload" class="btn btn-info btn-xs"><i class="fas fa-x-ray"></i> CT Scan </a>
+                          {% endif %}
+
+                          <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash-alt"></i> Delete </button>
                         </td>
                       </tr>
 
