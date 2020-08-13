@@ -154,10 +154,6 @@ def result(mhd_md5, patient_id):
         db.session.commit()
 
     patient = Patient.query.filter_by(id=patient_id).first()
-    upload = patient.upload.order_by(Upload.date_uploaded.desc()).all()
-
-    for u in upload:
-        print(u.ct_scan)
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
                            result_percent=binary_prediction, diameter=diameter, ct_scan=ct_scan, patient=patient)
