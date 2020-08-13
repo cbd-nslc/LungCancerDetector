@@ -101,23 +101,19 @@
                         <td>
                           <a href="{{ url_for('patients_blueprint.patients_profile', patient_id=patient.id) }}" class="btn btn-primary btn-xs"><i class="fa fa-folder"></i> View </a>
 
-                          {% if patient.ctscan %}
-                            <a href="{{ url_for('base_blueprint.result', mhd_md5=patient.ctscan.mhd_md5, patient_id=patient.id) }}" class="btn btn-info btn-xs"><i class="fas fa-x-ray"></i> CT Scan </a>
-                          {% else %}
-                            <a href="{{ url_for('patients_blueprint.patients_profile', patient_id=patient.id, _anchor='tab_content2') }}" id="index-page-upload" class="btn btn-info btn-xs"><i class="fas fa-x-ray"></i> CT Scan </a>
-                          {% endif %}
+                          <a href="{{ url_for('patients_blueprint.patients_profile', patient_id=patient.id, _anchor='tab_content2') }}" id="index-page-upload" class="btn btn-info btn-xs"><i class="fas fa-x-ray"></i> CT Scan </a>
 
-                          <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash-alt"></i> Delete </button>
+                          <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal{{ patient.id }}"><i class="fas fa-trash-alt"></i> Delete </button>
                         </td>
                       </tr>
 
                       <!-- Modal -->
-                      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                      <div class="modal fade" id="deleteModal{{ patient.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                           <div class="modal-content">
 
                             <div class="modal-body">
-                              <h4>Do you want to delete this patient?</h4>
+                              <h4>Do you want to delete patient "{{ patient.first_name }} {{ patient.last_name }}" ?</h4>
                             </div>
                             <div class="modal-footer">
 

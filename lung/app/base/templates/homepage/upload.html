@@ -41,7 +41,7 @@
 
           {% if current_user.is_authenticated %}
             <!-- if patient_id not available, show patients_list table -->
-            {% if patients_list %}
+            {% if patients_list is not none %}
               {% include "homepage/FC_patient_table.html" %}
 
             <!-- if patient_id available, show upload form -->

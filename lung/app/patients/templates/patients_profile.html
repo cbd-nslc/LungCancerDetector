@@ -75,10 +75,10 @@
 
                     <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Health Info (details)</a>
                     </li>
-                    <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Upload CT Scan</a>
+                    <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">CT Scan</a>
                     </li>
-                    <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Cancer Report</a>
-                    </li>
+<!--                    <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Cancer Report</a>-->
+<!--                    </li>-->
                   </ul>
 
                   <!-- tab content -->
@@ -103,38 +103,74 @@
 
                     <!-- CT Scan -->
                     <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
-                      {% if patient.ctscan %}
-                        <p style="font-size: 25px;">View or change the CT Scan</p><br><br>
-                        <div class="col-md-12">
-                          <a href="{{ url_for('base_blueprint.result', mhd_md5=patient.ctscan.mhd_md5, patient_id=patient.id) }}" class="btn btn-success" style="padding: 10px 20px; margin-right: 10px;"><i class="fas fa-x-ray"></i>&nbsp;View</a>
+                      <div class="x_panel" style="width: 70%;">
+                        <div class="x_title">
+                          <div class="row" style="margin: 5px 5px;">
+                            <h3 style="display:inline-block;">Last Uploads</h3>
 
-                          <a href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="btn btn-info" style="padding: 10px 20px;"><i class="fa fa-edit m-right-xs" ></i>&nbsp;Reupload</a>
+                            <a href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="btn btn-success" style="padding: 10px 20px; float:right;"><i class="fas fa-upload"></i> New Upload</a>
+                          </div>
+
                         </div>
 
-                      {% else %}
-                        <p style="font-size: 20px;">You have not uploaded a CT Scan for patient {{ patient.first_name}} {{ patient.last_name }}</p><br><br>
-                        <a href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="btn btn-success"style="padding: 10px 20px;"><i class="fa fa-edit m-right-xs"></i>&nbsp;Upload</a>
-                      {% endif %}
+                        <div class="x_content">
+                          <table class="table table-striped projects" id="table-upload-ct-scan">
+                            <thead>
+                              <tr>
+                                <th style="width: 5%">#</th>
+                                <th style="width: calc(95%/3)">CT Scan</th>
+                                <th style="width: calc(95%/3)">Cancer Report</th>
+                              </tr>
+                            </thead>
 
+                            <tbody>
+                              {% if upload_list|length == 0 %}
+                                <!-- when user cannot seach for patient -->
+                                <tr>
+                                  <td colspan="4">
+                                    <p style="text-align:center; font-size:16px;">You don't have any uploads for this patient.</p>
+<!--                                    <div style="text-align:center">-->
+<!--                                      <a href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="btn btn-primary">Upload</a>-->
+<!--                                    </div>-->
+                                  </td>
+                                </tr>
+
+                              <!-- when user has > 0 patients -->
+                              {% else %}
+                                {% for upload in upload_list %}
+                                  <tr href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="row-patients">
+                                    <!-- num -->
+                                    <td>{{ loop.index }}</td>
+
+                                    <!-- upload -->
+                                    <td>
+                                      <a href="{{ url_for('base_blueprint.result', mhd_md5=upload.ct_scan.mhd_md5, patient_id=patient.id) }}" class="btn btn-primary" style="padding: 10px 20px;"><i class="fas fa-x-ray"></i> View</a>
+                                      ct_scan_id: {{ upload.ct_scan.id }}
+                                      <br />
+                                      <small>Uploaded {{ upload.date_uploaded.strftime("%B %d, %Y - %H:%M") }}</small>
+                                    </td>
+
+                                    <!-- cancer report -->
+                                    <td>
+                                      <a href="{{ url_for('patients_blueprint.pdf_template', upload_id=upload.id) }}" target="_blank"><i class="fas fa-file-pdf fa-4x"></i> Report {{ loop.index }}</a>
+
+                                    </td>
+
+                                  </tr>
+                                {% endfor %}
+                              {% endif %}
+                            </tbody>
+                          </table>
+
+                        </div>
+                      </div>
                     </div>
 
-                    <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
-                      {% if patient.ctscan %}
-                        {% if patient.ctscan.diameter <= 20 %}
-                          <p style="font-size: 20px;">Patient "{{ patient.first_name }} {{ patient.last_name }}" was detected having Lung cancer with stage I</p>
-                        {% else %}
-                          <p style="font-size: 20px;">Patient "{{ patient.first_name }} {{ patient.last_name }}" was detected having Lung cancer with stage II</p>
-                        {% endif %}
-                        <p style="font-size: 20px;">The size of tumor is {{ patient.ctscan.diameter }} mm in diameter</p>
+                    <!-- cancer report -->
+<!--                    <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">-->
+<!--                      -->
+<!--                    </div>-->
 
-                        <br><br>
-                        <p style="font-size: 15px;">Uploaded {{ patient.ctscan.date_uploaded.strftime('%d-%m-%Y') }}</p>
-
-                      {% else %}
-                        <p style="font-size: 20px;">Patient "{{ patient.first_name }} {{ patient.last_name }}" has no cancer report</p>
-                      {% endif %}
-
-                    </div>
                   </div>
                 </div>
               </div>

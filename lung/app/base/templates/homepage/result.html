@@ -40,12 +40,15 @@
 
   <div class="site-section">
     <div class="container">
+      <div class="row mb-5" data-aos="fade-up">
+        <a href="{{ url_for('patients_blueprint.patients_profile', patient_id=patient.id) }}#tab_content2" class="btn btn-primary" style="float:right; margin-right: 20px!important;">All Uploads &nbsp;<i class="fa fa-arrow-circle-right" style="font-size: 19px;"></i></a>
+      </div>
+
       <div data-aos="fade-up">
-        {% if ct_scan.patient %}
-          {% if current_user.is_authenticated %}
-            <h2>Patient "{{ ct_scan.patient.first_name }} {{ ct_scan.patient.last_name }}"</h2>
-          {% endif %}
+        {% if current_user.is_authenticated %}
+          <h2>Patient "{{ patient.first_name }} {{ patient.last_name }}"</h2>
         {% endif %}
+
         <br>
       </div>
 
@@ -180,9 +183,6 @@
       </div>
 
     </div>
-
-
-
 
 </main>
 {% endblock main %}

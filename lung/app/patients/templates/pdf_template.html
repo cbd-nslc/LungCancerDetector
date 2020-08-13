@@ -1,0 +1,10 @@
+
+<h2 style="margin-left: auto; margin-right: auto;">CANCER REPORT</h2><br>
+
+{% if upload.ct_scan.diameter <= 20 %}
+  <p style="font-size: 20px;">Patient "{{ upload.patient.first_name }} {{ upload.patient.last_name }}" was detected having Lung cancer with stage I</p>
+{% else %}
+  <p style="font-size: 20px;">Patient "{{ upload.patient.first_name }} {{ upload.patient.last_name }}" was detected having Lung cancer with stage II</p>
+{% endif %}
+
+<p>The size of tumor is {{ upload.ct_scan.diameter }} mm in diameter</p>

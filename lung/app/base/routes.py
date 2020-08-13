@@ -16,7 +16,7 @@ from flask_login import current_user
 from werkzeug.utils import secure_filename
 
 from app.base import blueprint
-from app.base.models import CTScan, Patient
+from app.base.models import CTScan, Patient, Upload
 from app.base.forms import CTScanForm
 
 
@@ -41,20 +41,24 @@ def contact():
     return render_template('homepage/contact.html', title='Contact')
 
 
-def call_model(path, name, md5):
+def call_model(path, name, md5, patient):
     print('Not pre-computed, calling model')
 
     # run the model
     new_prediction = inference(path)
+    new_ct_scan = CTScan(mhd_name=name, mhd_md5=md5, prediction=new_prediction)
 
-    new_ct_scan = CTScan()
-    new_ct_scan.mhd_name = name
-    new_ct_scan.mhd_md5 = md5
-    new_ct_scan.prediction = new_prediction
+    if patient:
+        upload = Upload(patient_id=patient.id, date_uploaded=datetime.utcnow())
+
+        new_ct_scan.patient.append(patient)
+        new_ct_scan.upload.append(upload)
+
     db.session.add(new_ct_scan)
     db.session.commit()
 
     return new_ct_scan
+
 
 @blueprint.route('/upload', defaults={'patient_id': None}, methods=['GET', 'POST'])
 @blueprint.route('/upload/patient_id:<int:patient_id>', methods=['GET', 'POST'])
@@ -63,15 +67,14 @@ def upload(patient_id):
 
     # if patient_id available, not show the patient list
     if patient_id:
-        patients_list = None
         patient = Patient.query.filter_by(id=patient_id).first()
+        patients_list = None
     else:
+        patient = None
         if current_user.is_authenticated:
             patients_list = Patient.query.filter_by(doctor=current_user).all()
-            patient = None
         else:
             patients_list = None
-            patient = None
 
     if form.submit.data and form.validate_on_submit():
         raw_file = form.raw_file.data
@@ -106,18 +109,30 @@ def upload(patient_id):
 
                 # check if file is not saved due to some error
                 if os.path.exists(clean_path) and os.path.exists(pbb_path):
+                    if patient_id:
+                        upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id,
+                                        date_uploaded=datetime.utcnow())
+
+                        if ct_scan not in patient.ct_scan.all():
+                            patient.ct_scan.append(ct_scan)
+
+                        db.session.add(upload)
+                        db.session.commit()
+
                     return redirect(url_for('base_blueprint.result', mhd_md5=mhd_md5, patient_id=patient_id))
 
                 else:
-                    new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5)
-                    return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id))
+                    new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
+                    return redirect(
+                        url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id))
 
             # if no, save the file and run the model
             else:
-                new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5)
+                new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
                 return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id))
 
-    return render_template('homepage/upload.html', title="Upload", form=form, patients_list=patients_list, patient=patient)
+    return render_template('homepage/upload.html', title="Upload", form=form, patients_list=patients_list,
+                           patient=patient)
 
 
 @blueprint.route('/result/<mhd_md5>/', defaults={'patient_id': None}, methods=['GET', 'POST'])
@@ -133,17 +148,16 @@ def result(mhd_md5, patient_id):
 
     # diameter
     bbox_basename, diameter = make_bb_image(clean_path, pbb_path)
-    ct_scan.diameter = diameter
 
-    print(ct_scan.patient)
-    print(patient_id)
-    print(ct_scan.patient_id)
+    if not ct_scan.diameter:
+        ct_scan.diameter = diameter
+        db.session.commit()
 
-    if patient_id:
-        ct_scan.patient_id = patient_id
-        ct_scan.date_uploaded = datetime.utcnow()
+    patient = Patient.query.filter_by(id=patient_id).first()
+    upload = patient.upload.order_by(Upload.date_uploaded.desc()).all()
 
-    db.session.commit()
+    for u in upload:
+        print(u.ct_scan)
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
-                           result_percent=binary_prediction, diameter=diameter, ct_scan=ct_scan)
+                           result_percent=binary_prediction, diameter=diameter, ct_scan=ct_scan, patient=patient)
