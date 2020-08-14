@@ -12,7 +12,7 @@ from DSB2017.main import inference, make_bb_image
 from DSB2017.utils import get_binary_prediction
 
 from flask import render_template, redirect, url_for, current_app, flash
-from flask_login import current_user
+from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
 from app.base import blueprint
@@ -62,6 +62,7 @@ def call_model(path, name, md5, patient):
 
 @blueprint.route('/upload', defaults={'patient_id': None}, methods=['GET', 'POST'])
 @blueprint.route('/upload/patient_id:<int:patient_id>', methods=['GET', 'POST'])
+@login_required
 def upload(patient_id):
     form = CTScanForm()
 
