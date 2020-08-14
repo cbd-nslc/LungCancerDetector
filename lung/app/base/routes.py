@@ -142,6 +142,7 @@ def result(mhd_md5, patient_id):
 
     base_name = ct_scan.mhd_name.replace('.mhd', '')
     binary_prediction = get_binary_prediction(ct_scan.prediction)
+    result_percent = round(binary_prediction, 2)
 
     clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
     pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
@@ -153,7 +154,11 @@ def result(mhd_md5, patient_id):
         ct_scan.diameter = diameter
         db.session.commit()
 
+    if not ct_scan.binary_prediction:
+        ct_scan.binary_prediction = binary_prediction
+        db.session.commit()
+
     patient = Patient.query.filter_by(id=patient_id).first()
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
-                           result_percent=binary_prediction, diameter=diameter, ct_scan=ct_scan, patient=patient)
+                           result_percent=result_percent, diameter=diameter, ct_scan=ct_scan, patient=patient)

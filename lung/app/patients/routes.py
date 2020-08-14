@@ -126,6 +126,9 @@ def delete_patients(patient_id):
 @login_required
 def pdf_template(upload_id):
     upload = Upload.query.filter_by(id=upload_id).first()
+    ct_scan = upload.ct_scan
+    diameter = ct_scan.diameter
+    result_percent = round(ct_scan.binary_prediction, 2)
 
     # path_wkthmltopdf = r'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe'
     # config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
@@ -133,7 +136,7 @@ def pdf_template(upload_id):
     # rendered = render_template('pdf_template.html', upload=upload)
     # pdf = pdfkit.from_string(rendered, False, configuration=config)
 
-    rendered = render_template('pdf_template.html', upload=upload)
+    rendered = render_template('pdf_template.html', upload=upload, diameter=diameter, result_percent=result_percent)
     pdf = pdfkit.from_string(rendered, False)
 
     response = make_response(pdf)

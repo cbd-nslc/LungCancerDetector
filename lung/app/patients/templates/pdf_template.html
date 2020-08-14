@@ -1,10 +1,21 @@
 
-<h2 style="margin-left: auto; margin-right: auto;">CANCER REPORT</h2><br>
+<h2>CANCER REPORT</h2><br>
 
-{% if upload.ct_scan.diameter <= 20 %}
-  <p style="font-size: 20px;">Patient "{{ upload.patient.first_name }} {{ upload.patient.last_name }}" was detected having Lung cancer with stage I</p>
+<!-- no lung cancer -->
+{% if result_percent == 0 %}
+  <p>Patient "{{ upload.patient.first_name }} {{ upload.patient.last_name }}" does not have lung cancer</p>
+<!-- have lung cancer -->
+{% elif result_percent == 1 %}
+  <!-- stage 1 -->
+  {% if diameter <= 20 %}
+    <p>Patient "{{ upload.patient.first_name }} {{ upload.patient.last_name }}" was detected having Lung cancer with stage I</p>
+  <!-- stage 2 -->
+  {% else %}
+    <p>Patient "{{ upload.patient.first_name }} {{ upload.patient.last_name }}" was detected having Lung cancer with stage II</p>
+  {% endif %}
+
 {% else %}
-  <p style="font-size: 20px;">Patient "{{ upload.patient.first_name }} {{ upload.patient.last_name }}" was detected having Lung cancer with stage II</p>
+  <p>You have {{ result_percent * 100 }}% chance of having lung cancer</p>
 {% endif %}
 
 <p>The size of tumor is {{ upload.ct_scan.diameter }} mm in diameter</p>
