@@ -159,6 +159,10 @@ def result(mhd_md5, patient_id):
         ct_scan.binary_prediction = binary_prediction
         db.session.commit()
 
+    if not ct_scan.bbox_basename:
+        ct_scan.bbox_basename = bbox_basename
+        db.session.commit()
+
     patient = Patient.query.filter_by(id=patient_id).first()
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,

@@ -95,6 +95,7 @@ class CTScan(db.Model):
     mhd_md5 = db.Column(db.String, nullable=False)
     prediction = db.Column(db.Float, nullable=False)
     binary_prediction = db.Column(db.Float)
+    bbox_basename = db.Column(db.String)
     diameter = db.Column(db.Float)
 
     upload = db.relationship('Upload', back_populates='ct_scan', lazy='dynamic')

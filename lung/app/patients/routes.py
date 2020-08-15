@@ -1,5 +1,5 @@
 import secrets, os, json
-import pdfkit
+import pdfkit, base64
 from flask import render_template, redirect, request, url_for, flash, make_response
 from flask_login import login_required, current_user
 
@@ -126,18 +126,18 @@ def delete_patients(patient_id):
 @login_required
 def pdf_template(upload_id):
     upload = Upload.query.filter_by(id=upload_id).first()
+
     ct_scan = upload.ct_scan
-    diameter = ct_scan.diameter
     result_percent = round(ct_scan.binary_prediction, 2)
 
-    # path_wkthmltopdf = r'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe'
-    # config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
-    #
-    # rendered = render_template('pdf_template.html', upload=upload)
-    # pdf = pdfkit.from_string(rendered, False, configuration=config)
+    with open(f'app/base/static/uploaded_ct_scan/{ct_scan.bbox_basename}', 'rb') as image_file:
+        bbox = base64.b64encode(image_file.read()).decode()
 
-    rendered = render_template('pdf_template.html', upload=upload, diameter=diameter, result_percent=result_percent)
-    pdf = pdfkit.from_string(rendered, False)
+    rendered = render_template('pdf_template.html', upload=upload, ct_scan=ct_scan, result_percent=result_percent, bbox=bbox)
+
+    css = ['app/base/static/vendors/bootstrap/dist/css/bootstrap.min.css',
+           'app/base/static/css/pdf.css']
+    pdf = pdfkit.from_string(rendered, False, css=css)
 
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
