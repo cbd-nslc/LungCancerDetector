@@ -190,47 +190,54 @@
         </div>
 
       </div>
+      {% if previous_upload_list | length > 0 %}
+        {% for previous_upload in previous_upload_list %}
+          <hr style="width:100%; text-align:left; margin-left:0; border: 1px solid black;">
 
-      {% for previous_upload in previous_upload_list %}
-        <hr style="width:100%; text-align:left; margin-left:0; border: 1px solid black;">
+          <div class="row">
+            <div class="col-xs-1">
+              <p>{{ loop.index }}</p>
+            </div>
 
-        <div class="row">
-          <div class="col-xs-1">
-            <p>{{ loop.index }}</p>
-          </div>
+            <!-- status -->
+            <div class="col-xs-4">
+              <!-- no lung cancer -->
+              {% if previous_upload.ct_scan.binary_prediction == 0 %}
+                <p>NO LUNG CANCER</p>
+              <!-- have lung cancer -->
+              {% elif previous_upload.ct_scan.binary_prediction == 1 %}
+                <!-- stage 1 -->
+                {% if previous_upload.ct_scan.diameter <= 20 %}
+                  <p>LUNG CANCER STAGE I</p>
+                <!-- stage 2 -->
+                {% else %}
+                  <p>LUNG CANCER STAGE II</p>
+                {% endif %}
 
-          <!-- status -->
-          <div class="col-xs-4">
-            <!-- no lung cancer -->
-            {% if previous_upload.ct_scan.binary_prediction == 0 %}
-              <p>NO LUNG CANCER</p>
-            <!-- have lung cancer -->
-            {% elif previous_upload.ct_scan.binary_prediction == 1 %}
-              <!-- stage 1 -->
-              {% if previous_upload.ct_scan.diameter <= 20 %}
-                <p>LUNG CANCER STAGE I</p>
-              <!-- stage 2 -->
+              <!-- not sure -->
               {% else %}
-                <p>LUNG CANCER STAGE II</p>
+                <p>{{ (previous_upload.ct_scan.binary_prediction * 100) | round(2) }}% chance of having lung cancer</p>
               {% endif %}
+            </div>
 
-            <!-- not sure -->
-            {% else %}
-              <p>{{ (previous_upload.ct_scan.binary_prediction * 100) | round(2) }}% chance of having lung cancer</p>
-            {% endif %}
-          </div>
+            <!-- diameter -->
+            <div class="col-xs-3">
+              <p>{{ previous_upload.ct_scan.diameter }} mm</p>
+            </div>
 
-          <!-- diameter -->
-          <div class="col-xs-3">
-            <p>{{ previous_upload.ct_scan.diameter }} mm</p>
+            <!-- date uploaded -->
+            <div class="col-xs-4">
+              <p>{{ previous_upload.date_uploaded.strftime("%B %d, %Y - %H:%M") }}</p>
+            </div>
           </div>
+        {% endfor %}
+      {% else %}
+        <hr style="width:100%; text-align:left; margin-left:0; border: 1px solid black;">
+        <p style="text-align: center">No previous reports</p>
+      {% endif %}
 
-          <!-- date uploaded -->
-          <div class="col-xs-4">
-            <p>{{ previous_upload.date_uploaded.strftime("%B %d, %Y - %H:%M") }}</p>
-          </div>
-        </div>
-      {% endfor %}
+
+
     </div>
 
   </body>

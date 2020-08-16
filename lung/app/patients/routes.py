@@ -128,9 +128,12 @@ def pdf_template(upload_id):
     upload = Upload.query.filter_by(id=upload_id).first()
 
     upload_list = upload.patient.upload.order_by(Upload.date_uploaded.desc()).all()
-    upload_index = upload_list.index(upload)
+    if len(upload_list) > 1:
+        upload_index = upload_list.index(upload) + 1
+        previous_upload_list = upload_list[upload_index:]
 
-    previous_upload_list = upload_list[upload_index:]
+    else:
+        previous_upload_list = []
 
     ct_scan = upload.ct_scan
     result_percent = round(ct_scan.binary_prediction, 2)
