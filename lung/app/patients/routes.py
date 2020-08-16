@@ -127,14 +127,20 @@ def delete_patients(patient_id):
 def pdf_template(upload_id):
     upload = Upload.query.filter_by(id=upload_id).first()
 
+    upload_list = upload.patient.upload.order_by(Upload.date_uploaded.desc()).all()
+    upload_index = upload_list.index(upload)
+
+    previous_upload_list = upload_list[upload_index:]
+
     ct_scan = upload.ct_scan
     result_percent = round(ct_scan.binary_prediction, 2)
 
     with open(f'app/base/static/uploaded_ct_scan/{ct_scan.bbox_basename}', 'rb') as image_file:
         bbox = base64.b64encode(image_file.read()).decode()
 
-    rendered = render_template('pdf_template.html', upload=upload, ct_scan=ct_scan, result_percent=result_percent, bbox=bbox)
+    rendered = render_template('pdf_template.html', upload=upload, ct_scan=ct_scan, result_percent=result_percent, bbox=bbox, previous_upload_list=previous_upload_list)
 
+    # pdf template
     css = ['app/base/static/vendors/bootstrap/dist/css/bootstrap.min.css',
            'app/base/static/css/pdf.css']
     pdf = pdfkit.from_string(rendered, False, css=css)
