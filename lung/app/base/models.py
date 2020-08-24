@@ -67,12 +67,29 @@ class Patient(db.Model):
     height = db.Column(db.Integer)
     health_condition = db.Column(db.String)
     diabetes = db.Column(db.String)
-    blood_pressure = db.Column(db.Integer)
+    blood_pressure = db.Column(db.Float)
     cancer_report = db.Column(db.String)
     other_problems = db.Column(db.String)
 
-    picture = Column(String(20), nullable=False, default='default.png')
+    smoking = db.Column(db.String)
+    blood_drawn_date = db.Column(db.String)
+    hemolized_sample = db.Column(db.String)
 
+    # Comorbidities
+    liver_disease = db.Column(db.String)
+    pemphigus = db.Column(db.String)
+    renal_failure = db.Column(db.String)
+
+    # Serum Tumor Markers:
+    ca = db.Column(db.Float)
+    cea = db.Column(db.Float)
+    cyfra = db.Column(db.Float)
+    nse = db.Column(db.Float)
+    pro_grp = db.Column(db.Float)
+    scc = db.Column(db.Float)
+
+
+    picture = Column(String(20), nullable=False, default='default.png')
     date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     # id of user

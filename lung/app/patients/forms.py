@@ -12,17 +12,37 @@ class PatientsForm(FlaskForm):
     occupation = StringField('Occupation')
     address = StringField('Address')
 
-    weight = FloatField('Weight (kg)', render_kw={'type': 'number'})
-    height = FloatField('Height (cm)', render_kw={'type': 'number'})
-    blood_pressure = FloatField('Blood Pressure (mmHg)', render_kw={'type': 'number'})
+    # health info
 
-    diabetes = StringField('Diabetes')
+    weight = FloatField('Weight (kg)', render_kw={'type': 'number', 'step':'.01'})
+    height = FloatField('Height (cm)', render_kw={'type': 'number', 'step':'.01'})
+    blood_pressure = FloatField('Blood Pressure (mmHg)', render_kw={'type': 'number', 'step':'.01'})
+
     health_condition = TextAreaField('Health Condition', render_kw={'type': 'text-area'})
     cancer_report = TextAreaField('Cancer Report', render_kw={'type': 'text-area'})
+
+    diabetes = SelectField('Diabetes', choices=['Yes', 'No'], validate_choice=False)
+    smoking = SelectField('Smoking', choices=['Yes', 'No'], validate_choice=False)
+    hemolized_sample = SelectField('Hemolized sample', choices=['Yes', 'No'], validate_choice=False)
+
+    blood_drawn_date = StringField('Blood drawn date', render_kw={'type': 'date', 'min': '2000-01-01', 'max': '2100-01-01'})
+
+    # Comorbidities
+    liver_disease = SelectField('Liver Disease', choices=['Yes', 'No'], validate_choice=False)
+    pemphigus = SelectField('Pemphigus/Psoriasis', choices=['Yes', 'No'], validate_choice=False)
+    renal_failure = SelectField('Renal Failure', choices=['Yes', 'No'], validate_choice=False)
+
+    # Serum Tumor Markers:
+    ca = FloatField('CA 15.3(U/mL)', render_kw={'type': 'number', 'step':'.01'})
+    cea = FloatField('CEA (ng/mL)', render_kw={'type': 'number', 'step':'.01'})
+    cyfra = FloatField('CYFRA 21-1 (ng/mL)', render_kw={'type': 'number', 'step':'.01'})
+    nse = FloatField('NSE (ng/mL)', render_kw={'type': 'number', 'step':'.01'})
+    pro_grp = FloatField('ProGRP (pg/mL)', render_kw={'type': 'number', 'step':'.01'})
+    scc = FloatField('SCC (ng/mL)', render_kw={'type': 'number', 'step':'.01'})
+
     other_problems = TextAreaField('Other Problems', render_kw={'type': 'text-area'})
 
     picture = FileField('Patient Picture')
-    # ct_scan = FileField('CT Scan')
 
     submit = SubmitField('Save')
     cancel = SubmitField('Cancel')

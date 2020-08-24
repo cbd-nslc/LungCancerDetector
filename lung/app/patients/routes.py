@@ -2,6 +2,7 @@ import secrets, os, json
 import pdfkit, base64
 from flask import render_template, redirect, request, url_for, flash, make_response
 from flask_login import login_required, current_user
+from flask_weasyprint import HTML, render_pdf
 
 import app
 from app import db, login_manager
@@ -12,8 +13,8 @@ from app.patients.forms import PatientsForm
 
 from app.base.models import User, Patient, CTScan, Upload
 
-"""add patient"""
 
+"""add patient"""
 
 @blueprint.route("/create", methods=['GET', 'POST'])
 @login_required
@@ -45,7 +46,6 @@ def create_patients():
 
 
 """edit patient"""
-
 
 @blueprint.route("/<int:patient_id>/edit", methods=['GET', 'POST'])
 @login_required
@@ -86,7 +86,6 @@ def edit_info(patient_id):
 
 """view patients"""
 
-
 @blueprint.route("/<int:patient_id>/profile", methods=['GET', 'POST'])
 @login_required
 def patients_profile(patient_id):
@@ -105,7 +104,6 @@ def patients_profile(patient_id):
 
 """delete patient"""
 
-
 @blueprint.route("/<int:patient_id>/delete", methods=['POST'])
 @login_required
 def delete_patients(patient_id):
@@ -122,16 +120,22 @@ def delete_patients(patient_id):
     return redirect(url_for('home_blueprint.index'))
 
 
+"""pdf template"""
+
+import logging
+logging.getLogger('weasyprint').setLevel(100)
+
 @blueprint.route("/<upload_id>/")
 @login_required
 def pdf_template(upload_id):
+    form = PatientsForm()
+
     upload = Upload.query.filter_by(id=upload_id).first()
 
     upload_list = upload.patient.upload.order_by(Upload.date_uploaded.desc()).all()
     if len(upload_list) > 1:
         upload_index = upload_list.index(upload) + 1
         previous_upload_list = upload_list[upload_index:]
-
     else:
         previous_upload_list = []
 
@@ -141,15 +145,13 @@ def pdf_template(upload_id):
     with open(f'app/base/static/uploaded_ct_scan/{ct_scan.bbox_basename}', 'rb') as image_file:
         bbox = base64.b64encode(image_file.read()).decode()
 
-    rendered = render_template('pdf_template.html', upload=upload, ct_scan=ct_scan, result_percent=result_percent, bbox=bbox, previous_upload_list=previous_upload_list)
+    rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_percent=result_percent, bbox=bbox, previous_upload_list=previous_upload_list)
 
     # pdf template
     css = ['app/base/static/vendors/bootstrap/dist/css/bootstrap.min.css',
            'app/base/static/css/pdf.css']
-    pdf = pdfkit.from_string(rendered, False, css=css)
 
-    response = make_response(pdf)
-    response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+    return render_pdf(HTML(string=rendered))
 
-    return response
+
+

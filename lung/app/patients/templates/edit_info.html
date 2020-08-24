@@ -79,7 +79,44 @@
                   <!-- health info -->
                   <div class="row">
                     {% for field in form %}
-                      {% if field.name in ['weight', 'height', 'blood_pressure', 'diabetes', 'health_condition', 'cancer_report', other_problems] %}
+                      {% if field.name in ['weight', 'height', 'blood_pressure', 'diabetes', 'health_condition', 'cancer_report', 'smoking', 'blood_drawn_date', 'hemolized_sample',  'other_problems'] %}
+                        <div class="item form-group" >
+                          <label class="control-label col-md-2 col-sm-2 col-xs-12">{{ field.label }}</label>
+                          <div class="col-md-4 col-sm-4 col-xs-12">
+                            {{ field(class="form-control col-md-7 col-xs-12") }}
+                          </div>
+                          <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                            <p style="float:left; color:red">{{ field.errors[0] }}</p>
+                          </div>
+                        </div>
+                      {% endif %}
+                    {% endfor %}<br>
+
+                    <!-- Comorbidities -->
+                    <div class="ln_solid"></div>
+                    <h3>Comorbidities</h3>
+                    <div class="ln_solid"></div>
+
+                    {% for field in form %}
+                      {% if field.name in ['liver_disease', 'pemphigus', 'renal_failure'] %}
+                        <div class="item form-group" >
+                          <label class="control-label col-md-2 col-sm-2 col-xs-12">{{ field.label }}</label>
+                          <div class="col-md-4 col-sm-4 col-xs-12">
+                            {{ field(class="form-control col-md-7 col-xs-12") }}
+                          </div>
+                          <div class="control-label col-md-5 col-sm-5 col-xs-12">
+                            <p style="float:left; color:red">{{ field.errors[0] }}</p>
+                          </div>
+                        </div>
+                      {% endif %}
+                    {% endfor %}<br>
+
+                    <!-- Serum Tumor Markers -->
+                    <div class="ln_solid"></div>
+                    <h3>Serum Tumor Markers</h3>
+                    <div class="ln_solid"></div>
+                    {% for field in form %}
+                      {% if field.name in ['ca', 'cea', 'cyfra', 'nse', 'pro_grp', 'scc'] %}
                         <div class="item form-group" >
                           <label class="control-label col-md-2 col-sm-2 col-xs-12">{{ field.label }}</label>
                           <div class="col-md-4 col-sm-4 col-xs-12">
@@ -91,7 +128,7 @@
                         </div>
                       {% endif %}
                     {% endfor %}
-                  </div>
+                  </div><br>
 
                   <!-- submit button -->
                   <div class="form-group">
@@ -99,7 +136,6 @@
                       {{ form.submit(class="btn btn-success") }}
                       <button class="btn btn-primary" type="reset">Reset</button>
                       {{ form.cancel(class="btn btn-secondary", formnovalidate=True) }}
-
                     </div>
                   </div>
                 </div>

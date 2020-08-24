@@ -1,45 +1,200 @@
-body {
-    font-family:Roboto, sans-serif;
-    font-size:20px;
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Pacifico|Source+Sans+Pro:400,700");
+@page {
+    margin: 3cm;
+    size: A4;
+    counter-increment: page;
+
+    @bottom-center {
+        /* content: "Page " counter(page) " of " counter(pages); */
+        content: counter(page);
+
+
+    }
+
+    /*
+    @bottom-left {
+        color: #1ee494;
+        font-family: Pacifico;
+        content: '♥ Thank you!'; }
+
+    @bottom-right {
+        color: #a9a;
+        content: 'cbdrobotic@gmail.com | +84 4 78 84 19 28 | cbdrobotic.com';
+        font-family: Pacifico;
+        font-size: 15pt; }
+    */
 }
 
-h1 {
-    text-align:center;
-    font-size: 45px;
+
+
+
+
+
+
+
+html body {
+    color: #14213d;
+    font-family: Source Sans Pro;
+    font-size: 15pt;
+    line-height: 1.6;
+}
+
+html h1 {
+    color: #a9a;
+    font-family: Source Sans Pro;
+    font-size: 40pt;
     font-weight: bold;
-}
+    margin-right: 2cm;
+    text-align: center;}
 
-h2 {
-    font-size: 30px;
+html h2{
+    margin-top: 1.5em;
+    margin-bottom: 1rem;
     font-weight: bold;
+    padding-bottom: 0.5rem;
+    border-bottom: .3mm solid #a9a; margin-right:4rem;
 }
 
-p{
-    font-size:20px;
+html h3{
+    font-weight: 600;
 }
 
-.part {
-    margin: 50px 60px;
+html h4{
+    font-weight: 600;
 }
 
-.row {
-    margin: 25px 0px;
-}
 
-.title {
-    margin-left: 20px;
-}
+html dl {
+    text-align: right;
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 4em 0 4em;
+    }
+
+html dl dt, html dl dd {
+    display: inline;
+    margin: 0; }
+
+html dl dt {
+    color: #a9a; }
+
+html dl dt::before {
+    content: '';
+    display: block; }
+
+html dl dt::after {
+    content: ':'; }
+
+p {margin-bottom:0.5rem!important; }
+
+hr {border-bottom: .2mm solid #a9a; margin-right:4rem;}
 
 img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 80px;
-    margin-bottom: 80px;
+    margin: 0;
+    border-radius: 10px;
     width: 80%;
+    height: 15em;
 }
 
-.treatment {
-    margin: 10px 30px;
+/* outer column */
+.outer-row {
+    display: flex;
+    flex-direction: row;
+    /* flex-wrap: wrap; */
+    width: 100%;}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+    margin-right: 4rem;
+    }
+
+.inner-row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.25rem;}
+
+.label {flex-direction: column;}
+
+.content {flex-direction: column;}
+
+/* personal-info */
+#personal-info .label{
+    flex:1;
+    text-align: left;}
+
+#personal-info .content{
+    flex:1;
+    text-align: left;}
+
+/* address */
+#address .label{
+    flex:1;
+    text-align: left;}
+
+#address .content{
+    flex:4;
+    text-align: left;
+    margin-left: 2rem;}
+
+/* health info */
+#health-info .label{
+    flex:5;
+    text-align: left;}
+
+#health-info .content{
+    flex:1;
+    text-align: right;}
+
+/* outcome */
+#outcome h4 {margin-bottom:1.5rem;}
+
+#outcome .label{
+    flex:1;
+    margin-top: 1rem;
+    text-align: left;
 }
+
+#outcome .content{
+    flex:1;
+    margin-top: 1rem;
+    margin-right: 4rem;
+    text-align: left;
+}
+
+#outcome .outer-row {
+    margin-bottom: 1rem;
+}
+
+/* table */
+#table {
+    margin-right: 4rem;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    }
+
+table th {
+    border-bottom: .2mm solid #a9a;
+    color: #a9a;
+    font-size: 16pt;
+    font-weight: 600;
+    padding-bottom: .25cm;
+    text-transform: uppercase;
+}
+
+table td {
+    padding-top: 7mm; }
+
+table th:nth-of-type(3), table td:nth-of-type(3) {
+    text-align: center; }
+
+table th:last-of-type, table td:last-of-type {
+    text-align: right; }
 

@@ -1,246 +1,267 @@
+<!doctype html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+
+    <link href="{{ url_for('static', filename='css/pdf.css') }}", media="print", rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
   </head>
+
   <body>
-    <h1>CANCER REPORT</h1><br>
+    <h1>CANCER REPORT</h1>
 
-    <div class="title">
-      <h2>Personal information: </h2>
+    <dl>
+      <dt>Upload date</dt>
+      <dd>{{ upload.date_uploaded.strftime("%B %d, %Y - %H:%M") }}</dd>
+    </dl>
+
+    <!-- Personal info -->
+    <h2 style="margin-top: 4em;">Personal information</h2>
+
+    <div id="personal-info">
+      <div class="outer-row">
+        {% for field in ['first_name', 'last_name'] %}
+          <div class="column">
+            <div class="inner-row">
+              <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="outer-row">
+        {% for field in ['age', 'sex'] %}
+          <div class="column">
+            <div class="inner-row">
+              <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
 
-    <div class="part">
-      {% for field, label in [('first_name', 'First name'),
-                               ('last_name', 'Last name'),
-                               ('age', 'Age'),
-                               ('sex', 'Sex'),
-                               ('occupation', 'Occupation'),
-                               ('address', 'Address')] %}
-
-        <div class="row">
-          <div class="col-xs-5">
-            <label >{{ label }}:</label>
-          </div>
-
-          <div class="col-xs-7">
-            {{ upload.patient[field] }}
-          </div>
-        </div>
-
-      {% endfor %}
-    </div>
-
-    <div class="title">
-      <h2>Health information:</h2>
-    </div>
-
-    <div class="part">
-      {% for field, label in [('weight', 'Weight'),
-                             ('height', 'Height'),
-                             ('blood_pressure', 'Blood pressure'),
-                             ('diabetes', 'Diabetes'),
-                             ('health_condition', 'Health condition'),
-                             ('cancer_report', 'Cancer report'),
-                             ('other_problems', 'Other problems')] %}
-
-        <div class="row">
-          <div class="col-xs-5">
-            <label >{{ label }}:</label>
-          </div>
-
-          <div class="col-xs-7">
-            {{ upload.patient[field] }}
+    <div id="address">
+      {% for field in ['occupation', 'address'] %}
+        <div class="outer-row">
+          <div class="column">
+            <div class="inner-row">
+              <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
           </div>
         </div>
       {% endfor %}
     </div>
 
+    <!-- health info -->
+    <h2>Health information</h2>
 
-    <div class="title">
-      <h2>Cancer result:</h2>
+    <div id="health-info">
+      <div class="outer-row">
+        <div class="column">
+          <!-- basic health -->
+          <h4>Health</h4>
+          {% for field in ['weight', 'height', 'blood_pressure'] %}
+            <div class="inner-row">
+              <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
+          {% endfor %}<br>
+
+          <h4>General Biochemistry</h4>
+          {% for field in ['diabetes', 'smoking', 'hemolized_sample'] %}
+            <div class="inner-row">
+              <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
+          {% endfor %}<br>
+        </div>
+
+        <div class="column">
+          <h4>Comorbidities</h4>
+          {% for field in ['liver_disease', 'pemphigus', 'renal_failure'] %}
+            <div class="inner-row">
+              <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
+          {% endfor %}<br>
+
+          <h4>Serum Tumor Markers</h4>
+          {% for field in ['ca', 'cea', 'cyfra', 'nse', 'pro_grp', 'scc'] %}
+            <div class="inner-row">
+              <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
+          {% endfor %}<br>
+        </div>
+
+        <div class="column" style="margin-right: 7rem;">
+          <h4>Biochemistry Realization</h4>
+          {% for field in ['blood_drawn_date'] %}
+            <div class="inner-row">
+              <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
+          {% endfor %}<br>
+        </div>
+      </div>
     </div>
 
-    <div class="part">
-      <!-- status -->
-      <div class="row">
-        <div class="col-xs-5"><label>Status:</label></div>
-        <div class="col-xs-7">
+    <!-- OUTCOME -->
+    <h2 style="color:#654321;">Outcome</h2>
+
+    <div id="outcome">
+      <!-- conclusion -->
+      <h4>Conclusion</h4>
+      <div class="outer-row">
+        <div class="column">
           <!-- no lung cancer -->
           {% if result_percent == 0 %}
-            <p>DOES NOT HAVE LUNG CANCER</p>
+            <p>PATIENT DOES NOT HAVE LUNG CANCER</p>
           <!-- have lung cancer -->
           {% elif result_percent == 1 %}
             <!-- stage 1 -->
             {% if ct_scan.diameter <= 20 %}
-              <p>LUNG CANCER STAGE I</p>
+              <p>PATIENT WAS DETECTED HAVING LUNG CANCER STAGE I</p>
             <!-- stage 2 -->
             {% else %}
-              <p>LUNG CANCER STAGE II</p>
+              <p>PATIENT WAS DETECTED HAVING LUNG CANCER STAGE II</p>
             {% endif %}
 
           <!-- not sure -->
           {% else %}
-            <p>{{ result_percent * 100 }}% chance of having lung cancer</p>
+            <p>PATIENT HAS {{ result_percent * 100 }}% CHANCE OF HAVING CANCER</p>
           {% endif %}
         </div>
-      </div>
+      </div><br>
 
-      <!-- visualization -->
-      <div class="row">
-        <div class="col-xs-5"><label>Visualization:</label></div>
-        <div class="col-xs-7"><p>The size of tumor is {{ ct_scan.diameter }} mm in diameter</p></div>
-        <img src="data:;base64,{{ bbox }}">
-      </div>
-    </div>
+      <!-- Visualization -->
+      <h4>Visualization</h4>
+      <div class="outer-row">
+        <div class="label">
+          <img src="{{ url_for('static', filename='uploaded_ct_scan/' + upload.ct_scan.bbox_basename) }}">
+        </div>
 
-    <!-- Treatment recommendation -->
-    <div class="title">
-      <h2>Treatment recommendation:</h2>
-    </div>
+        <div class="content">
+          <div class="inner-row">The size of tumor is {{ ct_scan.diameter }} mm in diameter</div>
+        </div>
 
-    <div class="part">
-      <div class="row treatment">
-        <!-- have lung cancer -->
-        {% if result_percent == 1 %}
-          <!-- stage 1 -->
-          {% if ct_scan.diameter <= 20 %}
-            <p>If you have stage I NSCLC, surgery may be the only treatment you need. This may be done either by taking out the lobe of the lung that has the tumor (lobectomy) or by taking out a smaller piece of the lung (sleeve resection, segmentectomy, or wedge resection). At least some lymph nodes in the lung and in the space between the lungs will also be removed and checked for cancer.</p>
+      </div><br><br>
 
-            <p>Segmentectomy or wedge resection is generally an option only for very small stage I cancers and for patients with other health problems that make removing the entire lobe dangerous. Still, most surgeons believe it is better to do a lobectomy if the patient can tolerate it, as it offers the best chance for cure.</p>
+      <!-- TREATMENT  -->
+      <h4>Treatment recommendation</h4>
+      <div class="outer-row">
+        <div class="column">
+          <!-- have lung cancer -->
+          {% if result_percent == 1 %}
+            <!-- stage 1 -->
+            {% if ct_scan.diameter <= 20 %}
+              <p>If you have stage I NSCLC, surgery may be the only treatment you need. This may be done either by taking out the lobe of the lung that has the tumor (lobectomy) or by taking out a smaller piece of the lung (sleeve resection, segmentectomy, or wedge resection). At least some lymph nodes in the lung and in the space between the lungs will also be removed and checked for cancer.</p>
+              <p>Segmentectomy or wedge resection is generally an option only for very small stage I cancers and for patients with other health problems that make removing the entire lobe dangerous. Still, most surgeons believe it is better to do a lobectomy if the patient can tolerate it, as it offers the best chance for cure.</p>
+              <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen (called positive margins). This could mean that some cancer has been left behind, so a second surgery might be done to try to ensure that all the cancer has been removed. (This might be followed by chemotherapy as well.) Another option might be to use radiation therapy after surgery.</p>
+              <p>If you have serious health problems that prevent you from having surgery, you may get stereotactic body radiation therapy (SBRT) or another type of radiation therapy as your main treatment. Radiofrequency ablation (RFA) may be another option if the tumor is small and in the outer part of the lung.</p>
+            <!-- stage 2 -->
+            {% else %}
+              <p>People who have stage II NSCLC and are healthy enough for surgery usually have the cancer removed by lobectomy or sleeve resection. Sometimes removing the whole lung (pneumonectomy) is needed.</p>
+              <p>Any lymph nodes likely to have cancer in them are also removed. The extent of lymph node involvement and whether or not cancer cells are found at the edges of the removed tissues are important factors when planning the next step of treatment.</p>
+              <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen. This might mean that some cancer has been left behind, so a second surgery might be done to try to remove any remaining cancer. This may be followed by chemotherapy (chemo). Another option is to treat with radiation, sometimes with chemo.</p>
+              <p>Even if positive margins are not found, chemo is usually recommended after surgery to try to destroy any cancer cells that might have been left behind. As with stage I cancers, newer lab tests now being studied may help doctors find out which patients need this adjuvant treatment and which are less likely to benefit from it.</p>
+              <p>If you have serious medical problems that would keep you from having surgery, you may get only radiation therapy as your main treatment.</p>
+            {% endif %}
 
-            <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen (called positive margins). This could mean that some cancer has been left behind, so a second surgery might be done to try to ensure that all the cancer has been removed. (This might be followed by chemotherapy as well.) Another option might be to use radiation therapy after surgery.</p>
-
-            <p>If you have serious health problems that prevent you from having surgery, you may get stereotactic body radiation therapy (SBRT) or another type of radiation therapy as your main treatment. Radiofrequency ablation (RFA) may be another option if the tumor is small and in the outer part of the lung.</p>
-          <!-- stage 2 -->
+          <!-- no lung cancer & not sure -->
           {% else %}
-            <p>People who have stage II NSCLC and are healthy enough for surgery usually have the cancer removed by lobectomy or sleeve resection. Sometimes removing the whole lung (pneumonectomy) is needed.</p>
+            <p>No treatment required</p>
+          {% endif %}
+        </div>
+      </div><br><br>
 
-            <p>Any lymph nodes likely to have cancer in them are also removed. The extent of lymph node involvement and whether or not cancer cells are found at the edges of the removed tissues are important factors when planning the next step of treatment.</p>
+      <!-- MEDICINE -->
+      <h4>Medicine recommendation</h4>
+      <div class="outer-row">
+        <div class="column">
+          {% if result_percent == 1 %}
+            <p style="text-decoration: underline; margin-bottom:0.5rem!important;">CYRAMZA + ERLOTINIB</p>
+            <p>The trial was designed to measure disease progression, which is the time that people lived without their cancer spreading or growing after taking treatment. The study also measured the proportion of patients who had a reduction in tumor size of 30% or more</p>
+            <p>CYRAMZA + erlotinib was studied in a clinical trial for the initial treatment of people with metastatic NSCLC with certain EGFR mutations. Of the 449 people included in the trial, 224 people received CYRAMZA + erlotinib and 225 people received placebo + erlotinib.</p>
+            <p>In a clinical study, CYRAMZA + erlotinib provided more time without disease progression than placebo + erlotinib for people with metastatic NSCLC with certain types of EGFR mutations. On average, people taking CYRAMZA + erlotinib lived 19 months without disease progression compared with 12 months for those taking placebo + erlotinib</p><br>
 
-            <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen. This might mean that some cancer has been left behind, so a second surgery might be done to try to remove any remaining cancer. This may be followed by chemotherapy (chemo). Another option is to treat with radiation, sometimes with chemo.</p>
+            <p style="text-decoration: underline; margin-bottom:0.5rem!important;">CYRAMZA + DOCETAXEL </p>
+            <p>36% of people had delayed disease progression for 6 months or longer with CYRAMZA + docetaxeI (a type of chemotherapy) vs 29% with chemotherapy alone
+              Half of the people who received CYRAMZA + chemotherapy lived without their cancer getting worse for 4.5 months vs 3.0 months with chemotherapy alone</p>
+            <p>43% of people lived 1 year or longer with CYRAMZA + chemotherapy vs 38% with chemotherapy alone
+              Half of the people who received CYRAMZA + chemotherapy after their cancer progressed were still alive at 10.5 months vs 9.1 months with chemotherapy alone.</p>
+            <p>CYRAMZA was studied in a clinical trial of 1253 people with metastatic non-small cell lung cancer who received CYRAMZA + docetaxel (628 people) vs those who received docetaxel alone (625 people). All people in the study had previously received platinum-containing chemotherapy.</p>
 
-            <p>Even if positive margins are not found, chemo is usually recommended after surgery to try to destroy any cancer cells that might have been left behind. As with stage I cancers, newer lab tests now being studied may help doctors find out which patients need this adjuvant treatment and which are less likely to benefit from it.</p>
+          {% else %}
+            <p>No medicine required</p>
+          {% endif %}
+        </div>
+      </div><br><br>
+    </div>
 
-            <p>If you have serious medical problems that would keep you from having surgery, you may get only radiation therapy as your main treatment.</p>
+    <!-- PREVIOUS UPLOADS -->
+    <h2>Previous uploads</h2>
+
+    <div id="table">
+      <table>
+        <thead>
+          <th>#</th>
+          <th>Status</th>
+          <th>Diameter</th>
+          <th>Upload date</th>
+        </thead>
+
+        <tbody>
+          {% if previous_upload_list | length > 0 %}
+            {% for previous_upload in previous_upload_list %}
+              <tr>
+                <td>{{ loop.index }}</td>
+
+                <!-- status -->
+                <td>
+                  <!-- no lung cancer -->
+                  {% if previous_upload.ct_scan.binary_prediction == 0 %}
+                    NO LUNG CANCER
+                  <!-- have lung cancer -->
+                  {% elif previous_upload.ct_scan.binary_prediction == 1 %}
+                    <!-- stage 1 -->
+                    {% if previous_upload.ct_scan.diameter <= 20 %}
+                      LUNG CANCER STAGE I
+                    <!-- stage 2 -->
+                    {% else %}
+                      LUNG CANCER STAGE II
+                    {% endif %}
+
+                  <!-- not sure -->
+                  {% else %}
+                    {{ (previous_upload.ct_scan.binary_prediction * 100) | round(2) }}% chance of having lung cancer
+                  {% endif %}
+                </td>
+
+                <!-- diameter -->
+                <td>{{ previous_upload.ct_scan.diameter }} mm</td>
+
+                <!-- date uploaded -->
+                <td>{{ previous_upload.date_uploaded.strftime("%B %d, %Y - %H:%M") }}</td>
+              </tr>
+
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4"><div style="text-align: center">No previous reports</div></td>
+            </tr>
           {% endif %}
 
-        <!-- no lung cancer & not sure -->
-        {% else %}
-          <p>No treatment required</p>
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- medicine recommendation -->
-    <div class="title">
-      <h2>Medicine recommendation:</h2>
-    </div>
-
-    <div class="part">
-      <div class="row treatment">
-        {% if result_percent == 1 %}
-          <h4>CYRAMZA + ERLOTINIB</h4>
-          <p>The trial was designed to measure disease progression, which is the time that people lived without their cancer spreading or growing after taking treatment. The study also measured the proportion of patients who had a reduction in tumor size of 30% or more</p>
-
-          <p>CYRAMZA + erlotinib was studied in a clinical trial for the initial treatment of people with metastatic NSCLC with certain EGFR mutations. Of the 449 people included in the trial, 224 people received CYRAMZA + erlotinib and 225 people received placebo + erlotinib.</p>
-
-          <p>In a clinical study, CYRAMZA + erlotinib provided more time without disease progression than placebo + erlotinib for people with metastatic NSCLC with certain types of EGFR mutations. On average, people taking CYRAMZA + erlotinib lived 19 months without disease progression compared with 12 months for those taking placebo + erlotinib</p><br>
-
-
-          <h4>CYRAMZA + DOCETAXEL </h4>
-          <p>36% of people had delayed disease progression for 6 months or longer with CYRAMZA + docetaxeI (a type of chemotherapy) vs 29% with chemotherapy alone
-            Half of the people who received CYRAMZA + chemotherapy lived without their cancer getting worse for 4.5 months vs 3.0 months with chemotherapy alone</p>
-
-          <p>43% of people lived 1 year or longer with CYRAMZA + chemotherapy vs 38% with chemotherapy alone
-            Half of the people who received CYRAMZA + chemotherapy after their cancer progressed were still alive at 10.5 months vs 9.1 months with chemotherapy alone.
-
-          <p>CYRAMZA was studied in a clinical trial of 1253 people with metastatic non-small cell lung cancer who received CYRAMZA + docetaxel (628 people) vs those who received docetaxel alone (625 people). All people in the study had previously received platinum-containing chemotherapy.</p></p>
-
-        {% else %}
-          <p>No medicine required</p>
-
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- previous uploads -->
-    <div class="title">
-      <h2>Previous reports:</h2>
-    </div>
-
-    <div class="part">
-      <div class="row">
-        <div class="col-xs-1">
-          <p>#</p>
-        </div>
-
-        <div class="col-xs-4">
-          <p>Status</p>
-        </div>
-
-        <div class="col-xs-3">
-          <p>Diameter</p>
-        </div>
-
-        <div class="col-xs-4">
-          <p>Date uploaded</p>
-        </div>
-
-      </div>
-      {% if previous_upload_list | length > 0 %}
-        {% for previous_upload in previous_upload_list %}
-          <hr style="width:100%; text-align:left; margin-left:0; border: 1px solid black;">
-
-          <div class="row">
-            <div class="col-xs-1">
-              <p>{{ loop.index }}</p>
-            </div>
-
-            <!-- status -->
-            <div class="col-xs-4">
-              <!-- no lung cancer -->
-              {% if previous_upload.ct_scan.binary_prediction == 0 %}
-                <p>NO LUNG CANCER</p>
-              <!-- have lung cancer -->
-              {% elif previous_upload.ct_scan.binary_prediction == 1 %}
-                <!-- stage 1 -->
-                {% if previous_upload.ct_scan.diameter <= 20 %}
-                  <p>LUNG CANCER STAGE I</p>
-                <!-- stage 2 -->
-                {% else %}
-                  <p>LUNG CANCER STAGE II</p>
-                {% endif %}
-
-              <!-- not sure -->
-              {% else %}
-                <p>{{ (previous_upload.ct_scan.binary_prediction * 100) | round(2) }}% chance of having lung cancer</p>
-              {% endif %}
-            </div>
-
-            <!-- diameter -->
-            <div class="col-xs-3">
-              <p>{{ previous_upload.ct_scan.diameter }} mm</p>
-            </div>
-
-            <!-- date uploaded -->
-            <div class="col-xs-4">
-              <p>{{ previous_upload.date_uploaded.strftime("%B %d, %Y - %H:%M") }}</p>
-            </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <hr style="width:100%; text-align:left; margin-left:0; border: 1px solid black;">
-        <p style="text-align: center">No previous reports</p>
-      {% endif %}
-
-
-
+        </tbody>
+      </table>
     </div>
 
   </body>
+
 
 </html>
 
