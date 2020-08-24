@@ -8,8 +8,6 @@
     @bottom-center {
         /* content: "Page " counter(page) " of " counter(pages); */
         content: counter(page);
-
-
     }
 
     /*

@@ -125,6 +125,9 @@ def delete_patients(patient_id):
 import logging
 logging.getLogger('weasyprint').setLevel(100)
 
+import warnings
+warnings.filterwarnings("ignore", module="weasyprint")
+
 @blueprint.route("/<upload_id>/")
 @login_required
 def pdf_template(upload_id):
