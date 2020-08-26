@@ -159,11 +159,20 @@ $(".picture-file").change(function() {
   }
 });
 
-// patient-form input type number
+//INPUT FORM
+// input type number
 $('form#patient-form input[type="number"]').each(function(i, input){
      if (input.value === ''){
         input.value = 0;
      };
 })
 
+// input select
 
+
+$('select').children(':first-child').each(function() {
+   var thisAttr = $(this).attr('disabled');
+   if(thisAttr = "disabled") {
+      $(this).hide();
+   }
+});

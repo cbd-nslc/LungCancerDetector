@@ -8,7 +8,7 @@ class PatientsForm(FlaskForm):
     first_name = StringField('First Name', validators=[DataRequired(), Length(max=20)])
     last_name = StringField('Last Name', validators=[DataRequired(), Length(max=20)])
     age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=0, max=1000)], render_kw={'type': 'number'})
-    sex = SelectField('Sex', choices=['Male', 'Female', 'Other'], validate_choice=False)
+    sex = SelectField('Sex', choices=[('', 'Choose'), ('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')], validate_choice=False)
     occupation = StringField('Occupation')
     address = StringField('Address')
 
@@ -21,16 +21,16 @@ class PatientsForm(FlaskForm):
     # health_condition = TextAreaField('Health Condition', render_kw={'type': 'text-area'})
     # cancer_report = TextAreaField('Cancer Report', render_kw={'type': 'text-area'})
 
-    diabetes = SelectField('Diabetes', choices=['Yes', 'No'], validate_choice=False)
-    smoking = SelectField('Smoking', choices=['Yes', 'No'], validate_choice=False)
-    hemolized_sample = SelectField('Hemolized sample', choices=['Yes', 'No'], validate_choice=False)
+    diabetes = SelectField('Diabetes', choices=[('', 'Choose'), ('Yes', 'Yes'), ('Yes', 'No')], validate_choice=False)
+    smoking = SelectField('Smoking', choices=[('', 'Choose'), ('Yes', 'Yes'), ('Yes', 'No')], validate_choice=False,)
+    hemolized_sample = SelectField('Hemolized sample', choices=[('', 'Choose'), ('Yes', 'Yes'),  ('Yes', 'No')], validate_choice=False)
 
     blood_drawn_date = StringField('Blood drawn date', render_kw={'type': 'date', 'min': '2000-01-01', 'max': '2100-01-01'})
 
     # Comorbidities
-    liver_disease = SelectField('Liver Disease', choices=['Yes', 'No'], validate_choice=False)
-    pemphigus = SelectField('Pemphigus/Psoriasis', choices=['Yes', 'No'], validate_choice=False)
-    renal_failure = SelectField('Renal Failure', choices=['Yes', 'No'], validate_choice=False)
+    liver_disease = SelectField('Liver Disease', choices=[('', 'Choose'), ('Yes', 'Yes'),  ('Yes', 'No')], validate_choice=False)
+    pemphigus = SelectField('Pemphigus/ Psoriasis', choices=[('', 'Choose'), ('Yes', 'Yes'),  ('Yes', 'No')], validate_choice=False)
+    renal_failure = SelectField('Renal Failure', choices=[('', 'Choose'), ('Yes', 'Yes'),  ('Yes', 'No')], validate_choice=False)
 
     # Serum Tumor Markers:
     ca = FloatField('CA 15.3(U/mL)', render_kw={'type': 'number', 'step':'.01'})
