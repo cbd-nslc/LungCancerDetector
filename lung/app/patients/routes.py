@@ -1,8 +1,8 @@
 import secrets, os, json
-import pdfkit, base64
+from datetime import datetime
 from flask import render_template, redirect, request, url_for, flash, make_response
 from flask_login import login_required, current_user
-from flask_weasyprint import HTML, render_pdf
+from flask_weasyprint import HTML, render_pdf, CSS
 
 import app
 from app import db, login_manager
@@ -25,9 +25,13 @@ def create_patients():
     if 'submit' in request.form:
         if form.validate_on_submit():
             new_request = {k: v.capitalize() for k, v in request.form.items() if
-                           k not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture']}
+                           k not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture', 'blood_drawn_date']}
 
             patient = Patient(**new_request, doctor=current_user)
+            if form.blood_drawn_date.data:
+                datetime_obj = datetime.strptime(form.blood_drawn_date.data, '%Y-%m-%d')
+                patient.blood_drawn_date = datetime_obj.strftime('%b %d, %Y')
+
             if form.picture.data:
                 patient.picture = save_picture_patients(form.picture.data)
 
@@ -47,7 +51,7 @@ def create_patients():
 
 """edit patient"""
 
-@blueprint.route("/<int:patient_id>/edit", methods=['GET', 'POST'])
+@blueprint.route("/patient_id:<int:patient_id>/edit", methods=['GET', 'POST'])
 @login_required
 def edit_info(patient_id):
     patient = Patient.query.get_or_404(patient_id)
@@ -63,8 +67,12 @@ def edit_info(patient_id):
             if form.picture.data:
                 patient.picture = save_picture_patients(form.picture.data)
 
+            if form.blood_drawn_date.data:
+                datetime_obj = datetime.strptime(form.blood_drawn_date.data, '%Y-%m-%d')
+                patient.blood_drawn_date = datetime_obj.strftime('%b %d, %Y')
+
             for field in form:
-                if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture']:
+                if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture', 'blood_drawn_date']:
                     setattr(patient, field.name, field.data)
 
             db.session.commit()
@@ -86,7 +94,7 @@ def edit_info(patient_id):
 
 """view patients"""
 
-@blueprint.route("/<int:patient_id>/profile", methods=['GET', 'POST'])
+@blueprint.route("/patient_id:<int:patient_id>/profile", methods=['GET', 'POST'])
 @login_required
 def patients_profile(patient_id):
     patient = Patient.query.get_or_404(patient_id)
@@ -128,9 +136,9 @@ logging.getLogger('weasyprint').setLevel(100)
 import warnings
 warnings.filterwarnings("ignore", module="weasyprint")
 
-@blueprint.route("/<upload_id>/")
+@blueprint.route("/patient_id:<int:patient_id>/pdf/upload_id:<upload_id>")
 @login_required
-def pdf_template(upload_id):
+def pdf_template(patient_id, upload_id):
     form = PatientsForm()
 
     upload = Upload.query.filter_by(id=upload_id).first()
@@ -145,14 +153,7 @@ def pdf_template(upload_id):
     ct_scan = upload.ct_scan
     result_percent = round(ct_scan.binary_prediction, 2)
 
-    with open(f'app/base/static/uploaded_ct_scan/{ct_scan.bbox_basename}', 'rb') as image_file:
-        bbox = base64.b64encode(image_file.read()).decode()
-
-    rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_percent=result_percent, bbox=bbox, previous_upload_list=previous_upload_list)
-
-    # pdf template
-    css = ['app/base/static/vendors/bootstrap/dist/css/bootstrap.min.css',
-           'app/base/static/css/pdf.css']
+    rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_percent=result_percent, previous_upload_list=previous_upload_list)
 
     return render_pdf(HTML(string=rendered))
 

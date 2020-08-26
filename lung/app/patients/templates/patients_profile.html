@@ -84,21 +84,74 @@
                   <!-- tab content -->
                   <div id="myTabContent" class="tab-content">
                     <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
-                      <!-- start health info -->
-                      {% for field in form if field.name in ['weight', 'height', 'blood_pressure', 'diabetes', 'health_condition', 'cancer_report', other_problems] %}
-                        <div class="item-form-group">
-                          <div class="col-md-3">
-                            <label class="control-label">{{ field.label.text }}:
-                            </label>
-                          </div>
-                          <div class="col-md-9">
-                              <p>{{ patient[field.name] }}</p>
-                          </div>
-                        </div>
-                        <br><br>
+                      <div class="col-md-6">
+                        <!-- Health -->
+                        <h3>Health</h3>
+                        {% for field in ['weight', 'height', 'blood_pressure'] %}
+                          <div class="item-form-group">
+                            <div class="col-md-7">
+                              <label class="control-label">{{ form[field].label.text }}:</label>
+                            </div>
+                            <div class="col-md-5">
+                              <p>{{ patient[field] }}</p>
+                            </div>
+                          </div><br><br>
+                        {% endfor %}
 
-                      {% endfor %}
-                      <!-- end health info -->
+                        <!-- General Biochemistry -->
+                        <h3>General Biochemistry</h3>
+                        {% for field in ['diabetes', 'smoking', 'hemolized_sample'] %}
+                          <div class="item-form-group">
+                            <div class="col-md-7">
+                              <label class="control-label">{{ form[field].label.text }}:</label>
+                            </div>
+                            <div class="col-md-5">
+                              <p>{{ patient[field] }}</p>
+                            </div>
+                          </div><br><br>
+                        {% endfor %}
+
+                        <!-- Comorbidities -->
+                        <h3>Comorbidities</h3>
+                        {% for field in ['liver_disease', 'pemphigus', 'renal_failure'] %}
+                          <div class="item-form-group">
+                            <div class="col-md-7">
+                              <label class="control-label">{{ form[field].label.text }}:</label>
+                            </div>
+                            <div class="col-md-5">
+                              <p>{{ patient[field] }}</p>
+                            </div>
+                          </div><br><br>
+                        {% endfor %}
+                      </div>
+
+                      <div class="col-md-6">
+                        <!-- Serum Tumor Markers -->
+                        <h3>Serum Tumor Markers</h3>
+                        {% for field in ['ca', 'cea', 'cyfra', 'nse', 'pro_grp', 'scc'] %}
+                          <div class="item-form-group">
+                            <div class="col-md-7">
+                              <label class="control-label">{{ form[field].label.text }}:</label>
+                            </div>
+                            <div class="col-md-5">
+                              <p>{{ patient[field] }}</p>
+                            </div>
+                          </div><br><br>
+                        {% endfor %}
+
+                        <h3>Serum Tumor Markers</h3>
+                        {% for field in ['blood_drawn_date'] %}
+                          <div class="item-form-group">
+                            <div class="col-md-7">
+                              <label class="control-label">{{ form[field].label.text }}:</label>
+                            </div>
+                            <div class="col-md-5">
+                              <p>{{ patient[field] }}</p>
+                            </div>
+                          </div><br><br>
+                        {% endfor %}
+                      </div>
+
                     </div>
 
                     <!-- CT Scan -->
@@ -129,9 +182,6 @@
                                 <tr>
                                   <td colspan="4">
                                     <p style="text-align:center; font-size:16px;">You don't have any uploads for this patient.</p>
-<!--                                    <div style="text-align:center">-->
-<!--                                      <a href="{{ url_for('base_blueprint.upload', patient_id=patient.id) }}" class="btn btn-primary">Upload</a>-->
-<!--                                    </div>-->
                                   </td>
                                 </tr>
 
@@ -152,10 +202,8 @@
 
                                     <!-- cancer report -->
                                     <td>
-                                      <a href="{{ url_for('patients_blueprint.pdf_template', upload_id=upload.id) }}" target="_blank"><i class="fas fa-file-pdf fa-4x"></i> Report {{ loop.index }}</a>
-
+                                      <a href="{{ url_for('patients_blueprint.pdf_template', patient_id=patient.id, upload_id=upload.id) }}" target="_blank"><i class="fas fa-file-pdf fa-4x"></i> Report {{ loop.index }}</a>
                                     </td>
-
                                   </tr>
                                 {% endfor %}
                               {% endif %}
@@ -165,7 +213,6 @@
                         </div>
                       </div>
                     </div>
-
                     <!-- cancer report -->
 <!--                    <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">-->
 <!--                      -->

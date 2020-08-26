@@ -18,8 +18,8 @@ class PatientsForm(FlaskForm):
     height = FloatField('Height (cm)', render_kw={'type': 'number', 'step':'.01'})
     blood_pressure = FloatField('Blood Pressure (mmHg)', render_kw={'type': 'number', 'step':'.01'})
 
-    health_condition = TextAreaField('Health Condition', render_kw={'type': 'text-area'})
-    cancer_report = TextAreaField('Cancer Report', render_kw={'type': 'text-area'})
+    # health_condition = TextAreaField('Health Condition', render_kw={'type': 'text-area'})
+    # cancer_report = TextAreaField('Cancer Report', render_kw={'type': 'text-area'})
 
     diabetes = SelectField('Diabetes', choices=['Yes', 'No'], validate_choice=False)
     smoking = SelectField('Smoking', choices=['Yes', 'No'], validate_choice=False)

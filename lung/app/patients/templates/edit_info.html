@@ -79,7 +79,7 @@
                   <!-- health info -->
                   <div class="row">
                     {% for field in form %}
-                      {% if field.name in ['weight', 'height', 'blood_pressure', 'diabetes', 'health_condition', 'cancer_report', 'smoking', 'blood_drawn_date', 'hemolized_sample',  'other_problems'] %}
+                      {% if field.name in ['weight', 'height', 'blood_pressure', 'diabetes', 'smoking', 'blood_drawn_date', 'hemolized_sample'] %}
                         <div class="item form-group" >
                           <label class="control-label col-md-2 col-sm-2 col-xs-12">{{ field.label }}</label>
                           <div class="col-md-4 col-sm-4 col-xs-12">

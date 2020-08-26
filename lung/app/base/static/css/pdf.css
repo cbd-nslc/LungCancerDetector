@@ -1,66 +1,52 @@
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Pacifico|Source+Sans+Pro:400,700");
 @page {
-    margin: 3cm;
-    size: A4;
+    size: Letter;
+    margin: 1.5cm 2cm 1.5cm;
     counter-increment: page;
 
     @bottom-center {
         /* content: "Page " counter(page) " of " counter(pages); */
+        margin-bottom: 1cm;
         content: counter(page);
+        font-family: Source Sans Pro;
+        font-size: 11pt;
     }
-
     /*
     @bottom-left {
-        color: #1ee494;
-        font-family: Pacifico;
-        content: '♥ Thank you!'; }
-
+        color: #1ee494; font-family: Pacifico; content: '♥ Thank you!'; }
     @bottom-right {
-        color: #a9a;
-        content: 'cbdrobotic@gmail.com | +84 4 78 84 19 28 | cbdrobotic.com';
-        font-family: Pacifico;
-        font-size: 15pt; }
+        color: #a9a; content: 'cbdrobotic@gmail.com | +84 4 78 84 19 28 | cbdrobotic.com'; font-family: Pacifico; font-size: 15pt; }
     */
 }
-
-
-
-
-
-
-
 
 html body {
     color: #14213d;
     font-family: Source Sans Pro;
-    font-size: 15pt;
+    font-size: 11pt;
     line-height: 1.6;
 }
+
+html p {margin: 0.05em 0 0.1em;}
 
 html h1 {
     color: #a9a;
     font-family: Source Sans Pro;
-    font-size: 40pt;
+    font-size: 30pt;
     font-weight: bold;
-    margin-right: 2cm;
     text-align: center;}
 
 html h2{
     margin-top: 1.5em;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     font-weight: bold;
-    padding-bottom: 0.5rem;
-    border-bottom: .3mm solid #a9a; margin-right:4rem;
+    padding-bottom: 0.3rem;
+    border-bottom: .3mm solid #a9a;
 }
 
-html h3{
-    font-weight: 600;
-}
+html h3{font-weight: 600;}
 
-html h4{
-    font-weight: 600;
-}
+html h4{font-weight: 600; margin: 0 0 0.15cm; font-size: 11pt;}
 
 
 html dl {
@@ -68,15 +54,14 @@ html dl {
     position: absolute;
     right: 0;
     top: 0;
-    margin: 4em 0 4em;
+    margin: 6em 0 6em;
     }
 
 html dl dt, html dl dd {
     display: inline;
     margin: 0; }
 
-html dl dt {
-    color: #a9a; }
+html dl dt {color: #a9a;}
 
 html dl dt::before {
     content: '';
@@ -86,15 +71,6 @@ html dl dt::after {
     content: ':'; }
 
 p {margin-bottom:0.5rem!important; }
-
-hr {border-bottom: .2mm solid #a9a; margin-right:4rem;}
-
-img {
-    margin: 0;
-    border-radius: 10px;
-    width: 80%;
-    height: 15em;
-}
 
 /* outer column */
 .outer-row {
@@ -108,13 +84,13 @@ img {
     flex-direction: column;
     flex-basis: 100%;
     flex: 1;
-    margin-right: 4rem;
+    margin-right: 3rem;
     }
 
 .inner-row {
     display: flex;
     flex-direction: row;
-    margin-bottom: 0.25rem;}
+    margin-bottom: 0.1rem;}
 
 .label {flex-direction: column;}
 
@@ -137,19 +113,31 @@ img {
 #address .content{
     flex:4;
     text-align: left;
-    margin-left: 2rem;}
+    margin-left: 1.2rem;}
 
 /* health info */
 #health-info .label{
-    flex:5;
+    flex:4;
     text-align: left;}
 
 #health-info .content{
     flex:1;
     text-align: right;}
 
+#health-info .column:last-of-type {
+    margin-right: 0;
+}
+
+#health-info .column:last-of-type .label{
+    flex:1.5;
+    text-align: left;}
+
+#health-info .column:last-of-type .content{
+    flex:1;
+    text-align: left;}
+
+
 /* outcome */
-#outcome h4 {margin-bottom:1.5rem;}
 
 #outcome .label{
     flex:1;
@@ -160,18 +148,21 @@ img {
 #outcome .content{
     flex:1;
     margin-top: 1rem;
-    margin-right: 4rem;
-    text-align: left;
+    text-align: center;
 }
 
 #outcome .outer-row {
-    margin-bottom: 1rem;
+    margin-bottom: 0.25rem;
 }
 
+img {
+    margin: 0;
+    border-radius: 10px;
+    width: 100%;
+    height: 17em;}
+
+
 /* table */
-#table {
-    margin-right: 4rem;
-}
 
 table {
     border-collapse: collapse;
@@ -181,7 +172,7 @@ table {
 table th {
     border-bottom: .2mm solid #a9a;
     color: #a9a;
-    font-size: 16pt;
+    font-size: 12pt;
     font-weight: 600;
     padding-bottom: .25cm;
     text-transform: uppercase;
