@@ -13,6 +13,21 @@ from app.patients.forms import PatientsForm
 
 from app.base.models import User, Patient, CTScan, Upload
 
+personal_info = ['first_name', 'last_name', 'age', 'sex', 'occupation', 'address']
+health = ['weight', 'height', 'blood_pressure']
+general_biochemistry = ['diabetes', 'smoking', 'hemolized_sample']
+comorbidities = ['liver_disease', 'pemphigus', 'renal_failure']
+serum_tumor_markers = ['ca', 'cea', 'cyfra', 'nse', 'pro_grp', 'scc']
+
+biopsy_test = ['egpr', 'alk', 'ros1', 'kras', 'ardenocarcinoma', 'angiolymphatic', 'antypia', 'antibody', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'lymph_node', 'metastasis']
+genetic_test = ['egfr', 'egfr_t790m', 'eml4_alk', 'braf', 'her2', 'mek', 'met', 'ret']
+
+biochemistry_realization = ['blood_drawn_date']
+
+health_info_dict = {'personal_info': personal_info, 'health': health, 'general_biochemistry': general_biochemistry,
+                    'comorbidities': comorbidities, 'serum_tumor_markers': serum_tumor_markers, 'biopsy_test': biopsy_test,
+                    'genetic_test': genetic_test, 'biochemistry_realization': biochemistry_realization}
+
 
 """add patient"""
 
@@ -29,8 +44,7 @@ def create_patients():
 
             patient = Patient(**new_request, doctor=current_user)
             if form.blood_drawn_date.data:
-                datetime_obj = datetime.strptime(form.blood_drawn_date.data, '%Y-%m-%d')
-                patient.blood_drawn_date = datetime_obj.strftime('%b %d, %Y')
+                patient.blood_drawn_date = datetime.strptime(form.blood_drawn_date.data, '%Y-%m-%d').strftime('%b %d, %Y')
 
             if form.picture.data:
                 patient.picture = save_picture_patients(form.picture.data)
@@ -46,7 +60,7 @@ def create_patients():
 
     picture_file = url_for('static', filename='patients_pics/default.png')
 
-    return render_template('edit_info.html', title='Create', heading='Create', form=form, picture_file=picture_file)
+    return render_template('edit_info.html', title='Create', heading='Create', form=form, picture_file=picture_file, health_info_dict=health_info_dict)
 
 
 """edit patient"""
@@ -68,8 +82,7 @@ def edit_info(patient_id):
                 patient.picture = save_picture_patients(form.picture.data)
 
             if form.blood_drawn_date.data:
-                datetime_obj = datetime.strptime(form.blood_drawn_date.data, '%Y-%m-%d')
-                patient.blood_drawn_date = datetime_obj.strftime('%b %d, %Y')
+                patient.blood_drawn_date = datetime.strptime(form.blood_drawn_date.data, '%Y-%m-%d').strftime('%b %d, %Y')
 
             for field in form:
                 if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture', 'blood_drawn_date']:
@@ -81,15 +94,19 @@ def edit_info(patient_id):
 
     elif request.method == 'GET':
         for field in form:
-            if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture']:
+            if field.name not in ['csrf_token', 'submit', 'cancel', 'ct_scan', 'picture', 'blood_drawn_date']:
                 field.data = getattr(patient, field.name)
+            elif field.name == 'blood_drawn_date':
+                if field.data:
+                    field.data = datetime.strptime(patient.blood_drawn_date, '%b %d, %Y').strftime('%Y-%m-%d')
+
 
     if patient.picture == '':
         picture_file = url_for('static', filename='patients_pics/default.png')
     else:
         picture_file = url_for('static', filename='patients_pics/' + patient.picture)
 
-    return render_template('edit_info.html', title='Edit', heading='Edit', form=form, picture_file=picture_file)
+    return render_template('edit_info.html', title='Edit', heading='Edit', form=form, picture_file=picture_file, health_info_dict=health_info_dict)
 
 
 """view patients"""
@@ -107,7 +124,7 @@ def patients_profile(patient_id):
     upload_list = patient.upload.order_by(Upload.date_uploaded.desc()).all()
 
     return render_template('patients_profile.html', title='Profile', patient=patient, form=PatientsForm(),
-                           picture_file=picture_file, upload_list=upload_list)
+                           picture_file=picture_file, upload_list=upload_list, health_info_dict=health_info_dict)
 
 
 """delete patient"""
@@ -153,7 +170,7 @@ def pdf_template(patient_id, upload_id):
     ct_scan = upload.ct_scan
     result_percent = round(ct_scan.binary_prediction, 2)
 
-    rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_percent=result_percent, previous_upload_list=previous_upload_list)
+    rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_percent=result_percent, previous_upload_list=previous_upload_list, health_info_dict=health_info_dict)
 
     return render_pdf(HTML(string=rendered))
 

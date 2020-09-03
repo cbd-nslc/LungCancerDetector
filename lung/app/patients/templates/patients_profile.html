@@ -87,7 +87,7 @@
                       <div class="col-md-6">
                         <!-- Health -->
                         <h3>Health</h3>
-                        {% for field in ['weight', 'height', 'blood_pressure'] %}
+                        {% for field in health_info_dict['health'] %}
                           <div class="item-form-group">
                             <div class="col-md-7">
                               <label class="control-label">{{ form[field].label.text }}:</label>
@@ -100,7 +100,7 @@
 
                         <!-- General Biochemistry -->
                         <h3>General Biochemistry</h3>
-                        {% for field in ['diabetes', 'smoking', 'hemolized_sample'] %}
+                        {% for field in health_info_dict['general_biochemistry'] %}
                           <div class="item-form-group">
                             <div class="col-md-7">
                               <label class="control-label">{{ form[field].label.text }}:</label>
@@ -113,7 +113,20 @@
 
                         <!-- Comorbidities -->
                         <h3>Comorbidities</h3>
-                        {% for field in ['liver_disease', 'pemphigus', 'renal_failure'] %}
+                        {% for field in health_info_dict['comorbidities'] %}
+                          <div class="item-form-group">
+                            <div class="col-md-7">
+                              <label class="control-label">{{ form[field].label.text }}:</label>
+                            </div>
+                            <div class="col-md-5">
+                              <p>{{ patient[field] }}</p>
+                            </div>
+                          </div><br><br>
+                        {% endfor %}
+
+                        <!-- biopsy test -->
+                        <h3>Biopsy Test</h3>
+                        {% for field in health_info_dict['biopsy_test'] %}
                           <div class="item-form-group">
                             <div class="col-md-7">
                               <label class="control-label">{{ form[field].label.text }}:</label>
@@ -125,10 +138,11 @@
                         {% endfor %}
                       </div>
 
+
                       <div class="col-md-6">
-                        <!-- Serum Tumor Markers -->
-                        <h3>Serum Tumor Markers</h3>
-                        {% for field in ['ca', 'cea', 'cyfra', 'nse', 'pro_grp', 'scc'] %}
+                        <!-- genetic test -->
+                        <h3>Genetic Test</h3>
+                        {% for field in health_info_dict['genetic_test'] %}
                           <div class="item-form-group">
                             <div class="col-md-7">
                               <label class="control-label">{{ form[field].label.text }}:</label>
@@ -139,8 +153,22 @@
                           </div><br><br>
                         {% endfor %}
 
+                        <!-- Serum Tumor Markers -->
                         <h3>Serum Tumor Markers</h3>
-                        {% for field in ['blood_drawn_date'] %}
+                        {% for field in health_info_dict['serum_tumor_markers'] %}
+                          <div class="item-form-group">
+                            <div class="col-md-7">
+                              <label class="control-label">{{ form[field].label.text }}:</label>
+                            </div>
+                            <div class="col-md-5">
+                              <p>{{ patient[field] }}</p>
+                            </div>
+                          </div><br><br>
+                        {% endfor %}
+
+                        <!-- Biochemistry Realization -->
+                        <h3>Biochemistry Realization</h3>
+                        {% for field in health_info_dict['biochemistry_realization'] %}
                           <div class="item-form-group">
                             <div class="col-md-7">
                               <label class="control-label">{{ form[field].label.text }}:</label>
@@ -156,7 +184,7 @@
 
                     <!-- CT Scan -->
                     <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
-                      <div class="x_panel" style="width: 70%;">
+                      <div class="x_panel" style="width: 100%;">
                         <div class="x_title">
                           <div class="row" style="margin: 5px 5px;">
                             <h3 style="display:inline-block;">Last Uploads</h3>
@@ -167,7 +195,7 @@
                         </div>
 
                         <div class="x_content">
-                          <table class="table table-striped projects" id="table-upload-ct-scan">
+                          <table class="table table-striped projects" style="width: 70%">
                             <thead>
                               <tr>
                                 <th style="width: 5%">#</th>

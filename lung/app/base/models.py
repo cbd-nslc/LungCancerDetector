@@ -13,11 +13,11 @@ def user_loader(user_id):
     return User.query.get(int(user_id))
 
 
-@login_manager.request_loader
-def request_loader(request):
-    username = request.form.get('username')
-    user = User.query.filter_by(username=username).first()
-    return user if user else None
+# @login_manager.request_loader
+# def request_loader(request):
+#     username = request.form.get('username')
+#     user = User.query.filter_by(username=username).first()
+#     return user if user else None
 
 
 class User(db.Model, UserMixin):
@@ -63,22 +63,45 @@ class Patient(db.Model):
     occupation = db.Column(db.String)
     address = db.Column(db.String)
 
+    # health info
     weight = db.Column(db.Integer)
     height = db.Column(db.Integer)
-    health_condition = db.Column(db.String)
-    diabetes = db.Column(db.String)
     blood_pressure = db.Column(db.Float)
-    cancer_report = db.Column(db.String)
-    other_problems = db.Column(db.String)
 
+    # General Biochemistry
+    diabetes = db.Column(db.String)
     smoking = db.Column(db.String)
-    blood_drawn_date = db.Column(db.String)
     hemolized_sample = db.Column(db.String)
 
     # Comorbidities
     liver_disease = db.Column(db.String)
     pemphigus = db.Column(db.String)
     renal_failure = db.Column(db.String)
+
+    # biopsy test
+    egpr = db.Column(db.String)
+    alk = db.Column(db.String)
+    ros1 = db.Column(db.String)
+    kras = db.Column(db.String)
+    ardenocarcinoma = db.Column(db.String)
+    angiolymphatic = db.Column(db.String)
+    antypia = db.Column(db.String)
+    antibody = db.Column(db.String)
+    squamous_cell_carcinoma = db.Column(db.String)
+    large_cell_carcinoma = db.Column(db.String)
+    lymph_node = db.Column(db.String)
+    metastasis = db.Column(db.String)
+
+    # genetic test
+    egfr = db.Column(db.String)
+    egfr_t790m = db.Column(db.String)
+    eml4_alk = db.Column(db.String)
+    braf = db.Column(db.String)
+    her2 = db.Column(db.String)
+    mek = db.Column(db.String)
+    met = db.Column(db.String)
+    ret = db.Column(db.String)
+
 
     # Serum Tumor Markers:
     ca = db.Column(db.Float)
@@ -87,6 +110,9 @@ class Patient(db.Model):
     nse = db.Column(db.Float)
     pro_grp = db.Column(db.Float)
     scc = db.Column(db.Float)
+
+    # Biochemistry Realization
+    blood_drawn_date = db.Column(db.String)
 
 
     picture = Column(String(20), nullable=False, default='default.png')

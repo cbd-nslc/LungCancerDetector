@@ -61,7 +61,7 @@
         <div class="column">
           <!-- basic health -->
           <h4>Health</h4>
-          {% for field in ['weight', 'height', 'blood_pressure'] %}
+          {% for field in health_info_dict['health'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
               <div class="content">{{ upload.patient[field] }}</div>
@@ -69,7 +69,15 @@
           {% endfor %}<br>
 
           <h4>General Biochemistry</h4>
-          {% for field in ['diabetes', 'smoking', 'hemolized_sample'] %}
+          {% for field in health_info_dict['general_biochemistry'] %}
+            <div class="inner-row">
+              <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
+          {% endfor %}<br>
+
+          <h4>Comorbidities</h4>
+          {% for field in health_info_dict['comorbidities'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
               <div class="content">{{ upload.patient[field] }}</div>
@@ -77,9 +85,10 @@
           {% endfor %}<br>
         </div>
 
+
         <div class="column">
-          <h4>Comorbidities</h4>
-          {% for field in ['liver_disease', 'pemphigus', 'renal_failure'] %}
+          <h4>Genetic Test </h4>
+          {% for field in health_info_dict['genetic_test'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
               <div class="content">{{ upload.patient[field] }}</div>
@@ -87,7 +96,7 @@
           {% endfor %}<br>
 
           <h4>Serum Tumor Markers</h4>
-          {% for field in ['ca', 'cea', 'cyfra', 'nse', 'pro_grp', 'scc'] %}
+          {% for field in health_info_dict['serum_tumor_markers'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
               <div class="content">{{ upload.patient[field] }}</div>
@@ -96,10 +105,18 @@
         </div>
 
         <div class="column">
-          <h4>Biochemistry Realization</h4>
-          {% for field in ['blood_drawn_date'] %}
+          <h4>Biopsy Test</h4>
+          {% for field in health_info_dict['biopsy_test'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
+              <div class="content">{{ upload.patient[field] }}</div>
+            </div>
+          {% endfor %}<br>
+
+          <h4>Biochemistry Realization</h4>
+          {% for field in health_info_dict['biochemistry_realization'] %}
+            <div class="inner-row">
+              <div class="label" style="flex: 1.5!important;">{{ form[field].label.text }}:</div>
               <div class="content">{{ upload.patient[field] }}</div>
             </div>
           {% endfor %}<br>
@@ -112,7 +129,7 @@
 
     <div id="outcome">
       <!-- conclusion -->
-      <h4>Conclusion</h4>
+      <h3>Conclusion</h3>
       <div class="outer-row">
         <div class="column">
           <!-- no lung cancer -->
@@ -136,7 +153,7 @@
       </div><br>
 
       <!-- Visualization -->
-      <h4>Visualization</h4>
+      <h3>Visualization</h3>
       <div class="outer-row">
         <div class="label">
           <img src="{{ url_for('static', filename='uploaded_ct_scan/' + upload.ct_scan.bbox_basename) }}">
@@ -149,7 +166,7 @@
       </div><br><br>
 
       <!-- TREATMENT  -->
-      <h4>Treatment recommendation</h4>
+      <h3>Treatment recommendation</h3>
       <div class="outer-row">
         <div class="column">
           <!-- have lung cancer -->
@@ -177,7 +194,7 @@
       </div><br><br>
 
       <!-- MEDICINE -->
-      <h4>Medicine recommendation</h4>
+      <h3>Medicine recommendation</h3>
       <div class="outer-row">
         <div class="column">
           {% if result_percent == 1 %}
@@ -201,9 +218,9 @@
     </div>
 
     <!-- PREVIOUS UPLOADS -->
-    <h2>Previous uploads</h2>
+    <h2 style="page-break-before: always;">Previous uploads</h2>
 
-    <div id="table">
+    <div id="table" style="clear: both; page-break-after: always;">
       <table>
         <thead>
           <th>#</th>
