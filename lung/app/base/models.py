@@ -85,7 +85,7 @@ class Patient(db.Model):
     kras = db.Column(db.String)
     ardenocarcinoma = db.Column(db.String)
     angiolymphatic = db.Column(db.String)
-    antypia = db.Column(db.String)
+    atypia = db.Column(db.String)
     antibody = db.Column(db.String)
     squamous_cell_carcinoma = db.Column(db.String)
     large_cell_carcinoma = db.Column(db.String)
@@ -150,6 +150,7 @@ class Upload(db.Model):
 
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'))
     ct_scan_id = db.Column(db.Integer, db.ForeignKey('ct_scan.id'))
+    result_text = db.Column(db.String)
 
     patient = db.relationship('Patient', back_populates='upload')
     ct_scan = db.relationship('CTScan', back_populates='upload')

@@ -47,7 +47,7 @@ class PatientsForm(FlaskForm):
 
     ardenocarcinoma = SelectField('ARDENOCARCINOMA', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
     angiolymphatic = SelectField('ANGIOLYMPHATIC', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
-    antypia = SelectField('ATYPIA', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
+    atypia = SelectField('ATYPIA', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
     antibody = SelectField('ANTIBODY', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
     squamous_cell_carcinoma = SelectField('Squamous cell carcinoma', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
     large_cell_carcinoma = SelectField('Large cell carcinoma', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)

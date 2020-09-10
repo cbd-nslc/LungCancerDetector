@@ -79,21 +79,15 @@
             <div aria-labelledby="v-pills-home-tab" class="tab-pane fade show active" id="v-pills-home" role="tabpanel" style="text-align: center;">
               <!-- no lung cancer -->
               {% if result_percent == 0 %}
-                <h2>YOU DON'T HAVE LUNG CANCER</h2><br>
-                <p>Your CT Scan was predicted that you have NOT been diagnosed with lung cancer</p>
+                <h2>PATIENT DOESN'T HAVE LUNG CANCER</h2><br>
+                <p>Patient {{ patient.first_name }} {{ patient.last_name }} was detected {{ result_text }}</p>
               <!-- have lung cancer -->
               {% elif result_percent == 1 %}
                 <h2>YOU HAVE LUNG CANCER</h2><br>
-                <!-- stage 1 -->
-                {% if diameter <= 20 %}
-                  <p>Your CT Scan was predicted that you have been diagnosed with lung cancer STAGE I</p>
-                <!-- stage 2 -->
-                {% else %}
-                  <p>Your CT Scan was predicted that you have been diagnosed with lung cancer STAGE II</p>
-                {% endif %}
+                <p>Patient {{ patient.first_name }} {{ patient.last_name }} was detected having lung cancer {{ result_text }}</p>
 
               {% else %}
-                <p>You have {{ result_percent * 100 }}% chance of having lung cancer</p>
+                <p>Patient {{ patient.first_name }} {{ patient.last_name }} has {{ result_text }}</p>
               {% endif %}
 
             </div>

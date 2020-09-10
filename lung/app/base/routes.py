@@ -19,6 +19,8 @@ from app.base import blueprint
 from app.base.models import CTScan, Patient, Upload
 from app.base.forms import CTScanForm
 
+from app.users.utils import additional_specs
+
 
 # default page
 @blueprint.route('/')
@@ -140,10 +142,11 @@ def upload(patient_id):
 @blueprint.route('/result/<mhd_md5>/patient_id:<int:patient_id>', methods=['GET', 'POST'])
 def result(mhd_md5, patient_id):
     ct_scan = CTScan.query.filter_by(mhd_md5=mhd_md5).first()
+    patient = Patient.query.filter_by(id=patient_id).first()
+    upload = Upload.query.filter_by(patient_id=patient_id).first()
 
     base_name = ct_scan.mhd_name.replace('.mhd', '')
     binary_prediction = get_binary_prediction(ct_scan.prediction)
-    result_percent = round(binary_prediction, 2)
 
     clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
     pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
@@ -163,7 +166,21 @@ def result(mhd_md5, patient_id):
         ct_scan.bbox_basename = bbox_basename
         db.session.commit()
 
-    patient = Patient.query.filter_by(id=patient_id).first()
+
+    if binary_prediction == 0:
+        result_text = 'NOT having lung cancer'
+    elif binary_prediction == 1:
+        stage, cell_type, grade, invasive_type = additional_specs(diameter, patient.ardenocarcinoma, patient.squamous_cell_carcinoma,
+                                                                  patient.large_cell_carcinoma, patient.atypia, patient.angiolymphatic,
+                                                                  patient.lymph_node, patient.metastasis)
+        result_text = f'stage {stage}, {cell_type}, grade {grade}, {invasive_type}'
+    else:
+        result_text = f'{round(binary_prediction*100, 2)}% chance of having lung cancer'
+
+    if not upload.result_text:
+        upload.result_text = result_text
+        db.session.commit()
+
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
-                           result_percent=result_percent, diameter=diameter, ct_scan=ct_scan, patient=patient)
+                           result_percent=binary_prediction, result_text=result_text, diameter=diameter, ct_scan=ct_scan, patient=patient)

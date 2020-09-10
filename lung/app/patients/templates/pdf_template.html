@@ -137,17 +137,11 @@
             <p>PATIENT DOES NOT HAVE LUNG CANCER</p>
           <!-- have lung cancer -->
           {% elif result_percent == 1 %}
-            <!-- stage 1 -->
-            {% if ct_scan.diameter <= 20 %}
-              <p>PATIENT WAS DETECTED HAVING LUNG CANCER STAGE I</p>
-            <!-- stage 2 -->
-            {% else %}
-              <p>PATIENT WAS DETECTED HAVING LUNG CANCER STAGE II</p>
-            {% endif %}
+            <p>PATIENT WAS DETECTED HAVING LUNG CANCER {{ result_text }}</p>
 
           <!-- not sure -->
           {% else %}
-            <p>PATIENT HAS {{ result_percent * 100 }}% CHANCE OF HAVING CANCER</p>
+            <p>PATIENT HAS {{ (result_percent * 100) | round(2) }}% CHANCE OF HAVING CANCER</p>
           {% endif %}
         </div>
       </div><br>
@@ -237,23 +231,7 @@
 
                 <!-- status -->
                 <td>
-                  <!-- no lung cancer -->
-                  {% if previous_upload.ct_scan.binary_prediction == 0 %}
-                    NO LUNG CANCER
-                  <!-- have lung cancer -->
-                  {% elif previous_upload.ct_scan.binary_prediction == 1 %}
-                    <!-- stage 1 -->
-                    {% if previous_upload.ct_scan.diameter <= 20 %}
-                      LUNG CANCER STAGE I
-                    <!-- stage 2 -->
-                    {% else %}
-                      LUNG CANCER STAGE II
-                    {% endif %}
-
-                  <!-- not sure -->
-                  {% else %}
-                    {{ (previous_upload.ct_scan.binary_prediction * 100) | round(2) }}% chance of having lung cancer
-                  {% endif %}
+                  {{ previous_upload.result_text }}
                 </td>
 
                 <!-- diameter -->

@@ -2,13 +2,13 @@ import secrets, os, json
 from datetime import datetime
 from flask import render_template, redirect, request, url_for, flash, make_response
 from flask_login import login_required, current_user
-from flask_weasyprint import HTML, render_pdf, CSS
+from flask_weasyprint import HTML, render_pdf
 
 import app
 from app import db, login_manager
 from app.patients import blueprint
 
-from app.users.utils import save_picture_patients
+from app.users.utils import save_picture_patients, additional_specs
 from app.patients.forms import PatientsForm
 
 from app.base.models import User, Patient, CTScan, Upload
@@ -19,7 +19,7 @@ general_biochemistry = ['diabetes', 'smoking', 'hemolized_sample']
 comorbidities = ['liver_disease', 'pemphigus', 'renal_failure']
 serum_tumor_markers = ['ca', 'cea', 'cyfra', 'nse', 'pro_grp', 'scc']
 
-biopsy_test = ['egpr', 'alk', 'ros1', 'kras', 'ardenocarcinoma', 'angiolymphatic', 'antypia', 'antibody', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'lymph_node', 'metastasis']
+biopsy_test = ['egpr', 'alk', 'ros1', 'kras', 'ardenocarcinoma', 'angiolymphatic', 'atypia', 'antibody', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'lymph_node', 'metastasis']
 genetic_test = ['egfr', 'egfr_t790m', 'eml4_alk', 'braf', 'her2', 'mek', 'met', 'ret']
 
 biochemistry_realization = ['blood_drawn_date']
@@ -121,6 +121,7 @@ def patients_profile(patient_id):
     else:
         picture_file = url_for('static', filename='patients_pics/' + patient.picture)
 
+
     upload_list = patient.upload.order_by(Upload.date_uploaded.desc()).all()
 
     return render_template('patients_profile.html', title='Profile', patient=patient, form=PatientsForm(),
@@ -159,8 +160,8 @@ def pdf_template(patient_id, upload_id):
     form = PatientsForm()
 
     upload = Upload.query.filter_by(id=upload_id).first()
-
     upload_list = upload.patient.upload.order_by(Upload.date_uploaded.desc()).all()
+
     if len(upload_list) > 1:
         upload_index = upload_list.index(upload) + 1
         previous_upload_list = upload_list[upload_index:]
@@ -168,9 +169,17 @@ def pdf_template(patient_id, upload_id):
         previous_upload_list = []
 
     ct_scan = upload.ct_scan
-    result_percent = round(ct_scan.binary_prediction, 2)
+    patient = upload.patient
 
-    rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_percent=result_percent, previous_upload_list=previous_upload_list, health_info_dict=health_info_dict)
+    stage, cell_type, grade, invasive_type = additional_specs(ct_scan.diameter, patient.ardenocarcinoma,
+                                                              patient.squamous_cell_carcinoma,
+                                                              patient.large_cell_carcinoma, patient.atypia,
+                                                              patient.angiolymphatic,
+                                                              patient.lymph_node, patient.metastasis)
+    result_text = f'lung cancer stage {stage}, {cell_type} and grade {grade}, {invasive_type}'.upper()
+
+
+    rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_text=result_text, result_percent=ct_scan.binary_prediction, previous_upload_list=previous_upload_list, health_info_dict=health_info_dict)
 
     return render_pdf(HTML(string=rendered))
 
