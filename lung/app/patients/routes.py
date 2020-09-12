@@ -73,7 +73,7 @@ def edit_info(patient_id):
 
     # The user pressed the "Cancel" button
     if form.cancel.data:
-        return redirect(url_for('home_blueprint.index'))
+        return redirect(url_for('patients_blueprint.patients_profile'))
 
     # The user pressed the "Submit" button
     if form.submit.data:
@@ -100,13 +100,40 @@ def edit_info(patient_id):
                 if field.data:
                     field.data = datetime.strptime(patient.blood_drawn_date, '%b %d, %Y').strftime('%Y-%m-%d')
 
-
     if patient.picture == '':
         picture_file = url_for('static', filename='patients_pics/default.png')
     else:
         picture_file = url_for('static', filename='patients_pics/' + patient.picture)
 
     return render_template('edit_info.html', title='Edit', heading='Edit', form=form, picture_file=picture_file, health_info_dict=health_info_dict)
+
+# test
+@blueprint.route("/patient_id:<int:patient_id>/test", methods=['GET', 'POST'])
+@login_required
+def test(patient_id):
+    patient = Patient.query.get_or_404(patient_id)
+    form = PatientsForm()
+
+    # The user pressed the "Cancel" button
+    if form.cancel.data:
+        return redirect(url_for('patients_blueprint.patients_profile', patient_id=patient.id))
+
+    # The user pressed the "Submit" button
+    if form.submit.data:
+        for field in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic', 'lymph_node', 'metastasis']:
+            field_data = getattr(form, field).data
+            setattr(patient, field, field_data)
+
+        db.session.commit()
+        flash('Your patient info has been updated!', 'success')
+        return redirect(url_for('patients_blueprint.patients_profile', patient_id=patient.id, _anchor='tab_content2'))
+
+    elif request.method == 'GET':
+        for field in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic', 'lymph_node', 'metastasis']:
+            field_data = getattr(form, field)
+            field_data.data = getattr(patient, field)
+
+    return render_template('test.html', title='Test', heading='Test', form=form)
 
 
 """view patients"""
