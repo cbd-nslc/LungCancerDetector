@@ -105,64 +105,14 @@
             <div aria-labelledby="v-pills-messages-tab" class="tab-pane fade" id="v-pills-messages"
                  role="tabpanel">
               <h2 style="text-align:center;"><i class="icon la la-file-text"></i> TREATMENT RECOMMENDATION </h2><br><br>
-              <!-- no lung cancer -->
-              {% if result_percent == 0 %}
-                <p style="text-align: center;">No treatment required</p>
-
-              <!-- have lung cancer -->
-              {% else %}
-                <!-- stage 1 -->
-                {% if diameter <= 20 %}
-                  <p>If you have stage I NSCLC, surgery may be the only treatment you need. This may be done either by taking out the lobe of the lung that has the tumor (lobectomy) or by taking out a smaller piece of the lung (sleeve resection, segmentectomy, or wedge resection). At least some lymph nodes in the lung and in the space between the lungs will also be removed and checked for cancer.</p>
-
-                  <p>Segmentectomy or wedge resection is generally an option only for very small stage I cancers and for patients with other health problems that make removing the entire lobe dangerous. Still, most surgeons believe it is better to do a lobectomy if the patient can tolerate it, as it offers the best chance for cure.</p>
-
-                  <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen (called positive margins). This could mean that some cancer has been left behind, so a second surgery might be done to try to ensure that all the cancer has been removed. (This might be followed by chemotherapy as well.) Another option might be to use radiation therapy after surgery.</p>
-
-                  <p>If you have serious health problems that prevent you from having surgery, you may get stereotactic body radiation therapy (SBRT) or another type of radiation therapy as your main treatment. Radiofrequency ablation (RFA) may be another option if the tumor is small and in the outer part of the lung.</p>
-                <!-- stage 2 -->
-                {% else %}
-                  <p>People who have stage II NSCLC and are healthy enough for surgery usually have the cancer removed by lobectomy or sleeve resection. Sometimes removing the whole lung (pneumonectomy) is needed.</p>
-
-                  <p>Any lymph nodes likely to have cancer in them are also removed. The extent of lymph node involvement and whether or not cancer cells are found at the edges of the removed tissues are important factors when planning the next step of treatment.</p>
-
-                  <p>After surgery, the removed tissue is checked to see if there are cancer cells at the edges of the surgery specimen. This might mean that some cancer has been left behind, so a second surgery might be done to try to remove any remaining cancer. This may be followed by chemotherapy (chemo). Another option is to treat with radiation, sometimes with chemo.</p>
-
-                  <p>Even if positive margins are not found, chemo is usually recommended after surgery to try to destroy any cancer cells that might have been left behind. As with stage I cancers, newer lab tests now being studied may help doctors find out which patients need this adjuvant treatment and which are less likely to benefit from it.</p>
-
-                  <p>If you have serious medical problems that would keep you from having surgery, you may get only radiation therapy as your main treatment.</p>
-                {% endif %}
-
-
-              {% endif %}
+              <p style="text-align: center;">{{ treatment }}</p>
             </div>
 
             <!-- medicine -->
             <div aria-labelledby="v-pills-settings-tab" class="tab-pane fade" id="v-pills-settings"
                  role="tabpanel">
               <h2 style="text-align:center;"><i class="icon fas fa-capsules"></i> MEDICINE RECOMMENDATION </h2><br><br>
-              {% if result_percent == 0 %}
-                <p style="text-align: center;">No medicine required</p>
-              {% else %}
-                <h4>CYRAMZA + ERLOTINIB</h4>
-                <p>The trial was designed to measure disease progression, which is the time that people lived without their cancer spreading or growing after taking treatment. The study also measured the proportion of patients who had a reduction in tumor size of 30% or more</p>
-
-                <p>CYRAMZA + erlotinib was studied in a clinical trial for the initial treatment of people with metastatic NSCLC with certain EGFR mutations. Of the 449 people included in the trial, 224 people received CYRAMZA + erlotinib and 225 people received placebo + erlotinib.</p>
-
-                <p>In a clinical study, CYRAMZA + erlotinib provided more time without disease progression than placebo + erlotinib for people with metastatic NSCLC with certain types of EGFR mutations. On average, people taking CYRAMZA + erlotinib lived 19 months without disease progression compared with 12 months for those taking placebo + erlotinib</p><br>
-
-
-                <h4>CYRAMZA + DOCETAXEL </h4>
-                <p>36% of people had delayed disease progression for 6 months or longer with CYRAMZA + docetaxeI (a type of chemotherapy) vs 29% with chemotherapy alone
-                  Half of the people who received CYRAMZA + chemotherapy lived without their cancer getting worse for 4.5 months vs 3.0 months with chemotherapy alone</p>
-
-                <p>43% of people lived 1 year or longer with CYRAMZA + chemotherapy vs 38% with chemotherapy alone
-                  Half of the people who received CYRAMZA + chemotherapy after their cancer progressed were still alive at 10.5 months vs 9.1 months with chemotherapy alone.
-
-                <p>CYRAMZA was studied in a clinical trial of 1253 people with metastatic non-small cell lung cancer who received CYRAMZA + docetaxel (628 people) vs those who received docetaxel alone (625 people). All people in the study had previously received platinum-containing chemotherapy.</p></p>
-
-              {% endif %}
-
+              <p style="text-align: center;">{{ medicine }}</p>
             </div>
 
           </div>

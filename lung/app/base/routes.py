@@ -2,6 +2,7 @@ import hashlib
 import os
 import sys
 from datetime import datetime
+import itertools
 
 from app import db
 
@@ -20,6 +21,8 @@ from app.base.models import CTScan, Patient, Upload
 from app.base.forms import CTScanForm
 
 from app.users.utils import additional_specs
+
+from app.patients.routes import health_info_dict
 
 
 # default page
@@ -166,16 +169,22 @@ def result(mhd_md5, patient_id):
         ct_scan.bbox_basename = bbox_basename
         db.session.commit()
 
+    specs_list = list(itertools.chain(*[health_info_dict['biopsy_test'], health_info_dict['genetic_test']]))
+    specs_dict = dict(zip(specs_list, [getattr(patient, spec) for spec in specs_list]))
 
     if binary_prediction == 0:
         result_text = 'NOT having lung cancer'
+        treatment = 'No treatment required'
+        medicine = 'No medicine required'
     elif binary_prediction == 1:
-        stage, cell_type, grade, invasive_type = additional_specs(diameter, patient.ardenocarcinoma, patient.squamous_cell_carcinoma,
-                                                                  patient.large_cell_carcinoma, patient.atypia, patient.angiolymphatic,
-                                                                  patient.lymph_node, patient.metastasis)
-        result_text = f'stage {stage}, {cell_type}, grade {grade}, {invasive_type}'
+        result = additional_specs(diameter, specs_dict)
+        result_text = f"stage {result['stage']}, {result['cell_type']}, grade {result['grade']}, {result['invasive_type']}"
+        treatment = result['treatment']
+        medicine = result['medicine']
     else:
         result_text = f'{round(binary_prediction*100, 2)}% chance of having lung cancer'
+        treatment = 'No treatment required'
+        medicine = 'No medicine required'
 
     if not upload.result_text:
         upload.result_text = result_text
@@ -183,4 +192,4 @@ def result(mhd_md5, patient_id):
 
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
-                           result_percent=binary_prediction, result_text=result_text, diameter=diameter, ct_scan=ct_scan, patient=patient)
+                           result_percent=binary_prediction, result_text=result_text, diameter=diameter, ct_scan=ct_scan, patient=patient, treatment=treatment, medicine=medicine)

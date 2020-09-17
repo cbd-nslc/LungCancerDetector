@@ -36,6 +36,7 @@ def save_picture_patients(form_picture):
 
     return picture_fn
 
+
 def token_hex_ct_scan(raw, mhd):
     random_hex = secrets.token_hex(8)
 
@@ -56,22 +57,20 @@ CELL_TYPE = dict(zip(['NSCLC', 'SCLC'], ['non-small cell type (NSCLC)', 'small-c
 INVASIVE_TYPE = dict(zip(['non-invasive', 'invasive'], ['non-invasive', 'invasive']))
 
 
-def additional_specs(diameter, ardenocarcinoma='n/a', squamous_cell_carcinoma='n/a', large_cell_carcinoma='n/a', atypia='n/a',                                                  angiolymphatic='n/a', lymph_node='n/a', metastasis='n/a'):
-
-    local = locals()
-    for spec in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic', 'lymph_node', 'metastasis']:
-        if local[spec]:
-            local[spec] = local[spec].lower()
+def additional_specs(diameter, specs):
+    for key, value in specs.items():
+        if value:
+            specs[key] = value.lower()
         else:
-            if spec == 'lymph_node':
-                local[spec] = 'not spread'
-            else:
-                local[spec] = 'n/a'
+            specs[key] = 'n/a'
+
 
     ardenocarcinoma, squamous_cell_carcinoma, large_cell_carcinoma, atypia, angiolymphatic, lymph_node, metastasis = \
-                        local['ardenocarcinoma'], local['squamous_cell_carcinoma'], local['large_cell_carcinoma'], local['atypia'], \
-                        local['angiolymphatic'], local['lymph_node'], local['metastasis']
+        specs['ardenocarcinoma'], specs['squamous_cell_carcinoma'], specs['large_cell_carcinoma'], specs['atypia'], \
+        specs['angiolymphatic'], specs['lymph_node'], specs['metastasis']
 
+    egfr, alk, ros1, kras, braf, mek, ret, met = specs['egfr'], specs['alk'], specs['ros1'], specs['kras'], specs[
+        'braf'], specs['mek'], specs['ret'], specs['met']
 
     if 'yes' in {ardenocarcinoma, squamous_cell_carcinoma, large_cell_carcinoma}:
         cell_type = CELL_TYPE['NSCLC']
@@ -96,14 +95,13 @@ def additional_specs(diameter, ardenocarcinoma='n/a', squamous_cell_carcinoma='n
             else:
                 grade = f"{GRADE['3']} & {GRADE['4']}"  # 3,6,9,12,15, 18,21,24,27,30
 
-
     if diameter <= 20:
         if lymph_node == 'not spread':
             stage = STAGE['I']
         elif lymph_node == 'spread nearby':
             stage = STAGE['II']
         else:
-            stage = 'not available'
+            stage = STAGE['III']
 
     else:
         if lymph_node == 'spread nearby':
@@ -114,10 +112,69 @@ def additional_specs(diameter, ardenocarcinoma='n/a', squamous_cell_carcinoma='n
             else:
                 stage = STAGE['III']
         else:
-            stage = 'not available'
+            stage = STAGE['II']
 
-    return stage, cell_type, grade, invasive_type
+    # treatment & medicine
 
+    if cell_type == CELL_TYPE['NSCLC']:
+        if stage == STAGE['I']:     #1-3
+            treatment = 'Lobectomy, sleeve resection, segmentectomy, wedge resection, lobectomy preferred. Chemotherapy after surgery'
+            medicine = 'No medicine needed'
+        elif stage == STAGE['II']:  #4-9
+            treatment = 'Lobectomy, sleeve resection, pneumonectomy. Lymph nodes having cancer should be removed. Chemotherapy after surgery'
+            medicine = 'No medicine needed'
+        elif stage == STAGE['III']: #10-12
+            treatment = 'Radiation therapy, chemotherapy, surgery, immunotherapy'
+            if 'positive' in {egfr, alk, ros1, kras}:
+                medicine_dict = {'egfr': ['Afatinib', 'Erlotinib', 'Gefitinib'], 'alk': ['Alectinib', 'Brigatinib'],
+                                 'ros1': ['Crizotinib', 'Xalkori'], 'kras': ['(KRAS mutation - no response to medicine)']}
+                medicine = []
+                for k, v in medicine_dict.items():
+                    if specs[k] == 'positive':
+                        medicine.extend(v)
+
+                medicine = list(dict.fromkeys(medicine))
+                medicine = ', '.join([m.capitalize() for m in medicine])
+
+            else:
+                medicine = 'Pembrolizumab, Durvalumab'
+        else:  #13-15
+            treatment = 'Radiation therapy, chemotherapy, surgery, immunotherapy, targeted therapy, photodynamic therapy, laser therapy'
+            if 'positive' in {egfr, alk, ros1, kras, braf, mek, ret, met}:
+                medicine_dict = {'egfr': ['Afatinib', 'Erlotinib', 'Gefitinib', 'cyramza'],
+                                 'alk': ['Alectinib', 'Brigatinib', 'ceritinib', 'crizotinib'],
+                                 'ros1': ['Crizotinib', 'Xalkori'],
+                                 'braf': ['dabrafenib', 'trametinib'], 'mek': ['trametinib'],
+                                 'ret': ['selpercatinib', 'pralsetinib'], 'met': ['capmatinib'],
+                                 'kras': ['(KRAS mutation - no response to medicine)']}
+                medicine = []
+                for k, v in medicine_dict.items():
+                    if specs[k] == 'positive':
+                        medicine.extend(v)
+
+                medicine = list(dict.fromkeys(medicine))
+                medicine = ', '.join([m.capitalize() for m in medicine])
+                medicine += ', Pembrolizumab, Nivolumab, Ipilimumab, Bevacizumab, Docetaxel'
+
+            else:
+                medicine = 'Pembrolizumab, Nivolumab, Ipilimumab, Bevacizumab, Docetaxel'
+
+    else:
+        if stage == STAGE['I']:     #16-18
+            treatment = 'Lobectomy, sleeve resection, segmentectomy, wedge resection, lobectomy preferred. Chemotherapy after surgery. Prophylactic cranial irradiation recommended'
+            medicine = 'No medicine needed'
+        elif stage == STAGE['II']:  #19-24
+            treatment = 'Lobectomy, sleeve resection, pneumonectomy. Lymph nodes having cancer should be removed. Chemotherapy after surgery, concurrent chemoradiation. Prophylactic cranial irradiation recommended'
+            medicine = 'No medicine needed'
+        elif stage == STAGE['III']: #25-27
+            treatment = 'Chemotherapy, concurrent chemoradiation, prophylactic cranial irradiation'
+            medicine = 'Etoposide, Cisplatin'
+        else:  #28-30
+            treatment = 'Chemotherapy, concurrent chemoradiation, prophylactic cranial irradiation, radiation therapy, palliative radiotherapy'
+            medicine = 'Etoposide, Cisplatin, Atezolizumab, Durvalumab, Carboplatin, Irinotecan'
+
+
+    return dict(zip(['stage', 'cell_type', 'grade', 'invasive_type', 'treatment', 'medicine'], [stage, cell_type, grade, invasive_type, treatment, medicine]))
 
 
 def send_reset_email(user):

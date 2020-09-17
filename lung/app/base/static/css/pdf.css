@@ -138,6 +138,14 @@ p {margin-bottom:0.5rem!important; }
     text-align: right;}
 
 
+#health-info .column:last-of-type .inner-row:nth-child(11) .label{
+    flex:1 1 auto;
+    text-align: left;}
+
+#health-info .column:last-of-type .inner-row:nth-child(11) .content{
+    flex:6;
+    text-align: right;}
+
 /* outcome */
 
 #outcome .label{

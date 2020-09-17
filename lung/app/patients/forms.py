@@ -40,10 +40,9 @@ class PatientsForm(FlaskForm):
                                    render_kw={'type': 'date', 'min': '2000-01-01', 'max': '2100-01-01'})
 
     # biopsy test
-    egpr = SelectField('EGPR', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')], validate_choice=False)
-    alk = SelectField('ALK', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')], validate_choice=False)
-    ros1 = SelectField('ROS1', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')], validate_choice=False)
-    kras = SelectField('KRAS', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')], validate_choice=False)
+    alk = SelectField('ALK', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')], validate_choice=False)
+    ros1 = SelectField('ROS1', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')], validate_choice=False)
+    kras = SelectField('KRAS', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')], validate_choice=False)
 
     ardenocarcinoma = SelectField('ARDENOCARCINOMA', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
     angiolymphatic = SelectField('ANGIOLYMPHATIC', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
@@ -52,25 +51,25 @@ class PatientsForm(FlaskForm):
     squamous_cell_carcinoma = SelectField('Squamous cell carcinoma', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
     large_cell_carcinoma = SelectField('Large cell carcinoma', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
 
-    lymph_node = SelectField('LYMPH NODE', choices=[('N/A', 'Choose'), ('Not spread', 'Not spread'), ('Spread nearby', 'Spread nearby'), ('Spread both chests', 'Spread both chests')], validate_choice=False)
+    lymph_node = SelectField('Lymph node', choices=[('N/A', 'Choose'), ('Not spread', 'Not spread'), ('Spread nearby', 'Spread nearby'), ('Spread both chests', 'Spread both chests')], validate_choice=False)
     metastasis = SelectField('METASTASIS', choices=[('N/A', 'Choose'), ('Yes', 'Yes'), ('No', 'No')], validate_choice=False)
 
     # genetic test
-    egfr = SelectField('EGFR', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')],
+    egfr = SelectField('EGFR', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')],
                        validate_choice=False)
-    egfr_t790m = SelectField('EGFR T790M', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')],
+    egfr_t790m = SelectField('EGFR T790M', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')],
                       validate_choice=False)
-    eml4_alk = SelectField('EML4-ALK', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')],
+    eml4_alk = SelectField('EML4-ALK', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')],
                        validate_choice=False)
-    braf = SelectField('BRAF', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')],
+    braf = SelectField('BRAF', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')],
                        validate_choice=False)
-    her2 = SelectField('HER2', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')],
+    her2 = SelectField('HER2', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')],
                        validate_choice=False)
-    mek = SelectField('MEK', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')],
+    mek = SelectField('MEK', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')],
                       validate_choice=False)
-    met = SelectField('MET', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')],
+    met = SelectField('MET', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')],
                        validate_choice=False)
-    ret = SelectField('RET', choices=[('N/A', 'Choose'), ('Positve', 'Positve'), ('Negative', 'Negative')],
+    ret = SelectField('RET', choices=[('N/A', 'Choose'), ('Positive', 'Positive'), ('Negative', 'Negative')],
                        validate_choice=False)
 
 

@@ -1,4 +1,5 @@
 import secrets, os, json
+import itertools
 from datetime import datetime
 from flask import render_template, redirect, request, url_for, flash, make_response
 from flask_login import login_required, current_user
@@ -19,7 +20,7 @@ general_biochemistry = ['diabetes', 'smoking', 'hemolized_sample']
 comorbidities = ['liver_disease', 'pemphigus', 'renal_failure']
 serum_tumor_markers = ['ca', 'cea', 'cyfra', 'nse', 'pro_grp', 'scc']
 
-biopsy_test = ['egpr', 'alk', 'ros1', 'kras', 'ardenocarcinoma', 'angiolymphatic', 'atypia', 'antibody', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'lymph_node', 'metastasis']
+biopsy_test = ['alk', 'ros1', 'kras', 'ardenocarcinoma', 'angiolymphatic', 'atypia', 'antibody', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'lymph_node', 'metastasis']
 genetic_test = ['egfr', 'egfr_t790m', 'eml4_alk', 'braf', 'her2', 'mek', 'met', 'ret']
 
 biochemistry_realization = ['blood_drawn_date']
@@ -73,7 +74,7 @@ def edit_info(patient_id):
 
     # The user pressed the "Cancel" button
     if form.cancel.data:
-        return redirect(url_for('patients_blueprint.patients_profile'))
+        return redirect(url_for('patients_blueprint.patients_profile', patient_id=patient.id))
 
     # The user pressed the "Submit" button
     if form.submit.data:
@@ -120,7 +121,7 @@ def test(patient_id):
 
     # The user pressed the "Submit" button
     if form.submit.data:
-        for field in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic', 'lymph_node', 'metastasis']:
+        for field in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic', 'lymph_node', 'metastasis', 'egfr', 'alk', 'ros1', 'kras', 'braf', 'mek', 'ret', 'met']:
             field_data = getattr(form, field).data
             setattr(patient, field, field_data)
 
@@ -129,7 +130,7 @@ def test(patient_id):
         return redirect(url_for('patients_blueprint.patients_profile', patient_id=patient.id, _anchor='tab_content2'))
 
     elif request.method == 'GET':
-        for field in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic', 'lymph_node', 'metastasis']:
+        for field in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic', 'lymph_node', 'metastasis', 'egfr', 'alk', 'ros1', 'kras', 'braf', 'mek', 'ret', 'met']:
             field_data = getattr(form, field)
             field_data.data = getattr(patient, field)
 
@@ -198,15 +199,29 @@ def pdf_template(patient_id, upload_id):
     ct_scan = upload.ct_scan
     patient = upload.patient
 
-    stage, cell_type, grade, invasive_type = additional_specs(ct_scan.diameter, patient.ardenocarcinoma,
-                                                              patient.squamous_cell_carcinoma,
-                                                              patient.large_cell_carcinoma, patient.atypia,
-                                                              patient.angiolymphatic,
-                                                              patient.lymph_node, patient.metastasis)
-    result_text = f'lung cancer stage {stage}, {cell_type} and grade {grade}, {invasive_type}'.upper()
+    specs_list = list(itertools.chain(*[health_info_dict['biopsy_test'], health_info_dict['genetic_test']]))
+    specs_dict = dict(zip(specs_list, [getattr(patient, spec) for spec in specs_list]))
+
+    if ct_scan.binary_prediction == 0:
+        result_text = 'NOT having lung cancer'
+        treatment = 'No treatment required'
+        medicine = 'No medicine required'
+    elif ct_scan.binary_prediction == 1:
+        result = additional_specs(ct_scan.diameter, specs_dict)
+        result_text = f"stage {result['stage']}, {result['cell_type']}, grade {result['grade']}, {result['invasive_type']}"
+        treatment = result['treatment']
+        medicine = result['medicine']
+    else:
+        result_text = f'{round(ct_scan.binary_prediction*100, 2)}% chance of having lung cancer'
+        treatment = 'No treatment required'
+        medicine = 'No medicine required'
+
+    if not upload.result_text:
+        upload.result_text = result_text
+        db.session.commit()
 
 
-    rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_text=result_text, result_percent=ct_scan.binary_prediction, previous_upload_list=previous_upload_list, health_info_dict=health_info_dict)
+    rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_text=result_text, treatment=treatment, medicine=medicine, result_percent=ct_scan.binary_prediction, previous_upload_list=previous_upload_list, health_info_dict=health_info_dict)
 
     return render_pdf(HTML(string=rendered))
 

@@ -79,7 +79,6 @@ class Patient(db.Model):
     renal_failure = db.Column(db.String)
 
     # biopsy test
-    egpr = db.Column(db.String)
     alk = db.Column(db.String)
     ros1 = db.Column(db.String)
     kras = db.Column(db.String)
