@@ -58,9 +58,6 @@
 
                 <br />
 
-                <!-- start skills -->
-                
-                <!-- end of skills -->
               </div>
 
 
@@ -224,7 +221,7 @@
 
                                     <!-- upload -->
                                     <td>
-                                      <a href="{{ url_for('base_blueprint.result', mhd_md5=upload.ct_scan.mhd_md5, patient_id=patient.id) }}" class="btn btn-primary" style="padding: 10px 20px;"><i class="fas fa-x-ray"></i> View</a>
+                                      <a href="{{ url_for('base_blueprint.result', mhd_md5=upload.ct_scan.mhd_md5, patient_id=patient.id, upload_id=upload.id) }}" class="btn btn-primary" style="padding: 10px 20px;"><i class="fas fa-x-ray"></i> View</a>
                                       ct_scan_id: {{ upload.ct_scan.id }}
                                       <br />
                                       <small>Uploaded {{ upload.date_uploaded.strftime("%B %d, %Y - %H:%M") }}</small>

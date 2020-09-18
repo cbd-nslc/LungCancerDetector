@@ -102,6 +102,15 @@ def upload(patient_id):
 
             # check if the file exists in db by md5 code
             ct_scan = CTScan.query.filter_by(mhd_md5=mhd_md5).first()
+            if patient_id:
+                upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id,
+                                date_uploaded=datetime.utcnow())
+
+                if ct_scan not in patient.ct_scan.all():
+                    patient.ct_scan.append(ct_scan)
+
+                db.session.add(upload)
+                db.session.commit()
 
             # if yes, load the ct_scan in the db
             if ct_scan:
@@ -115,38 +124,28 @@ def upload(patient_id):
 
                 # check if file is not saved due to some error
                 if os.path.exists(clean_path) and os.path.exists(pbb_path):
-                    if patient_id:
-                        upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id,
-                                        date_uploaded=datetime.utcnow())
-
-                        if ct_scan not in patient.ct_scan.all():
-                            patient.ct_scan.append(ct_scan)
-
-                        db.session.add(upload)
-                        db.session.commit()
-
-                    return redirect(url_for('base_blueprint.result', mhd_md5=mhd_md5, patient_id=patient_id))
+                    return redirect(url_for('base_blueprint.result', mhd_md5=mhd_md5, patient_id=patient_id, upload_id=upload.id))
 
                 else:
                     new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
                     return redirect(
-                        url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id))
+                        url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id, upload_id=upload.id))
 
             # if no, save the file and run the model
             else:
                 new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
-                return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id))
+                return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id, upload_id=upload.id))
 
     return render_template('homepage/upload.html', title="Upload", form=form, patients_list=patients_list,
                            patient=patient)
 
 
 @blueprint.route('/result/<mhd_md5>/', defaults={'patient_id': None}, methods=['GET', 'POST'])
-@blueprint.route('/result/<mhd_md5>/patient_id:<int:patient_id>', methods=['GET', 'POST'])
-def result(mhd_md5, patient_id):
+@blueprint.route('/result/<mhd_md5>/patient_id:<int:patient_id>/<upload_id>', methods=['GET', 'POST'])
+def result(mhd_md5, patient_id, upload_id):
     ct_scan = CTScan.query.filter_by(mhd_md5=mhd_md5).first()
     patient = Patient.query.filter_by(id=patient_id).first()
-    upload = Upload.query.filter_by(patient_id=patient_id).first()
+    upload = Upload.query.filter_by(id=upload_id).first()
 
     base_name = ct_scan.mhd_name.replace('.mhd', '')
     binary_prediction = get_binary_prediction(ct_scan.prediction)
@@ -192,4 +191,4 @@ def result(mhd_md5, patient_id):
 
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
-                           result_percent=binary_prediction, result_text=result_text, diameter=diameter, ct_scan=ct_scan, patient=patient, treatment=treatment, medicine=medicine)
+                           result_percent=binary_prediction, result_text=result_text, diameter=diameter, ct_scan=ct_scan, patient=patient, treatment=treatment, medicine=medicine, upload=upload)
