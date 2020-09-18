@@ -84,14 +84,15 @@
               <!-- have lung cancer -->
               {% elif result_percent == 1 %}
                 <h2>YOU HAVE LUNG CANCER</h2><br>
-                <p>Patient {{ patient.first_name }} {{ patient.last_name }} was detected having lung cancer {{ result_text }}</p>
+<!--                <p style="font-size: 18px;">Patient {{ patient.first_name }} {{ patient.last_name }} was detected having lung cancer {{ result_text }}</p>-->
+                <p>Patient {{ patient.first_name }} {{ patient.last_name }} was detected having lung cancer {{ upload.result_text }}</p>
               {% else %}
                 <p>Patient {{ patient.first_name }} {{ patient.last_name }} has {{ result_text }}</p>
               {% endif %}
 
 <!-- delete later -->
-              <br><br><br><br>
-              <p style="font-size: 32px;">{{ upload.result_text.upper() }}</p>
+<!--              <br><br><br><br>-->
+<!--              <p style="font-size: 32px;">{{ upload.result_text.upper() }}</p>-->
 
 
             </div>
