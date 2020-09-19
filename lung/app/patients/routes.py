@@ -216,9 +216,9 @@ def pdf_template(patient_id, upload_id):
         treatment = 'No treatment required'
         medicine = 'No medicine required'
 
-    if not upload.result_text:
-        upload.result_text = result_text
-        db.session.commit()
+    # if not upload.result_text:
+    #     upload.result_text = result_text
+    #     db.session.commit()
 
 
     rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_text=result_text, treatment=treatment, medicine=medicine, result_percent=ct_scan.binary_prediction, previous_upload_list=previous_upload_list, health_info_dict=health_info_dict)

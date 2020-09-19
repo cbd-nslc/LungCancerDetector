@@ -158,15 +158,12 @@ def result(mhd_md5, patient_id, upload_id):
 
     if not ct_scan.diameter:
         ct_scan.diameter = diameter
-        db.session.commit()
 
     if not ct_scan.binary_prediction:
         ct_scan.binary_prediction = binary_prediction
-        db.session.commit()
 
     if not ct_scan.bbox_basename:
         ct_scan.bbox_basename = bbox_basename
-        db.session.commit()
 
     specs_list = list(itertools.chain(*[health_info_dict['biopsy_test'], health_info_dict['genetic_test']]))
     specs_dict = dict(zip(specs_list, [getattr(patient, spec) for spec in specs_list]))
@@ -187,8 +184,14 @@ def result(mhd_md5, patient_id, upload_id):
 
     if not upload.result_text:
         upload.result_text = result_text
-        db.session.commit()
 
+    if not upload.treatment:
+        upload.treatment = treatment
+
+    if not upload.medicine:
+        upload.medicine = medicine
+
+    db.session.commit()
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
-                           result_percent=binary_prediction, result_text=result_text, diameter=diameter, ct_scan=ct_scan, patient=patient, treatment=treatment, medicine=medicine, upload=upload)
+                           result_percent=binary_prediction, result_text=result_text, diameter=diameter, ct_scan=ct_scan, patient=patient, upload=upload)

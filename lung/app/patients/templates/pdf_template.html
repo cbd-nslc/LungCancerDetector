@@ -137,7 +137,7 @@
             <p>PATIENT DOES NOT HAVE LUNG CANCER</p>
           <!-- have lung cancer -->
           {% elif result_percent == 1 %}
-            <p>PATIENT WAS DETECTED HAVING LUNG CANCER {{ result_text.upper() }}</p>
+            <p>PATIENT WAS DETECTED HAVING LUNG CANCER {{ upload.result_text.upper() }}</p>
 
           <!-- not sure -->
           {% else %}
@@ -163,7 +163,7 @@
       <h3>Treatment recommendation</h3>
       <div class="outer-row">
         <div class="column">
-         <p>{{ treatment }}</p>
+         <p>{{ upload.treatment }}</p>
         </div>
       </div><br><br>
 
@@ -171,7 +171,7 @@
       <h3>Medicine recommendation</h3>
       <div class="outer-row">
         <div class="column">
-          <p>{{ medicine }}</p>
+          <p>{{ upload.medicine }}</p>
         </div>
       </div><br><br>
     </div>

@@ -150,6 +150,8 @@ class Upload(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'))
     ct_scan_id = db.Column(db.Integer, db.ForeignKey('ct_scan.id'))
     result_text = db.Column(db.String)
+    treatment = db.Column(db.String)
+    medicine = db.Column(db.String)
 
     patient = db.relationship('Patient', back_populates='upload')
     ct_scan = db.relationship('CTScan', back_populates='upload')
