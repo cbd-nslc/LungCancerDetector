@@ -155,3 +155,52 @@ class Upload(db.Model):
 
     patient = db.relationship('Patient', back_populates='upload')
     ct_scan = db.relationship('CTScan', back_populates='upload')
+
+    # health info
+    weight = db.Column(db.Integer)
+    height = db.Column(db.Integer)
+    blood_pressure = db.Column(db.Float)
+
+    # General Biochemistry
+    diabetes = db.Column(db.String)
+    smoking = db.Column(db.String)
+    hemolized_sample = db.Column(db.String)
+
+    # Comorbidities
+    liver_disease = db.Column(db.String)
+    pemphigus = db.Column(db.String)
+    renal_failure = db.Column(db.String)
+
+    # biopsy test
+    alk = db.Column(db.String)
+    ros1 = db.Column(db.String)
+    kras = db.Column(db.String)
+    ardenocarcinoma = db.Column(db.String)
+    angiolymphatic = db.Column(db.String)
+    atypia = db.Column(db.String)
+    antibody = db.Column(db.String)
+    squamous_cell_carcinoma = db.Column(db.String)
+    large_cell_carcinoma = db.Column(db.String)
+    lymph_node = db.Column(db.String)
+    metastasis = db.Column(db.String)
+
+    # genetic test
+    egfr = db.Column(db.String)
+    egfr_t790m = db.Column(db.String)
+    eml4_alk = db.Column(db.String)
+    braf = db.Column(db.String)
+    her2 = db.Column(db.String)
+    mek = db.Column(db.String)
+    met = db.Column(db.String)
+    ret = db.Column(db.String)
+
+    # Serum Tumor Markers:
+    ca = db.Column(db.Float)
+    cea = db.Column(db.Float)
+    cyfra = db.Column(db.Float)
+    nse = db.Column(db.Float)
+    pro_grp = db.Column(db.Float)
+    scc = db.Column(db.Float)
+
+    # Biochemistry Realization
+    blood_drawn_date = db.Column(db.String)

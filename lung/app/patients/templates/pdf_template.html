@@ -64,7 +64,7 @@
           {% for field in health_info_dict['health'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
-              <div class="content">{{ upload.patient[field] }}</div>
+              <div class="content">{{ upload[field] }}</div>
             </div>
           {% endfor %}<br>
 
@@ -72,7 +72,7 @@
           {% for field in health_info_dict['general_biochemistry'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
-              <div class="content">{{ upload.patient[field] }}</div>
+              <div class="content">{{ upload[field] }}</div>
             </div>
           {% endfor %}<br>
 
@@ -80,7 +80,7 @@
           {% for field in health_info_dict['comorbidities'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
-              <div class="content">{{ upload.patient[field] }}</div>
+              <div class="content">{{ upload[field] }}</div>
             </div>
           {% endfor %}<br>
         </div>
@@ -91,7 +91,7 @@
           {% for field in health_info_dict['genetic_test'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
-              <div class="content">{{ upload.patient[field] }}</div>
+              <div class="content">{{ upload[field] }}</div>
             </div>
           {% endfor %}<br>
 
@@ -99,7 +99,7 @@
           {% for field in health_info_dict['serum_tumor_markers'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
-              <div class="content">{{ upload.patient[field] }}</div>
+              <div class="content">{{ upload[field] }}</div>
             </div>
           {% endfor %}<br>
         </div>
@@ -109,7 +109,7 @@
           {% for field in health_info_dict['biopsy_test'] %}
             <div class="inner-row">
               <div class="label">{{ form[field].label.text }}:</div>
-              <div class="content">{{ upload.patient[field] }}</div>
+              <div class="content">{{ upload[field] }}</div>
             </div>
           {% endfor %}<br>
 
@@ -117,7 +117,7 @@
           {% for field in health_info_dict['biochemistry_realization'] %}
             <div class="inner-row">
               <div class="label" style="flex: 1.5!important;">{{ form[field].label.text }}:</div>
-              <div class="content">{{ upload.patient[field] }}</div>
+              <div class="content">{{ upload[field] }}</div>
             </div>
           {% endfor %}<br>
         </div>

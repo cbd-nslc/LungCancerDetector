@@ -182,6 +182,9 @@ def result(mhd_md5, patient_id, upload_id):
         treatment = 'No treatment required'
         medicine = 'No medicine required'
 
+    for spec in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic', 'lymph_node', 'metastasis', 'egfr', 'alk', 'ros1', 'kras', 'braf', 'mek', 'ret', 'met']:
+        setattr(upload, spec, getattr(patient, spec))
+
     if not upload.result_text:
         upload.result_text = result_text
 
