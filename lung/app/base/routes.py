@@ -18,7 +18,7 @@ from werkzeug.utils import secure_filename
 
 from app.base import blueprint
 from app.base.models import CTScan, Patient, Upload
-from app.base.forms import CTScanForm
+from app.base.forms import CTScanForm, CTScanFormUI
 
 from app.users.utils import additional_specs
 
@@ -63,6 +63,27 @@ def call_model(path, name, md5, patient):
     db.session.commit()
 
     return new_ct_scan
+
+@blueprint.route('/uploadUI', defaults={'patient_id': None}, methods=['GET', 'POST'])
+@blueprint.route('/uploadUI/patient_id:<int:patient_id>', methods=['GET', 'POST'])
+@login_required
+def uploadUI(patient_id):
+    form = CTScanFormUI()
+    # if patient_id available, not show the patient list
+    if patient_id:
+        patient = Patient.query.filter_by(id=patient_id).first()
+        patients_list = None
+    else:
+        patient = None
+        patients_list = Patient.query.filter_by(doctor=current_user).all()
+
+    if form.submit.data and form.validate_on_submit():
+        files = form.file.data
+        print(files)
+        return redirect(url_for('base_blueprint.contact'))
+
+    return render_template('homepage/uploadUI.html', title="uploadUI", form=form, patients_list=patients_list,
+                           patient=patient)
 
 
 @blueprint.route('/upload', defaults={'patient_id': None}, methods=['GET', 'POST'])

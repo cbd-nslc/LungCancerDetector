@@ -1,0 +1,60 @@
+
+<div class="row mb-5 align-items-end">
+  <!-- -->
+  <div class="col-md-12" data-aos="fade-up">
+    <br>
+    <ul>
+      <li><p class="mb-0" style="color:black;">&emsp;Upload 2 files of ".raw" and ".mhd" extension</p></li>
+      <li><p class="mb-0" style="color:black;">&emsp;Both files must have the same name</p></li>
+    </ul>
+
+  </div>
+
+</div>
+
+<!-- form --> <!-- modified in lung/app/base/static/js/main.js -->
+<form class="row mb-12 align-items-end" id="ct-scan-uploadUI" method="POST" enctype="multipart/form-data" data-aos="fade-up">
+  {{ form.hidden_tag() }}
+  <!-- center box -->
+  <div class="center box">
+    <div class="title">
+        <h1>Click inside the box to upload</h1>
+    </div>
+
+    <div class="row-md-12">
+      <div class="text-danger text-center" id="upload-file-errorUI" style="font-size:16px;">
+      </div>
+    </div>
+
+    <div id="dropzone-box">
+      <!-- dropzone -->
+
+      <div class="row dropzone-contentUI">
+        <div class="col-md-6">
+          <div id="dropzoneUI" class="center-block">
+            {{ form.file(class="upload-ct-scan", id="fileUI", multiple="", accept=".nii, .jpg, .gif, png, .svg, .jpeg, .raw, .mhd") }}
+            <span><p class="file-name">Browse</p></span>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="preview">
+              <p>No files currently selected for upload</p>
+            </div>
+        </div>
+      </div>
+      <!-- end dropzone -->
+
+
+    </div>
+
+
+
+  </div>
+  <!-- end center box -->
+
+  <div class="col-md-12 text-center">
+    {{ form.submit(class='btn btn-primary') }}
+  </div>
+</form>
+

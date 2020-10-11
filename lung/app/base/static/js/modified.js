@@ -53,7 +53,6 @@ $('form#ct-scan-upload input').on('change', function() {
             $('#error-raw-mhd').hide();
         }
     }
-
     // check extension of mhd file
     if (mhdInput.val()) {
         if (mhdExtension === 'mhd') {
@@ -66,7 +65,6 @@ $('form#ct-scan-upload input').on('change', function() {
             $('#error-raw-mhd').hide();
         }
     }
-
     // check if raw file and mhd file match
     if ( rawInput.val() && mhdInput.val() ) {
         if (rawName !== mhdName) {
@@ -77,12 +75,109 @@ $('form#ct-scan-upload input').on('change', function() {
             $('#mhd-file').closest('#dropzone1').find('.file-name').html('');
 
             $('#error-raw-mhd').show();
-
         } else {
             $('#error-raw-mhd').hide();
         }
     }
 })
+
+const fileTypes = ['image/nii', 'image/jpg', 'image/gif', 'image/png', 'image/svg', 'image/jpeg', 'image/raw', ];
+
+function validFileType(file) {
+    return fileTypes.includes(file.type.toLowerCase());}
+function returnFileSize(number) {
+    if(number < 1024) {
+        return number + ' bytes';
+    } else if(number >= 1024 && number < 1048576) {
+        return (number/1024).toFixed(1) + ' KB';
+    } else if(number >= 1048576) {
+        return (number/1048576).toFixed(1) + ' MB';
+    }
+}
+
+function returnFileMBSize(number){
+    return (number/1048576);
+}
+
+$('form#ct-scan-uploadUI input').on('change', function() {
+    let input = $('input#fileUI');
+    let preview = document.querySelector('.preview');
+
+    let fullName = input.val().split('\\').pop();
+    let fullNameSplit = fullName.split('.');
+    let extension = fullNameSplit.pop().toLowerCase();
+    let name = fullNameSplit.join('');
+
+    while(preview.firstChild) {
+        preview.removeChild(preview.firstChild);}
+
+//    $(this).closest('#dropzoneUI').find('.file-name').html(fullName);
+//    $('#upload-file-errorUI').hide();
+
+    let file_list = input.prop('files')
+
+    if(file_list.length === 0) {
+        const para = document.createElement('p');
+        para.textContent = 'No files currently selected for upload';
+        preview.appendChild(para);
+    } else {
+        // check size
+        var totalSize = 0;
+        var isSame = true
+        for (let i=0; i<file_list.length; i++){
+//            if (i < file_list.length-1 && file_list[i].type != file_list[i+1].type){
+//                var isSame = false;
+//                break;}
+            totalSize = totalSize + returnFileMBSize(file_list[i].size);}
+
+        if (totalSize > 200) {
+            $('#upload-file-errorUI').text('Your files exceed 200 MB, please reupload.').show();
+        } else if (isSame === false){
+            $('#upload-file-errorUI').text('All files must have the same extension, please reupload.').show();
+        } else {
+        //  add file list
+            const list = document.createElement('ol');
+            preview.appendChild(list);
+
+            for(const file of file_list) {
+                const listItem = document.createElement('li');
+                const para = document.createElement('p');
+                para.textContent = `${file.name} - ${returnFileSize(file.size)}`;
+                listItem.appendChild(para);
+
+            list.appendChild(listItem);}
+        }
+    }
+
+
+    for (let i=0; i<file_list.length; i++){
+        console.log(returnFileMBSize(file_list[i].size))
+    }
+})
+
+// dropzoneUI
+//function validate_extension(extensionUI){
+//    let input = $('input#fileUI');
+//
+//    let fullName = input.val().split('\\').pop();
+//    let fullNameSplit = fullName.split('.');
+//    let extension = fullNameSplit.pop().toLowerCase();
+//    let name = fullNameSplit.join('');
+//
+//    // check extension of fileUI
+//    if (input.val()) {
+//        if (extension === extensionUI){
+//            $(this).closest('#dropzoneUI').find('.file-name').html(fullName);
+//            $('#upload-file-errorUI').hide();
+//        } else {
+//            $(this).val('');
+//            $(this).closest('#dropzoneUI').find('.file-name').html('');
+//            $('#upload-file-extension-errorUI').show();
+//            $('#upload-file-errorUI').hide();
+//        }
+//    }
+//}
+
 
 /* cancel-button */
 $('#cancel-button').on('click', function() {

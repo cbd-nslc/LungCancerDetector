@@ -218,6 +218,45 @@
 }
 
 /*--------------------------------------------------------------
+    dropzone UI
+--------------------------------------------------------------*/
+.dropzone-contentUI{
+  height: 90%;
+  margin-bottom: 5px;
+}
+
+#dropzoneUI {
+  position: relative;
+
+  width: 80%;
+  height: 100%;
+  border: 1px dashed #999;
+  border-radius: 3px;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  text-align: center;
+
+  background-image: url("http://100dayscss.com/codepen/upload.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#dropzoneUI p{
+  margin-top: -9.5rem;
+  word-wrap: break-word;}
+
+.preview {
+    height: 20em;
+    overflow: scroll;}
+
+.preview p{
+    word-wrap: break-word;
+}
+
+
+/*--------------------------------------------------------------
  result page
 --------------------------------------------------------------*/
 
