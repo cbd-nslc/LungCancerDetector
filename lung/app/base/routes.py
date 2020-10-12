@@ -1,10 +1,13 @@
 import hashlib
+import itertools
 import os
 import sys
 from datetime import datetime
-import itertools
+
+from werkzeug.utils import secure_filename
 
 from app import db
+from app.base.upload_file_utils import handle_file_list, UploadType
 
 sys.path.append("..")
 sys.path.append('../DSB2017')
@@ -12,13 +15,12 @@ sys.path.append('../DSB2017')
 from DSB2017.main import inference, make_bb_image
 from DSB2017.utils import get_binary_prediction
 
-from flask import render_template, redirect, url_for, current_app, flash
+from flask import render_template, redirect, url_for, current_app
 from flask_login import current_user, login_required
-from werkzeug.utils import secure_filename
 
 from app.base import blueprint
 from app.base.models import CTScan, Patient, Upload
-from app.base.forms import CTScanForm, CTScanFormUI
+from app.base.forms import CTScanFormUI
 
 from app.users.utils import additional_specs
 
@@ -64,10 +66,11 @@ def call_model(path, name, md5, patient):
 
     return new_ct_scan
 
-@blueprint.route('/uploadUI', defaults={'patient_id': None}, methods=['GET', 'POST'])
-@blueprint.route('/uploadUI/patient_id:<int:patient_id>', methods=['GET', 'POST'])
+
+@blueprint.route('/upload', defaults={'patient_id': None}, methods=['GET', 'POST'])
+@blueprint.route('/upload/patient_id:<int:patient_id>', methods=['GET', 'POST'])
 @login_required
-def uploadUI(patient_id):
+def upload(patient_id):
     form = CTScanFormUI()
     # if patient_id available, not show the patient list
     if patient_id:
@@ -80,58 +83,36 @@ def uploadUI(patient_id):
     if form.submit.data and form.validate_on_submit():
         files = form.file.data
         print(files)
-        return redirect(url_for('base_blueprint.contact'))
 
-    return render_template('homepage/uploadUI.html', title="uploadUI", form=form, patients_list=patients_list,
-                           patient=patient)
+        timestamp = int(datetime.now().timestamp())
+        save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(patient_id), str(timestamp))
+        if not os.path.isdir(save_path):
+            os.makedirs(save_path)
+        file_paths = [os.path.join(save_path, secure_filename(file.filename)) for file in files]
+        for file in files:
+            file_path = os.path.join(save_path, secure_filename(file.filename))
+            file_paths.append(file_path)
+            file.save(file_path)
 
+        upload_type, valid_upload_result = handle_file_list(file_paths)
 
-@blueprint.route('/upload', defaults={'patient_id': None}, methods=['GET', 'POST'])
-@blueprint.route('/upload/patient_id:<int:patient_id>', methods=['GET', 'POST'])
-@login_required
-def upload(patient_id):
-    form = CTScanForm()
-
-    # if patient_id available, not show the patient list
-    if patient_id:
-        patient = Patient.query.filter_by(id=patient_id).first()
-        patients_list = None
-    else:
-        patient = None
-        if current_user.is_authenticated:
-            patients_list = Patient.query.filter_by(doctor=current_user).all()
-        else:
-            patients_list = None
-
-    if form.submit.data and form.validate_on_submit():
-        raw_file = form.raw_file.data
-        mhd_file = form.mhd_file.data
-
-        if raw_file and mhd_file:
-            raw_name = secure_filename(raw_file.filename)
-            mhd_name = secure_filename(mhd_file.filename)
-
-            # raw_name, mhd_name = token_hex_ct_scan(raw_name, mhd_name)
-
-            raw_path = os.path.join(current_app.config['UPLOAD_FOLDER'], raw_name)
-            mhd_path = os.path.join(current_app.config['UPLOAD_FOLDER'], mhd_name)
-
-            raw_file.save(raw_path)
-            mhd_file.save(mhd_path)
-
+        if upload_type == UploadType.MHD_RAW:
+            mhd_path = valid_upload_result
             mhd_md5 = hashlib.md5(open(mhd_path, 'rb').read()).hexdigest()
 
             # check if the file exists in db by md5 code
             ct_scan = CTScan.query.filter_by(mhd_md5=mhd_md5).first()
+
+
             if patient_id:
                 upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id,
                                 date_uploaded=datetime.utcnow())
+                db.session.add(upload)
+                db.session.commit()
 
                 if ct_scan not in patient.ct_scan.all():
                     patient.ct_scan.append(ct_scan)
 
-                db.session.add(upload)
-                db.session.commit()
 
             # if yes, load the ct_scan in the db
             if ct_scan:
@@ -148,16 +129,13 @@ def upload(patient_id):
                     return redirect(url_for('base_blueprint.result', mhd_md5=mhd_md5, patient_id=patient_id, upload_id=upload.id))
 
                 else:
+                    mhd_name = os.path.basename(mhd_path)
                     new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
                     return redirect(
                         url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id, upload_id=upload.id))
 
-            # if no, save the file and run the model
-            else:
-                new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
-                return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id, upload_id=upload.id))
 
-    return render_template('homepage/upload.html', title="Upload", form=form, patients_list=patients_list,
+    return render_template('homepage/upload.html', title="upload", form=form, patients_list=patients_list,
                            patient=patient)
 
 
@@ -199,11 +177,12 @@ def result(mhd_md5, patient_id, upload_id):
         treatment = result['treatment']
         medicine = result['medicine']
     else:
-        result_text = f'{round(binary_prediction*100, 2)}% chance of having lung cancer'
+        result_text = f'{round(binary_prediction * 100, 2)}% chance of having lung cancer'
         treatment = 'No treatment required'
         medicine = 'No medicine required'
 
-    for spec in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic', 'lymph_node', 'metastasis', 'egfr', 'alk', 'ros1', 'kras', 'braf', 'mek', 'ret', 'met']:
+    for spec in ['ardenocarcinoma', 'squamous_cell_carcinoma', 'large_cell_carcinoma', 'atypia', 'angiolymphatic',
+                 'lymph_node', 'metastasis', 'egfr', 'alk', 'ros1', 'kras', 'braf', 'mek', 'ret', 'met']:
         setattr(upload, spec, getattr(patient, spec))
 
     if not upload.result_text:
@@ -218,4 +197,5 @@ def result(mhd_md5, patient_id, upload_id):
     db.session.commit()
 
     return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
-                           result_percent=binary_prediction, result_text=result_text, diameter=diameter, ct_scan=ct_scan, patient=patient, upload=upload)
+                           result_percent=binary_prediction, result_text=result_text, diameter=diameter,
+                           ct_scan=ct_scan, patient=patient, upload=upload)

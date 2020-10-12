@@ -136,3 +136,4 @@ dmypy.json
 # lung
 /lung/migrations/
 /lung/app/base/static/uploaded_ct_scan/
+/kaggle_ndsb2017/.idea/

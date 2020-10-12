@@ -46,8 +46,7 @@
             {% else %}
               <h2>Upload CT Scan for patient "{{ patient.first_name }} {{ patient.last_name }}"</h2>
               <br>
-              <a href="{{ url_for('base_blueprint.uploadUI', patient_id=patient.id) }}" class="btn btn-primary">New Upload UI</a>
-              {% include "homepage/FC_dropzone.html" %}
+              {% include "homepage/FC_dropzoneUI.html" %}
             {% endif %}
 
         </div>
