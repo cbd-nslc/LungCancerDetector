@@ -4,8 +4,8 @@
   <div class="col-md-12" data-aos="fade-up">
     <br>
     <ul>
-      <li><p class="mb-0" style="color:black;">&emsp;Upload 2 files of ".raw" and ".mhd" extension</p></li>
-      <li><p class="mb-0" style="color:black;">&emsp;Both files must have the same name</p></li>
+      <li><p class="mb-0" style="color:black;">&emsp;Allowed extension: nii, jpg, gif, png, svg, jpeg, dicom, raw & mhd</p></li>
+      <li><p class="mb-0" style="color:black;">&emsp;If you upload with "raw" and "mhd" files, make sure you upload only 1 file of each and both files must have the same name</p></li>
     </ul>
 
   </div>
@@ -32,7 +32,7 @@
       <div class="row dropzone-contentUI">
         <div class="col-md-6">
           <div id="dropzoneUI" class="center-block">
-            {{ form.file(class="upload-ct-scan", id="fileUI", multiple="", accept=".nii, .jpg, .gif, png, .svg, .jpeg, .raw, .mhd") }}
+            {{ form.file(class="upload-ct-scan", id="fileUI", multiple="", accept=".nii, .jpg, .gif, .png, .svg, .jpeg, .dicom, .raw, .mhd") }}
             <span><p class="file-name">Browse</p></span>
           </div>
         </div>
