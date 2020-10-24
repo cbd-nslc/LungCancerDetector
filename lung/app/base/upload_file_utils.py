@@ -10,21 +10,26 @@ class UploadType(Enum):
     INVALID = 'invalid'
 
 
-class CompressedFileExtensions(Enum):
-    _rar = '.rar'
+class AllowedCompressedExtensions(Enum):
     _zip = '.zip'
     _7z = '.7z'
 
 
-COMPRESSED_FILE_EXTENSIONS = [ext.value for ext in CompressedFileExtensions]
+ALLOWED_COMPRESSED_EXTENSIONS = [ext.value for ext in AllowedCompressedExtensions]
+
+
+class UploadError(Enum):
+    ERROR_100 = f'Raise UI warning, if single file, it must be a compressed archive of image files, in {str(ALLOWED_COMPRESSED_EXTENSIONS)}'
+    ERROR_101 = 'Raise UI Warning, user should upload RAW and MHD file with the same filename'
+    ERROR_102 = 'Raise UI warning, user should upload multiple image file with the same extension'
 
 
 def handle_file_list(file_paths: list):
     if len(file_paths) == 1:
         file_ext = os.path.splitext(file_paths[0])[1].lower()
-        if file_ext not in COMPRESSED_FILE_EXTENSIONS:
-            # TODO: Raise UI warning, if single file, it must be a compressed archive of image files
-            pass
+        if file_ext not in ALLOWED_COMPRESSED_EXTENSIONS:
+            return UploadError.ERROR_100, None
+
         else:
             return handle_file_list(handle_compressed_file(file_paths[0]))
     else:
@@ -37,11 +42,9 @@ def handle_file_list(file_paths: list):
                 if len(file_names) == 1:
                     return UploadType.MHD_RAW, list(filter(lambda str: True if '.mhd' in str else False, file_paths))[0]
                 else:
-                    # TODO: Raise UI Warning, user should upload RAW and MHD file with the same filename
-                    return UploadType.INVALID, None
+                    return UploadError.ERROR_101, None
             else:
-                # TODO: Raise UI warning, user should upload multiple image file with the same extension
-                return UploadType.INVALID, None
+                return UploadError.ERROR_102, None
 
         else:
             # Multiple file, same extension
@@ -51,12 +54,30 @@ def handle_file_list(file_paths: list):
                 return UploadType.DICOM, dicom_files_handling(file_paths)
 
 
-def dicom_files_handling(dicom_files):
+def dicom_files_handling(dicom_files: list):
     parent_dir = Path(dicom_files[0]).parent
     return parent_dir
 
 
 def handle_compressed_file(file_path: str):
-    file_ext = os.path.splitext(file_path[0])[1].lower()
-    if file_ext == CompressedFileExtensions._zip.value:
-        return []
+    file_ext = os.path.splitext(file_path)[1].lower()
+    file_name = os.path.splitext(file_path)[0]
+    parent_dir = Path(file_path).parent
+
+    extract_dir = os.path.join(parent_dir, file_name)
+    if not os.path.isdir(extract_dir):
+        os.makedirs(extract_dir)
+
+    if file_ext == AllowedCompressedExtensions._zip.value:
+        import zipfile
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_dir)
+    elif file_ext == AllowedCompressedExtensions._7z.value:
+        from pyunpack import Archive
+        Archive(file_path).extractall(extract_dir)
+
+    file_list = []
+    for path, subdirs, files in os.walk(extract_dir):
+        for name in files:
+            file_list.append(os.path.join(path, name))
+    return file_list

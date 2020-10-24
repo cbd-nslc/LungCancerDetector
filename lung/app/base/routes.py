@@ -76,7 +76,9 @@ def upload(patient_id):
     if patient_id:
         patient = Patient.query.filter_by(id=patient_id).first()
         patients_list = None
+
     else:
+        #
         patient = None
         patients_list = Patient.query.filter_by(doctor=current_user).all()
 
@@ -85,7 +87,7 @@ def upload(patient_id):
         print(files)
 
         timestamp = int(datetime.now().timestamp())
-        save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(patient_id), str(timestamp))
+        save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(patient_id))
         if not os.path.isdir(save_path):
             os.makedirs(save_path)
         file_paths = [os.path.join(save_path, secure_filename(file.filename)) for file in files]
@@ -98,11 +100,12 @@ def upload(patient_id):
 
         if upload_type == UploadType.MHD_RAW:
             mhd_path = valid_upload_result
+            mhd_name = os.path.basename(mhd_path)
+
             mhd_md5 = hashlib.md5(open(mhd_path, 'rb').read()).hexdigest()
 
             # check if the file exists in db by md5 code
             ct_scan = CTScan.query.filter_by(mhd_md5=mhd_md5).first()
-
 
             if patient_id:
                 upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id,
@@ -112,7 +115,6 @@ def upload(patient_id):
 
                 if ct_scan not in patient.ct_scan.all():
                     patient.ct_scan.append(ct_scan)
-
 
             # if yes, load the ct_scan in the db
             if ct_scan:
@@ -126,13 +128,21 @@ def upload(patient_id):
 
                 # check if file is not saved due to some error
                 if os.path.exists(clean_path) and os.path.exists(pbb_path):
-                    return redirect(url_for('base_blueprint.result', mhd_md5=mhd_md5, patient_id=patient_id, upload_id=upload.id))
+                    return redirect(
+                        url_for('base_blueprint.result', mhd_md5=mhd_md5, patient_id=patient_id, upload_id=upload.id))
 
                 else:
-                    mhd_name = os.path.basename(mhd_path)
                     new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
                     return redirect(
-                        url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id, upload_id=upload.id))
+                        url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id,
+                                upload_id=upload.id))
+
+            # if no, save the file and run the model
+            else:
+                new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
+                return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id, upload_id=upload.id))
+
+        elif upload_type == UploadType.DICOM:
 
 
     return render_template('homepage/upload.html', title="upload", form=form, patients_list=patients_list,

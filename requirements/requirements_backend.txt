@@ -9,3 +9,5 @@ h5py
 SimpleITK
 pydicom
 opencv-python
+pyunpack
+patool
