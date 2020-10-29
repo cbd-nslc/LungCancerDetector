@@ -1,6 +1,8 @@
+import hashlib
 import os
 from enum import Enum
 from pathlib import Path
+from typing import Union, List
 
 
 class UploadType(Enum):
@@ -81,3 +83,16 @@ def handle_compressed_file(file_path: str):
         for name in files:
             file_list.append(os.path.join(path, name))
     return file_list
+
+
+def md5_checksum(file_path: Union[List[str], str]):
+    if isinstance(file_path, list):
+        hash_obj = hashlib.md5(open(file_path[0], 'rb').read())
+        for fname in file_path[1:]:
+            hash_obj.update(open(fname, 'rb').read())
+        checksum = hash_obj.hexdigest()
+        return checksum
+    elif isinstance(file_path, str):
+        return md5_checksum([file_path])
+    else:
+        raise UserWarning(f'Input type not supported: {type(file_path)}')

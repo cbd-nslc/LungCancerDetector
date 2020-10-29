@@ -118,6 +118,7 @@ def inference(input_path, output_file=None):
             pool.join()
         else:
             # Preprocess DCM files
+
             testsplit = full_prep(input_path, prep_result_path, n_worker=config.num_workers, use_existing=False)
 
     else:
@@ -216,14 +217,31 @@ if __name__ == "__main__":
     import os
     from fnmatch import fnmatch
 
-    base_path = '/home/vantuan5644/PycharmProjects/LungCancerDetector/lung/app/base/static/uploaded_ct_scan'
-    pattern = "*.mhd"
+    # DICOM inference
+    path = '/home/vantuan5644/PycharmProjects/DICOM_samples/0a0c32c9e08cc2ea76a71649de56be6d'
+    path = directory_padding(path)
+    basename = os.path.basename(path)
+    slice_matrix = os.path.join(path, f'{basename}_clean.npy')
+    bb_matrix = os.path.join(path, f'{basename}_pbb.npy')
+    make_bb_image(slice_matrix, bb_matrix)
 
-    images_list = []
-    for path, subdirs, files in os.walk(base_path):
-        for name in files:
-            if fnmatch(name, pattern):
-                basename = os.path.splitext(name)[0]
-                inference(os.path.join(path, name))
-                make_bb_image(os.path.join(base_path, f'{basename}_clean.npy'),
-                              os.path.join(base_path, f'{basename}_pbb.npy'))
+
+    # MHD inference
+    path = '/home/vantuan5644/PycharmProjects/LUNA_samples/negatives/1.3.6.1.4.1.14519.5.2.1.6279.6001.140527383975300992150799777603.mhd'
+    basename = os.path.splitext(path)[0]
+    inference(path)
+
+    slice_matrix = os.path.join(path, f'{basename}_clean.npy')
+    bb_matrix = os.path.join(path, f'{basename}_pbb.npy')
+    make_bb_image(slice_matrix, bb_matrix)
+
+    # pattern = "*.mhd"
+    # file_path = [os.path.join(path, p) for p in os.listdir(path)]
+    # images_list = []
+    # for path, subdirs, files in os.walk(base_path):
+    #     for name in files:
+    #         if fnmatch(name, pattern):
+    #             basename = os.path.splitext(name)[0]
+    #             inference(os.path.join(path, name))
+    #             make_bb_image(os.path.join(base_path, f'{basename}_clean.npy'),
+    #                           os.path.join(base_path, f'{basename}_pbb.npy'))

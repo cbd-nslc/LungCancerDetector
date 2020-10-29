@@ -330,3 +330,26 @@ def get_binary_prediction(prob):
         return 1
     else:
         return prob
+
+
+def check_least_directory(dir_path: str):
+    assert os.path.isdir(dir_path)
+    sub_dirs = [f.path for f in os.scandir(dir_path) if f.is_dir()]
+    return True if len(sub_dirs) == 0 else False
+
+
+def directory_padding(dir_path):
+    if check_least_directory(dir_path):
+        dir_name = os.path.basename(dir_path)
+        file_paths = [os.path.join(dir_path, f) for f in os.listdir(dir_path)]
+        dst_dir = os.path.join(dir_path, dir_name)
+        if not os.path.exists(dst_dir):
+            os.makedirs(dst_dir)
+        import shutil
+        for file_path in file_paths:
+            new_path = os.path.join(dst_dir, os.path.split(file_path)[1])
+            shutil.move(file_path, new_path)
+        return dir_path
+    else:
+        # raise UserWarning('Input directory contained subdirectories')
+        return dir_path

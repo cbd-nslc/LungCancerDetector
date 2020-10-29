@@ -7,7 +7,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 
 from app import db
-from app.base.upload_file_utils import handle_file_list, UploadType
+from app.base.upload_file_utils import handle_file_list, UploadType, md5_checksum
 
 sys.path.append("..")
 sys.path.append('../DSB2017')
@@ -23,7 +23,6 @@ from app.base.models import CTScan, Patient, Upload
 from app.base.forms import CTScanFormUI
 
 from app.users.utils import additional_specs
-
 from app.patients.routes import health_info_dict
 
 
@@ -54,10 +53,8 @@ def call_model(path, name, md5, patient):
     # run the model
     new_prediction = inference(path)
     new_ct_scan = CTScan(mhd_name=name, mhd_md5=md5, prediction=new_prediction)
-
     if patient:
         upload = Upload(patient_id=patient.id, date_uploaded=datetime.utcnow())
-
         new_ct_scan.patient.append(patient)
         new_ct_scan.upload.append(upload)
 
@@ -76,9 +73,7 @@ def upload(patient_id):
     if patient_id:
         patient = Patient.query.filter_by(id=patient_id).first()
         patients_list = None
-
     else:
-        #
         patient = None
         patients_list = Patient.query.filter_by(doctor=current_user).all()
 
@@ -99,50 +94,53 @@ def upload(patient_id):
         upload_type, valid_upload_result = handle_file_list(file_paths)
 
         if upload_type == UploadType.MHD_RAW:
-            mhd_path = valid_upload_result
-            mhd_name = os.path.basename(mhd_path)
-
-            mhd_md5 = hashlib.md5(open(mhd_path, 'rb').read()).hexdigest()
-
-            # check if the file exists in db by md5 code
-            ct_scan = CTScan.query.filter_by(mhd_md5=mhd_md5).first()
-
-            if patient_id:
-                upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id,
-                                date_uploaded=datetime.utcnow())
-                db.session.add(upload)
-                db.session.commit()
-
-                if ct_scan not in patient.ct_scan.all():
-                    patient.ct_scan.append(ct_scan)
-
-            # if yes, load the ct_scan in the db
-            if ct_scan:
-                print('Pre-computed')
-
-                # Return 0 if negative, 1 if positive, and keep the probability if unsure
-                base_name = ct_scan.mhd_name.replace('.mhd', '')
-
-                clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
-                pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
-
-                # check if file is not saved due to some error
-                if os.path.exists(clean_path) and os.path.exists(pbb_path):
-                    return redirect(
-                        url_for('base_blueprint.result', mhd_md5=mhd_md5, patient_id=patient_id, upload_id=upload.id))
-
-                else:
-                    new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
-                    return redirect(
-                        url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id,
-                                upload_id=upload.id))
-
-            # if no, save the file and run the model
-            else:
-                new_ct_scan = call_model(mhd_path, mhd_name, mhd_md5, patient)
-                return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id, upload_id=upload.id))
+            ct_scan_path = valid_upload_result
+            mhd_name = os.path.basename(ct_scan_path)
+            ct_scan_md5 = md5_checksum(ct_scan_path)
 
         elif upload_type == UploadType.DICOM:
+            ct_scan_path = valid_upload_result
+            dicom_files = [os.path.join(p) for p in os.listdir(ct_scan_path)]
+            ct_scan_md5 = md5_checksum(dicom_files)
+
+        else:
+            raise NotImplementedError()
+
+        # check if the file exists in db by md5 code
+        ct_scan = CTScan.query.filter_by(mhd_md5=ct_scan_md5).first()
+        if patient_id:
+            upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id, date_uploaded=datetime.utcnow())
+            if ct_scan not in patient.ct_scan.all():
+                patient.ct_scan.append(ct_scan)
+            db.session.add(upload)
+            db.session.commit()
+
+        # if yes, load the ct_scan in the db
+        if ct_scan:
+            print('Pre-computed')
+
+            # Return 0 if negative, 1 if positive, and keep the probability if unsure
+            base_name = ct_scan.mhd_name.replace('.mhd', '')
+
+            clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
+            pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
+
+            # check if file is not saved due to some error
+            if os.path.exists(clean_path) and os.path.exists(pbb_path):
+                return redirect(
+                    url_for('base_blueprint.result', mhd_md5=ct_scan_md5, patient_id=patient_id, upload_id=upload.id))
+
+            else:
+                new_ct_scan = call_model(ct_scan_path, mhd_name, ct_scan_md5, patient)
+                return redirect(
+                    url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id,
+                            upload_id=upload.id))
+
+        # if no, save the file and run the model
+        else:
+            new_ct_scan = call_model(ct_scan_path, mhd_name, ct_scan_md5, patient)
+            return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id,
+                                    upload_id=upload.id))
 
 
     return render_template('homepage/upload.html', title="upload", form=form, patients_list=patients_list,
