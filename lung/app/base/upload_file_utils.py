@@ -4,6 +4,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Union, List
 
+from DSB2017.utils import directory_padding
+
 
 class UploadType(Enum):
     MHD_RAW = 'mhd_raw'
@@ -58,7 +60,7 @@ def handle_file_list(file_paths: list):
 
 def dicom_files_handling(dicom_files: list):
     parent_dir = Path(dicom_files[0]).parent
-    return parent_dir
+    return directory_padding(parent_dir)
 
 
 def handle_compressed_file(file_path: str):

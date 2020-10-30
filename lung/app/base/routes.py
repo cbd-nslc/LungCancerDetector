@@ -1,4 +1,3 @@
-import hashlib
 import itertools
 import os
 import sys
@@ -95,25 +94,30 @@ def upload(patient_id):
 
         if upload_type == UploadType.MHD_RAW:
             ct_scan_path = valid_upload_result
-            mhd_name = os.path.basename(ct_scan_path)
+            ct_scan_name = os.path.basename(ct_scan_path)
             ct_scan_md5 = md5_checksum(ct_scan_path)
 
         elif upload_type == UploadType.DICOM:
             ct_scan_path = valid_upload_result
             dicom_files = [os.path.join(p) for p in os.listdir(ct_scan_path)]
             ct_scan_md5 = md5_checksum(dicom_files)
+            ct_scan_name = os.path.basename(ct_scan_path)
 
         else:
             raise NotImplementedError()
 
         # check if the file exists in db by md5 code
         ct_scan = CTScan.query.filter_by(mhd_md5=ct_scan_md5).first()
+
         if patient_id:
             upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id, date_uploaded=datetime.utcnow())
             if ct_scan not in patient.ct_scan.all():
                 patient.ct_scan.append(ct_scan)
             db.session.add(upload)
             db.session.commit()
+        else:
+            # anonymous session
+            pass
 
         # if yes, load the ct_scan in the db
         if ct_scan:
@@ -131,17 +135,16 @@ def upload(patient_id):
                     url_for('base_blueprint.result', mhd_md5=ct_scan_md5, patient_id=patient_id, upload_id=upload.id))
 
             else:
-                new_ct_scan = call_model(ct_scan_path, mhd_name, ct_scan_md5, patient)
+                new_ct_scan = call_model(ct_scan_path, ct_scan_name, ct_scan_md5, patient)
                 return redirect(
                     url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id,
                             upload_id=upload.id))
 
         # if no, save the file and run the model
         else:
-            new_ct_scan = call_model(ct_scan_path, mhd_name, ct_scan_md5, patient)
+            new_ct_scan = call_model(ct_scan_path, ct_scan_name, ct_scan_md5, patient)
             return redirect(url_for('base_blueprint.result', mhd_md5=new_ct_scan.mhd_md5, patient_id=patient_id,
                                     upload_id=upload.id))
-
 
     return render_template('homepage/upload.html', title="upload", form=form, patients_list=patients_list,
                            patient=patient)
