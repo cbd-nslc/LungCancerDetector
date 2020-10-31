@@ -1,8 +1,12 @@
 import hashlib
 import os
+import sys
 from enum import Enum
 from pathlib import Path
 from typing import Union, List
+
+sys.path.append("..")
+sys.path.append('../DSB2017')
 
 from DSB2017.utils import directory_padding
 
