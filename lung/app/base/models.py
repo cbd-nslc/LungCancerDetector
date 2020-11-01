@@ -134,7 +134,7 @@ class Patient(db.Model):
 class CTScan(db.Model):
     id = db.Column(Integer, primary_key=True)
     mhd_name = db.Column(db.String, nullable=False)
-    mhd_md5 = db.Column(db.String, nullable=False)
+    ct_scan_md5 = db.Column(db.String, nullable=False)
     prediction = db.Column(db.Float, nullable=False)
     binary_prediction = db.Column(db.Float)
     bbox_basename = db.Column(db.String)

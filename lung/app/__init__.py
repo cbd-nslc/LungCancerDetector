@@ -84,6 +84,10 @@ def apply_themes(app):
 
 def create_app(config, selenium=False):
     app = Flask(__name__, static_folder='base/static')
+    import logging
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+
     UPLOAD_FOLDER = path.join(app.static_folder, 'uploaded_ct_scan')
 
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
