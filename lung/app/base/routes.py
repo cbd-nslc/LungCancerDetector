@@ -85,7 +85,7 @@ def upload(patient_id):
         print(files)
 
         timestamp = int(datetime.now().timestamp())
-        save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(patient_id), str(timestamp))
+        save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(current_user.id), str(patient_id), str(timestamp))
         if not os.path.isdir(save_path):
             os.makedirs(save_path)
         file_paths = [os.path.join(save_path, secure_filename(file.filename)) for file in files]
@@ -94,7 +94,10 @@ def upload(patient_id):
             file_paths.append(file_path)
             file.save(file_path)
 
+        print(file_paths)
         upload_type, valid_upload_result = handle_file_list(file_paths)
+        print(upload_type)
+        print(valid_upload_result)
 
         if upload_type == UploadType.MHD_RAW:
             new_ct_scan_path = valid_upload_result
@@ -112,14 +115,15 @@ def upload(patient_id):
 
         # check if the file exists in db by md5 code
         ct_scan = CTScan.query.filter_by(md5=new_ct_scan_md5).first()
-        if patient_id:
+
+        # if ct_scan exists, create pdf report (upload)
+        if ct_scan:
             upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id, date_uploaded=datetime.utcnow())
             if ct_scan not in patient.ct_scan.all():
                 patient.ct_scan.append(ct_scan)
             db.session.add(upload)
             db.session.commit()
         else:
-            # anonymous session
             pass
 
         # if yes, load the ct_scan in the db
@@ -162,7 +166,7 @@ def upload(patient_id):
 @blueprint.route('/result/<ct_scan_md5>/', defaults={'patient_id': None}, methods=['GET', 'POST'])
 @blueprint.route('/result/<ct_scan_md5>/<int:patient_id>/<upload_id>', methods=['GET', 'POST'])
 def result(ct_scan_md5, patient_id, upload_id):
-    ct_scan = CTScan.query.filter_by(ct_scan_md5=ct_scan_md5).first()
+    ct_scan = CTScan.query.filter_by(md5=ct_scan_md5).first()
     patient = Patient.query.filter_by(id=patient_id).first()
     upload = Upload.query.filter_by(id=upload_id).first()
 
