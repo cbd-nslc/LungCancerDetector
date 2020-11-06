@@ -66,7 +66,7 @@ def create_patients():
 
 """edit patient"""
 
-@blueprint.route("/patient_id:<int:patient_id>/edit", methods=['GET', 'POST'])
+@blueprint.route("/<int:patient_id>/edit", methods=['GET', 'POST'])
 @login_required
 def edit_info(patient_id):
     patient = Patient.query.get_or_404(patient_id)
@@ -109,7 +109,7 @@ def edit_info(patient_id):
     return render_template('edit_info.html', title='Edit', heading='Edit', form=form, picture_file=picture_file, health_info_dict=health_info_dict)
 
 # test
-@blueprint.route("/patient_id:<int:patient_id>/test", methods=['GET', 'POST'])
+@blueprint.route("/<int:patient_id>/test", methods=['GET', 'POST'])
 @login_required
 def test(patient_id):
     patient = Patient.query.get_or_404(patient_id)
@@ -139,7 +139,7 @@ def test(patient_id):
 
 """view patients"""
 
-@blueprint.route("/patient_id:<int:patient_id>/profile", methods=['GET', 'POST'])
+@blueprint.route("/<int:patient_id>/profile", methods=['GET', 'POST'])
 @login_required
 def patients_profile(patient_id):
     patient = Patient.query.get_or_404(patient_id)
@@ -182,7 +182,7 @@ logging.getLogger('weasyprint').setLevel(100)
 import warnings
 warnings.filterwarnings("ignore", module="weasyprint")
 
-@blueprint.route("/patient_id:<int:patient_id>/pdf/upload_id:<upload_id>")
+@blueprint.route("/<int:patient_id>/pdf/upload_id:<upload_id>")
 @login_required
 def pdf_template(patient_id, upload_id):
     form = PatientsForm()

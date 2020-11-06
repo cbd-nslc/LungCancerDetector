@@ -48,12 +48,13 @@ def contact():
 
 
 def commit_new_ct_scan(path, md5, patient):
-    print('Not pre-computed, calling model')
-    
+
     # run the model
     if os.path.isdir(path):
         path = directory_padding(path)
     new_prediction = inference(path)
+    assert isinstance(path, str)
+    print(f'Not pre-computed, calling model for the input: {path}')
 
     new_ct_scan = CTScan(path=path, md5=md5, prediction=new_prediction)
     if patient:
@@ -82,8 +83,6 @@ def upload(patient_id):
 
     if form.submit.data and form.validate_on_submit():
         files = form.file.data
-        print(files)
-
         timestamp = int(datetime.now().timestamp())
         save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(current_user.id), str(patient_id), str(timestamp))
         if not os.path.isdir(save_path):
@@ -94,10 +93,7 @@ def upload(patient_id):
             file_paths.append(file_path)
             file.save(file_path)
 
-        print(file_paths)
         upload_type, valid_upload_result = handle_file_list(file_paths)
-        print(upload_type)
-        print(valid_upload_result)
 
         if upload_type == UploadType.MHD_RAW:
             new_ct_scan_path = valid_upload_result
@@ -106,7 +102,8 @@ def upload(patient_id):
 
         elif upload_type == UploadType.DICOM:
             new_ct_scan_path = valid_upload_result
-            dicom_files = [os.path.join(p) for p in os.listdir(new_ct_scan_path)]
+            import glob
+            dicom_files = glob.glob(new_ct_scan_path + '/*/*.dcm')
             new_ct_scan_md5 = md5_checksum(dicom_files)
             # new_ct_scan_name = Path(new_ct_scan_path).name
 

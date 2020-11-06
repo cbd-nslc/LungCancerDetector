@@ -63,7 +63,7 @@ def handle_file_list(file_paths: list):
 
 
 def dicom_files_handling(dicom_files: list):
-    parent_dir = Path(dicom_files[0]).parent
+    parent_dir = str(Path(dicom_files[0]).parent)
     return directory_padding(parent_dir)
 
 

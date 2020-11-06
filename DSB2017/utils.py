@@ -338,7 +338,7 @@ def check_least_directory(dir_path: str):
     return True if len(sub_dirs) == 0 else False
 
 
-def directory_padding(dir_path):
+def directory_padding(dir_path: str):
     if check_least_directory(dir_path):
         dir_name = os.path.basename(dir_path)
         file_paths = [os.path.join(dir_path, f) for f in os.listdir(dir_path)]
