@@ -57,10 +57,7 @@ def commit_new_ct_scan(path, md5, patient):
     print(f'Not pre-computed, calling model for the input: {path}')
 
     new_ct_scan = CTScan(path=path, md5=md5, prediction=new_prediction)
-    if patient:
-        upload = Upload(patient_id=patient.id, date_uploaded=datetime.utcnow())
-        new_ct_scan.patient.append(patient)
-        new_ct_scan.upload.append(upload)
+    new_ct_scan.patient.append(patient)
 
     db.session.add(new_ct_scan)
     db.session.commit()
@@ -113,18 +110,15 @@ def upload(patient_id):
         # check if the file exists in db by md5 code
         ct_scan = CTScan.query.filter_by(md5=new_ct_scan_md5).first()
 
-        # if ct_scan exists, create pdf report (upload)
+        # if yes, load the ct_scan in the db
         if ct_scan:
+            # if ct_scan exists, create pdf report (upload)
             upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id, date_uploaded=datetime.utcnow())
             if ct_scan not in patient.ct_scan.all():
                 patient.ct_scan.append(ct_scan)
             db.session.add(upload)
             db.session.commit()
-        else:
-            pass
 
-        # if yes, load the ct_scan in the db
-        if ct_scan:
             print('Pre-computed')
 
             old_ct_scan_path = ct_scan.path
@@ -153,6 +147,16 @@ def upload(patient_id):
         # if no, save the file and run the model
         else:
             new_ct_scan = commit_new_ct_scan(path=new_ct_scan_path, md5=new_ct_scan_md5, patient=patient)
+
+            new_ct_scan.patient.append(patient)
+            patient.ct_scan.append(new_ct_scan)
+
+            # if ct_scan not exists, create pdf report (upload)
+            upload = Upload(patient_id=patient_id, ct_scan_id=new_ct_scan.id, date_uploaded=datetime.utcnow())
+
+            db.session.add(upload)
+            db.session.commit()
+
             return redirect(url_for('base_blueprint.result', ct_scan_md5=new_ct_scan.md5, patient_id=patient_id,
                                     upload_id=upload.id))
 
