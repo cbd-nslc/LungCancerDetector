@@ -2,7 +2,6 @@ import itertools
 import os
 import sys
 from datetime import datetime
-from pathlib import Path
 
 from werkzeug.utils import secure_filename
 
@@ -13,7 +12,7 @@ sys.path.append("..")
 sys.path.append('../DSB2017')
 
 from DSB2017.main import inference, make_bb_image
-from DSB2017.utils import get_binary_prediction, directory_padding
+from DSB2017.utils import get_binary_prediction, directory_padding, get_slice_bb_matrices
 
 from flask import render_template, redirect, url_for, current_app
 from flask_login import current_user, login_required
@@ -47,24 +46,6 @@ def contact():
     return render_template('homepage/contact.html', title='Contact')
 
 
-def commit_new_ct_scan(path, md5, patient):
-
-    # run the model
-    if os.path.isdir(path):
-        path = directory_padding(path)
-    new_prediction = inference(path)
-    assert isinstance(path, str)
-    print(f'Not pre-computed, calling model for the input: {path}')
-
-    new_ct_scan = CTScan(path=path, md5=md5, prediction=new_prediction)
-    new_ct_scan.patient.append(patient)
-
-    db.session.add(new_ct_scan)
-    db.session.commit()
-
-    return new_ct_scan
-
-
 @blueprint.route('/upload', defaults={'patient_id': None}, methods=['GET', 'POST'])
 @blueprint.route('/upload/<int:patient_id>', methods=['GET', 'POST'])
 @login_required
@@ -81,7 +62,8 @@ def upload(patient_id):
     if form.submit.data and form.validate_on_submit():
         files = form.file.data
         timestamp = int(datetime.now().timestamp())
-        save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(current_user.id), str(patient_id), str(timestamp))
+        save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(current_user.id), str(patient_id),
+                                 str(timestamp))
         if not os.path.isdir(save_path):
             os.makedirs(save_path)
         file_paths = [os.path.join(save_path, secure_filename(file.filename)) for file in files]
@@ -112,31 +94,25 @@ def upload(patient_id):
 
         # if yes, load the ct_scan in the db
         if ct_scan:
+            print('Pre-computed')
             # if ct_scan exists, create pdf report (upload)
             upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id, date_uploaded=datetime.utcnow())
             if ct_scan not in patient.ct_scan.all():
                 patient.ct_scan.append(ct_scan)
             db.session.add(upload)
-            db.session.commit()
-
-            print('Pre-computed')
 
             old_ct_scan_path = ct_scan.path
-            if os.path.isfile(old_ct_scan_path):
-                # With MHD & RAW files, old_ct_scan_path is the path to the MHD file, we need the parent dir
-                base_name = os.path.basename(old_ct_scan_path)
-                old_ct_scan_path = Path(old_ct_scan_path).parent
+            if old_ct_scan_path is None or len(str(old_ct_scan_path)) == 0:
+                ct_scan.path = new_ct_scan_path
+            db.session.commit()
 
-            else:
-                base_name = Path(old_ct_scan_path).name
-
-            clean_path = os.path.join(old_ct_scan_path, f'{base_name}_clean.npy')
-            pbb_path = os.path.join(old_ct_scan_path, f'{base_name}_pbb.npy')
+            clean_path, pbb_path = get_slice_bb_matrices(ct_scan.path)
 
             # check if file is not saved due to some error
             if os.path.exists(clean_path) and os.path.exists(pbb_path):
                 return redirect(
-                    url_for('base_blueprint.result', ct_scan_md5=new_ct_scan_md5, patient_id=patient_id, upload_id=upload.id))
+                    url_for('base_blueprint.result', ct_scan_md5=new_ct_scan_md5, patient_id=patient_id,
+                            upload_id=upload.id))
 
             else:
                 new_ct_scan = commit_new_ct_scan(path=new_ct_scan_path, md5=new_ct_scan_md5, patient=patient)
@@ -171,23 +147,16 @@ def result(ct_scan_md5, patient_id, upload_id):
     patient = Patient.query.filter_by(id=patient_id).first()
     upload = Upload.query.filter_by(id=upload_id).first()
 
-    base_name = ct_scan.mhd_name.replace('.mhd', '')
     binary_prediction = get_binary_prediction(ct_scan.prediction)
-
-    clean_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_clean.npy')
-    pbb_path = os.path.join(current_app.static_folder, f'uploaded_ct_scan/{base_name}_pbb.npy')
-
+    clean_path, pbb_path = get_slice_bb_matrices(ct_scan.path)
     # diameter
-    bbox_basename, diameter = make_bb_image(clean_path, pbb_path)
+    bbox_image_path, diameter = make_bb_image(clean_path, pbb_path)
 
     if not ct_scan.diameter:
         ct_scan.diameter = diameter
 
     if not ct_scan.binary_prediction:
         ct_scan.binary_prediction = binary_prediction
-
-    if not ct_scan.bbox_basename:
-        ct_scan.bbox_basename = bbox_basename
 
     specs_list = list(itertools.chain(*[health_info_dict['biopsy_test'], health_info_dict['genetic_test']]))
     specs_dict = dict(zip(specs_list, [getattr(patient, spec) for spec in specs_list]))
@@ -221,6 +190,23 @@ def result(ct_scan_md5, patient_id, upload_id):
 
     db.session.commit()
 
-    return render_template('homepage/result.html', title="Upload", bbox_basename=bbox_basename,
+    return render_template('homepage/result.html', title="Upload", bbox_image_path=bbox_image_path,
                            result_percent=binary_prediction, result_text=result_text, diameter=diameter,
                            ct_scan=ct_scan, patient=patient, upload=upload)
+
+
+def commit_new_ct_scan(path, md5, patient):
+    # run the model
+    if os.path.isdir(path):
+        path = directory_padding(path)
+    new_prediction = inference(path)
+    assert isinstance(path, str)
+    print(f'Not pre-computed, calling model for the input: {path}')
+
+    new_ct_scan = CTScan(path=path, md5=md5, prediction=new_prediction)
+    new_ct_scan.patient.append(patient)
+
+    db.session.add(new_ct_scan)
+    db.session.commit()
+
+    return new_ct_scan

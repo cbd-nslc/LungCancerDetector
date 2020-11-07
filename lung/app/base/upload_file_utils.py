@@ -102,3 +102,6 @@ def md5_checksum(file_path: Union[List[str], str]):
         return md5_checksum([file_path])
     else:
         raise UserWarning(f'Input type not supported: {type(file_path)}')
+
+
+

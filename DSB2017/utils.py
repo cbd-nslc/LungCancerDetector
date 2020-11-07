@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -353,3 +354,30 @@ def directory_padding(dir_path: str):
     else:
         # raise UserWarning('Input directory contained subdirectories')
         return dir_path
+
+
+def get_base_name_from_path(ct_scan_path: str):
+    if os.path.isfile(ct_scan_path):
+        # With MHD & RAW files, old_ct_scan_path is the path to the MHD file, we need the parent dir
+        base_name = os.path.basename(ct_scan_path)
+        old_ct_scan_path = Path(ct_scan_path).parent
+
+    else:
+        base_name = Path(ct_scan_path).name
+
+    return base_name
+
+
+def get_slice_bb_matrices(ct_scan_path: str):
+    base_name = get_base_name_from_path(ct_scan_path)
+    clean_path = os.path.join(ct_scan_path, f'{base_name}_clean.npy')
+    pbb_path = os.path.join(ct_scan_path, f'{base_name}_pbb.npy')
+    return clean_path, pbb_path
+
+
+def get_bbox_image_path(ct_scan_path: str):
+    if os.path.isfile(ct_scan_path) and ct_scan_path.endswith('.mhd'):
+        return ct_scan_path.replace('.mhd', '.png')
+    else:
+        base_name = get_base_name_from_path(ct_scan_path)
+        return os.path.join(ct_scan_path, f'{base_name}.png')

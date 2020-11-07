@@ -103,7 +103,7 @@
               <h2 style="text-align:center;"><i class="icon fas fa-lungs"></i> VISUALIZATION</h2><br><br>
               <p style="text-align:center;">Tumors can be visualized within the white bounding box</p>
               <p style="text-align:center;">Diameter of tumor: {{ diameter }} mm</p>
-              <img id="pbb-image" src="{{ url_for('static', filename='uploaded_ct_scan/' + bbox_basename) }}">
+              <img id="pbb-image" src="{{bbox_image_path}}">
             </div>
 
             <!-- treatment -->

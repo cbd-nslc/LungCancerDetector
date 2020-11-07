@@ -210,7 +210,7 @@ def make_bb_image(slice_mat, bb_mat, output_img_file=None):
 
     plt.imsave(output_img_file_path, single_slice, cmap='binary')
     print('Write bb to img:', output_img_file)
-    return output_img_file, diameter
+    return output_img_file_path, diameter
 
 
 if __name__ == "__main__":
