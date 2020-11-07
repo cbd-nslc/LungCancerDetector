@@ -130,12 +130,10 @@ class Patient(db.Model):
 
 class CTScan(db.Model):
     id = db.Column(Integer, primary_key=True)
-    mhd_name = db.Column(db.String, nullable=False)
-    path = db.Column(db.String, nullable=False)
+    path = db.Column(db.String)
     md5 = db.Column(db.String, nullable=False)
     prediction = db.Column(db.Float, nullable=False)
     binary_prediction = db.Column(db.Float)
-    bbox_basename = db.Column(db.String)
     diameter = db.Column(db.Float)
 
     upload = db.relationship('Upload', back_populates='ct_scan', lazy='dynamic')
