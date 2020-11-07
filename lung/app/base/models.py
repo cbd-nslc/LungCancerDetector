@@ -130,7 +130,7 @@ class Patient(db.Model):
 
 class CTScan(db.Model):
     id = db.Column(Integer, primary_key=True)
-    path = db.Column(db.String, nullable=False)
+    path = db.Column(db.String)
     md5 = db.Column(db.String, nullable=False)
     prediction = db.Column(db.Float, nullable=False)
     binary_prediction = db.Column(db.Float)
