@@ -359,9 +359,7 @@ def directory_padding(dir_path: str):
 def get_base_name_from_path(ct_scan_path: str):
     if os.path.isfile(ct_scan_path):
         # With MHD & RAW files, old_ct_scan_path is the path to the MHD file, we need the parent dir
-        base_name = os.path.basename(ct_scan_path)
-        old_ct_scan_path = Path(ct_scan_path).parent
-
+        base_name = os.path.splitext(os.path.basename(ct_scan_path))[0]
     else:
         base_name = Path(ct_scan_path).name
 
@@ -370,14 +368,17 @@ def get_base_name_from_path(ct_scan_path: str):
 
 def get_slice_bb_matrices(ct_scan_path: str):
     base_name = get_base_name_from_path(ct_scan_path)
+    if os.path.isfile(ct_scan_path):
+        ct_scan_path = Path(ct_scan_path).parent
     clean_path = os.path.join(ct_scan_path, f'{base_name}_clean.npy')
     pbb_path = os.path.join(ct_scan_path, f'{base_name}_pbb.npy')
     return clean_path, pbb_path
 
 
 def get_bbox_image_path(ct_scan_path: str):
-    if os.path.isfile(ct_scan_path) and ct_scan_path.endswith('.mhd'):
-        return ct_scan_path.replace('.mhd', '.png')
+    if os.path.isfile(ct_scan_path):
+        ct_scan_ext = os.path.splitext(ct_scan_path)[1]
+        return ct_scan_path.replace(ct_scan_ext, '.png')
     else:
         base_name = get_base_name_from_path(ct_scan_path)
         return os.path.join(ct_scan_path, f'{base_name}.png')

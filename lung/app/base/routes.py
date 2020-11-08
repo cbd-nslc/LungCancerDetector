@@ -122,6 +122,7 @@ def upload(patient_id):
 
         # if no, save the file and run the model
         else:
+            print('Calling model due to computed results not found')
             new_ct_scan = commit_new_ct_scan(path=new_ct_scan_path, md5=new_ct_scan_md5, patient=patient)
 
             new_ct_scan.patient.append(patient)
@@ -149,6 +150,7 @@ def result(ct_scan_md5, patient_id, upload_id):
 
     binary_prediction = get_binary_prediction(ct_scan.prediction)
     clean_path, pbb_path = get_slice_bb_matrices(ct_scan.path)
+
     # diameter
     bbox_image_path, diameter = make_bb_image(clean_path, pbb_path)
 
