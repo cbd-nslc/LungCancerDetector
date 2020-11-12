@@ -2,6 +2,7 @@ import itertools
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 
 from werkzeug.utils import secure_filename
 
@@ -103,10 +104,11 @@ def upload(patient_id):
 
             old_ct_scan_path = ct_scan.path
             if old_ct_scan_path is None or len(str(old_ct_scan_path)) == 0:
-                ct_scan.path = new_ct_scan_path
+                ct_scan.path = get_relative_path(new_ct_scan_path, current_app.config['UPLOAD_FOLDER'])
             db.session.commit()
 
-            clean_path, pbb_path = get_slice_bb_matrices(ct_scan.path)
+            clean_path, pbb_path = get_slice_bb_matrices(
+                get_full_path(ct_scan.path, current_app.config['UPLOAD_FOLDER']))
 
             # check if file is not saved due to some error
             if os.path.exists(clean_path) and os.path.exists(pbb_path):
@@ -149,7 +151,7 @@ def result(ct_scan_md5, patient_id, upload_id):
     upload = Upload.query.filter_by(id=upload_id).first()
 
     binary_prediction = get_binary_prediction(ct_scan.prediction)
-    clean_path, pbb_path = get_slice_bb_matrices(ct_scan.path)
+    clean_path, pbb_path = get_slice_bb_matrices(get_full_path(ct_scan.path, current_app.config['UPLOAD_FOLDER']))
 
     # diameter
     bbox_image_path, diameter = make_bb_image(clean_path, pbb_path)
@@ -205,10 +207,19 @@ def commit_new_ct_scan(path, md5, patient):
     assert isinstance(path, str)
     print(f'Not pre-computed, calling model for the input: {path}')
 
-    new_ct_scan = CTScan(path=path, md5=md5, prediction=new_prediction)
+    new_ct_scan = CTScan(path=get_relative_path(path, current_app.config['UPLOAD_FOLDER']),
+                         md5=md5, prediction=new_prediction)
     new_ct_scan.patient.append(patient)
 
     db.session.add(new_ct_scan)
     db.session.commit()
 
     return new_ct_scan
+
+
+def get_relative_path(full_path, common_save_dir):
+    return str(Path(full_path).relative_to(common_save_dir))
+
+
+def get_full_path(relative_path, common_save_dir):
+    return str(os.path.join(common_save_dir, relative_path))
