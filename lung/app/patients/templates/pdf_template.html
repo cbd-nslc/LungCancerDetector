@@ -150,7 +150,7 @@
       <h3>Visualization</h3>
       <div class="outer-row">
         <div class="label">
-          <img src="{{bbox_image_path}}">
+          <img src="{{ url_for('static', filename='uploaded_ct_scan/' + bbox_image_path) }}">
         </div>
 
         <div class="content">

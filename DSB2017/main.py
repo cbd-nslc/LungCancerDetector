@@ -195,9 +195,9 @@ def make_bb_image(slice_mat, bb_mat, output_img_file=None):
                          )
     diameter = round(diameter, 2)
 
-    print('start_point', start_point)
-    print('end_point', end_point)
-    print('diameter', diameter)
+    # print('start_point', start_point)
+    # print('end_point', end_point)
+    # print('diameter', diameter)
 
     single_slice = cv2.rectangle(single_slice, start_point, end_point, color=(0, 0, 255))
 

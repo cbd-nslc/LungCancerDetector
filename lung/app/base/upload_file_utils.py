@@ -104,4 +104,9 @@ def md5_checksum(file_path: Union[List[str], str]):
         raise UserWarning(f'Input type not supported: {type(file_path)}')
 
 
+def get_relative_path(full_path, common_save_dir):
+    return str(Path(full_path).relative_to(common_save_dir))
 
+
+def get_full_path(relative_path, common_save_dir):
+    return str(os.path.join(common_save_dir, relative_path))

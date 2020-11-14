@@ -2,12 +2,11 @@ import itertools
 import os
 import sys
 from datetime import datetime
-from pathlib import Path
 
 from werkzeug.utils import secure_filename
 
 from app import db
-from app.base.upload_file_utils import handle_file_list, UploadType, md5_checksum
+from app.base.upload_file_utils import handle_file_list, UploadType, md5_checksum, get_relative_path, get_full_path
 
 sys.path.append("..")
 sys.path.append('../DSB2017')
@@ -95,7 +94,7 @@ def upload(patient_id):
 
         # if yes, load the ct_scan in the db
         if ct_scan:
-            print('Pre-computed')
+            print('\nPre-computed')
             # if ct_scan exists, create pdf report (upload)
             upload = Upload(patient_id=patient_id, ct_scan_id=ct_scan.id, date_uploaded=datetime.utcnow())
             if ct_scan not in patient.ct_scan.all():
@@ -117,14 +116,20 @@ def upload(patient_id):
                             upload_id=upload.id))
 
             else:
-                new_ct_scan = commit_new_ct_scan(path=new_ct_scan_path, md5=new_ct_scan_md5, patient=patient)
+                print("\nPre-computed files not found")
+                print(f"Old_pbb_path: {pbb_path}")
+                # new_ct_scan = commit_new_ct_scan(path=new_ct_scan_path, md5=new_ct_scan_md5, patient=patient)
+                call_model(new_ct_scan_path)
+                ct_scan.path = get_relative_path(new_ct_scan_path, current_app.config['UPLOAD_FOLDER'])
+                db.session.commit()
+                print("CT_scan path changed to:", ct_scan.path)
                 return redirect(
-                    url_for('base_blueprint.result', ct_scan_md5=new_ct_scan.md5, patient_id=patient_id,
+                    url_for('base_blueprint.result', ct_scan_md5=ct_scan.md5, patient_id=patient_id,
                             upload_id=upload.id))
 
         # if no, save the file and run the model
         else:
-            print('Calling model due to computed results not found')
+            print('\nCalling model due to computed results not found')
             new_ct_scan = commit_new_ct_scan(path=new_ct_scan_path, md5=new_ct_scan_md5, patient=patient)
 
             new_ct_scan.patient.append(patient)
@@ -149,12 +154,14 @@ def result(ct_scan_md5, patient_id, upload_id):
     ct_scan = CTScan.query.filter_by(md5=ct_scan_md5).first()
     patient = Patient.query.filter_by(id=patient_id).first()
     upload = Upload.query.filter_by(id=upload_id).first()
-
+    print("\nVisualizing result")
     binary_prediction = get_binary_prediction(ct_scan.prediction)
     clean_path, pbb_path = get_slice_bb_matrices(get_full_path(ct_scan.path, current_app.config['UPLOAD_FOLDER']))
-
+    print("CT_Scan_path:", ct_scan.path)
     # diameter
     bbox_image_path, diameter = make_bb_image(clean_path, pbb_path)
+    bbox_image_path = get_relative_path(bbox_image_path, current_app.config['UPLOAD_FOLDER'])
+    print("BB image path:", bbox_image_path)
 
     if not ct_scan.diameter:
         ct_scan.diameter = diameter
@@ -199,14 +206,19 @@ def result(ct_scan_md5, patient_id, upload_id):
                            ct_scan=ct_scan, patient=patient, upload=upload)
 
 
-def commit_new_ct_scan(path, md5, patient):
-    # run the model
+def call_model(path):
+    print(f"\nCalling model for path: {path}")
     if os.path.isdir(path):
         path = directory_padding(path)
-    new_prediction = inference(path)
+    prediction = inference(path)
     assert isinstance(path, str)
-    print(f'Not pre-computed, calling model for the input: {path}')
+    print(f'Calling model for the input: {path}')
+    return prediction
 
+
+def commit_new_ct_scan(path, md5, patient):
+    # run the model
+    new_prediction = call_model(path)
     new_ct_scan = CTScan(path=get_relative_path(path, current_app.config['UPLOAD_FOLDER']),
                          md5=md5, prediction=new_prediction)
     new_ct_scan.patient.append(patient)
@@ -215,11 +227,3 @@ def commit_new_ct_scan(path, md5, patient):
     db.session.commit()
 
     return new_ct_scan
-
-
-def get_relative_path(full_path, common_save_dir):
-    return str(Path(full_path).relative_to(common_save_dir))
-
-
-def get_full_path(relative_path, common_save_dir):
-    return str(os.path.join(common_save_dir, relative_path))

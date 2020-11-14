@@ -2,7 +2,7 @@ import itertools
 import os
 from datetime import datetime
 
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, current_app
 from flask_login import login_required, current_user
 from flask_weasyprint import HTML, render_pdf
 
@@ -10,6 +10,7 @@ from DSB2017.main import make_bb_image
 from DSB2017.utils import get_bbox_image_path, get_slice_bb_matrices
 from app import db
 from app.base.models import Patient, Upload
+from app.base.routes import get_relative_path
 from app.patients import blueprint
 from app.patients.forms import PatientsForm
 from app.users.utils import save_picture_patients, additional_specs
@@ -234,10 +235,12 @@ def pdf_template(patient_id, upload_id):
     #     upload.result_text = result_text
     #     db.session.commit()
     bbox_image_path = get_bbox_image_path(ct_scan.path)
+
     if not os.path.exists(bbox_image_path):
         clean_path, pbb_path = get_slice_bb_matrices(ct_scan.path)
         # diameter
         bbox_image_path, diameter = make_bb_image(clean_path, pbb_path)
+    bbox_image_path = get_relative_path(bbox_image_path, current_app.config['UPLOAD_FOLDER'])
 
     rendered = render_template('pdf_template.html', form=form, upload=upload, ct_scan=ct_scan, result_text=result_text,
                                treatment=treatment, medicine=medicine, result_percent=ct_scan.binary_prediction,
