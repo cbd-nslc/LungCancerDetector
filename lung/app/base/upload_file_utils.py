@@ -1,5 +1,6 @@
 import hashlib
 import os
+import shutil
 import sys
 from enum import Enum
 from pathlib import Path
@@ -110,3 +111,12 @@ def get_relative_path(full_path, common_save_dir):
 
 def get_full_path(relative_path, common_save_dir):
     return str(os.path.join(common_save_dir, relative_path))
+
+
+def move_files(new_path: str, file_paths: list):
+    base_names = [os.path.basename(f) for f in file_paths]
+    new_file_paths = [os.path.join(new_path, basename) for basename in base_names]
+    assert len(file_paths) == len(new_file_paths)
+    for i in range(len(file_paths)):
+        shutil.move(file_paths[i], new_file_paths[i])
+    return new_file_paths

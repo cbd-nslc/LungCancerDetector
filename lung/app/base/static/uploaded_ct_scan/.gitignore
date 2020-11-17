@@ -1,5 +1,6 @@
 *.mhd
 *.raw
+*.dcm
 # Except this file
 !.gitignore
 

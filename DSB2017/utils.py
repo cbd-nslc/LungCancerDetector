@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -360,6 +361,7 @@ def get_base_name_from_path(ct_scan_path: str):
     if os.path.isfile(ct_scan_path):
         # With MHD & RAW files, old_ct_scan_path is the path to the MHD file, we need the parent dir
         base_name = os.path.splitext(os.path.basename(ct_scan_path))[0]
+        base_name = replace_ext_in_path(base_name, '.mhd', '')
     else:
         base_name = Path(ct_scan_path).name
 
@@ -377,8 +379,15 @@ def get_slice_bb_matrices(ct_scan_path: str):
 
 def get_bbox_image_path(ct_scan_path: str):
     if os.path.isfile(ct_scan_path):
-        ct_scan_ext = os.path.splitext(ct_scan_path)[1]
-        return ct_scan_path.replace(ct_scan_ext, '.png')
+        # ct_scan_ext = os.path.splitext(ct_scan_path)[1]
+        # Bug if file path contains multiple dots (a.b.c.mhd)
+        return replace_ext_in_path(ct_scan_path, '.mhd', '.png')
     else:
         base_name = get_base_name_from_path(ct_scan_path)
         return os.path.join(ct_scan_path, f'{base_name}.png')
+
+def replace_ext_in_path(path: str, old_ext: str, new_ext:str):
+    insensitive = re.compile(re.escape(old_ext), re.IGNORECASE)
+    ct_scan_path = insensitive.sub(new_ext, path)
+    return ct_scan_path
+

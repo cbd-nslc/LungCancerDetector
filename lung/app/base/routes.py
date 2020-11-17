@@ -6,7 +6,8 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 
 from app import db
-from app.base.upload_file_utils import handle_file_list, UploadType, md5_checksum, get_relative_path, get_full_path
+from app.base.upload_file_utils import handle_file_list, UploadType, md5_checksum, get_relative_path, get_full_path, \
+    move_files
 
 sys.path.append("..")
 sys.path.append('../DSB2017')
@@ -61,30 +62,42 @@ def upload(patient_id):
 
     if form.submit.data and form.validate_on_submit():
         files = form.file.data
+
+        # Uploaded files will be saved into temp_path, then moved to save_path
         timestamp = int(datetime.now().timestamp())
-        save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(current_user.id), str(patient_id),
+        temp_path = os.path.join(current_app.config['UPLOAD_FOLDER'], str(current_user.id), str(patient_id),
                                  str(timestamp))
-        if not os.path.isdir(save_path):
-            os.makedirs(save_path)
-        file_paths = [os.path.join(save_path, secure_filename(file.filename)) for file in files]
+
+        if not os.path.isdir(temp_path):
+            os.makedirs(temp_path)
+
+        file_paths = []
         for file in files:
-            file_path = os.path.join(save_path, secure_filename(file.filename))
+            file_path = os.path.join(temp_path, secure_filename(file.filename))
             file_paths.append(file_path)
             file.save(file_path)
+
+        combined_md5 = md5_checksum(file_paths)
+        save_path = os.path.join(current_app.config['UPLOAD_FOLDER'], combined_md5)
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+
+        file_paths = move_files(save_path, file_paths)
 
         upload_type, valid_upload_result = handle_file_list(file_paths)
 
         if upload_type == UploadType.MHD_RAW:
             new_ct_scan_path = valid_upload_result
             # new_ct_scan_name = os.path.basename(new_ct_scan_path)
-            new_ct_scan_md5 = md5_checksum(new_ct_scan_path)
-
+            # new_ct_scan_md5 = md5_checksum(new_ct_scan_path)
+            new_ct_scan_md5 = combined_md5
         elif upload_type == UploadType.DICOM:
             new_ct_scan_path = valid_upload_result
             import glob
             dicom_files = glob.glob(new_ct_scan_path + '/*/*.dcm')
-            new_ct_scan_md5 = md5_checksum(dicom_files)
+            # new_ct_scan_md5 = md5_checksum(dicom_files)
             # new_ct_scan_name = Path(new_ct_scan_path).name
+            new_ct_scan_md5 = combined_md5
 
         else:
             raise NotImplementedError()

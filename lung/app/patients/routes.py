@@ -11,6 +11,7 @@ from DSB2017.utils import get_bbox_image_path, get_slice_bb_matrices
 from app import db
 from app.base.models import Patient, Upload
 from app.base.routes import get_relative_path
+from app.base.upload_file_utils import get_full_path
 from app.patients import blueprint
 from app.patients.forms import PatientsForm
 from app.users.utils import save_picture_patients, additional_specs
@@ -234,10 +235,11 @@ def pdf_template(patient_id, upload_id):
     # if not upload.result_text:
     #     upload.result_text = result_text
     #     db.session.commit()
-    bbox_image_path = get_bbox_image_path(ct_scan.path)
+    ct_scan_full_path = get_full_path(ct_scan.path, current_app.config['UPLOAD_FOLDER'])
+    bbox_image_path = get_bbox_image_path(ct_scan_full_path)
 
     if not os.path.exists(bbox_image_path):
-        clean_path, pbb_path = get_slice_bb_matrices(ct_scan.path)
+        clean_path, pbb_path = get_slice_bb_matrices(ct_scan_full_path)
         # diameter
         bbox_image_path, diameter = make_bb_image(clean_path, pbb_path)
     bbox_image_path = get_relative_path(bbox_image_path, current_app.config['UPLOAD_FOLDER'])
