@@ -1,6 +1,3 @@
-
-
-
 // disable flash message after 4s
 jQuery(function($){
   setTimeout(function(){
@@ -81,10 +78,11 @@ $('form#ct-scan-upload input').on('change', function() {
     }
 })
 
-const fileTypes = ['image/nii', 'image/jpg', 'image/gif', 'image/png', 'image/svg', 'image/jpeg', 'image/raw', ];
+const fileTypes = ['image/nii', 'image/jpg', 'image/gif', 'image/png', 'image/svg', 'image/jpeg', 'image/raw'];
 
 function validFileType(file) {
     return fileTypes.includes(file.type.toLowerCase());}
+
 function returnFileSize(number) {
     if(number < 1024) {
         return number + ' bytes';
@@ -99,14 +97,23 @@ function returnFileMBSize(number){
     return (number/1048576);
 }
 
-$('form#ct-scan-uploadUI input').on('change', function() {
-    let input = $('input#fileUI');
-    let preview = document.querySelector('.preview');
-
-    let fullName = input.val().split('\\').pop();
+function getExtension(file){
+    let fullName = file.name.split('\\').pop();
     let fullNameSplit = fullName.split('.');
     let extension = fullNameSplit.pop().toLowerCase();
     let name = fullNameSplit.join('');
+
+    return [name, extension]
+}
+
+function isRawMhdValidated(raw, mhd) {
+    let [raw_name, raw_ex] = getExtension(raw)
+    let [mhd_name, mhd_ex] = getExtension(mhd)
+}
+
+$('form#ct-scan-uploadUI input').on('change', function() {
+    let input = $('input#fileUI');
+    let preview = document.querySelector('.preview');
 
     while(preview.firstChild) {
         preview.removeChild(preview.firstChild);}
@@ -114,27 +121,74 @@ $('form#ct-scan-uploadUI input').on('change', function() {
 //    $(this).closest('#dropzoneUI').find('.file-name').html(fullName);
 //    $('#upload-file-errorUI').hide();
 
-    let file_list = input.prop('files')
+    let file_list = input.prop('files');
+    var totalSize = 0;
+    var isSame = true;
+    var isSameRawMhdValidated = true;
+    var isValidated = true;
+    var isRawMhdValidated = true;
 
     if(file_list.length === 0) {
         const para = document.createElement('p');
         para.textContent = 'No files currently selected for upload';
         preview.appendChild(para);
     } else {
-        // check size
-        var totalSize = 0;
-        var isSame = true
-        for (let i=0; i<file_list.length; i++){
-//            if (i < file_list.length-1 && file_list[i].type != file_list[i+1].type){
-//                var isSame = false;
-//                break;}
-            totalSize = totalSize + returnFileMBSize(file_list[i].size);}
+        // check file raw and mhd
+        if (file_list.length == 2) {
+            let [first_name, first_ex] = getExtension(file_list[0]);
+            let [second_name, second_ex] = getExtension(file_list[1]);
+            console.log(first_name);
+            console.log(second_name);
+            if (first_ex === second_ex) {
+                if (first_ex === 'raw' || first_ex === 'mhd'){
+                    isSameRawMhdValidated = false;
+                }
+            } else {
+                if (first_ex === 'raw' && second_ex === 'mhd') {
+                    if (first_name != second_name) {
+                        isRawMhdValidated = false;}
+                } else if (first_ex === 'mhd' && second_ex === 'raw') {
+                    if (first_name != second_name) {
+                        isRawMhdValidated = false;}
+                } else {
+                    isSame = false;
+                }
+            }
+            totalSize = returnFileSize(file_list[0].size) + returnFileSize(file_list[1].size);
+        }
+        else {
+            isValidated = true;
+            for (let i=0; i<file_list.length; i++){
+            // check if there is a mhd or raw files:
+                if (getExtension(file_list[i])[1] === 'mhd' || getExtension(file_list[i])[1] === 'raw') {
+                    isValidated = false;
+                    break;}
+
+                // check if all files are the same
+                if (i < file_list.length-1 && file_list[i].type != file_list[i+1].type){
+                    isSame = false;
+                    break;}
+
+                totalSize = totalSize + returnFileMBSize(file_list[i].size);}
+        }
+
 
         if (totalSize > 200) {
-            $('#upload-file-errorUI').text('Your files exceed 200 MB, please reupload.').show();
+            $('#upload-file-errorUI').text('Your files exceed 200 MB, please reupload.').show(); input.val('');
         } else if (isSame === false){
-            $('#upload-file-errorUI').text('All files must have the same extension, please reupload.').show();
+            // must have same extension, except for mhd/raw
+            $('#upload-file-errorUI').text('All files must have the same extension (except for "mhd" and "raw" files), please reupload.').show(); input.val('');
+        } else if (isRawMhdValidated == false){
+            // raw and mhd must have same name
+            $('#upload-file-errorUI').text('"mhd" and "raw" files must have the same names, please reupload.').show(); input.val('');
+        } else if (isValidated == false){
+            // cant upload raw/mhd if length != 2
+            $('#upload-file-errorUI').text('Only 1 "mhd" file and 1 "raw" file can be uploaded together, and separately from other extensions, please reupload.').show(); input.val('');
+        } else if (isSameRawMhdValidated == false){
+            // when length == 2, cannot upload [raw, raw], [mhd, mhd]
+            $('#upload-file-errorUI').text('Only 1 "raw" file and 1 "mhd" file can be uploaded at the same time, please reupload.').show(); input.val('');
         } else {
+            $('#upload-file-errorUI').hide();
         //  add file list
             const list = document.createElement('ol');
             preview.appendChild(list);
@@ -147,11 +201,6 @@ $('form#ct-scan-uploadUI input').on('change', function() {
 
             list.appendChild(listItem);}
         }
-    }
-
-
-    for (let i=0; i<file_list.length; i++){
-        console.log(returnFileMBSize(file_list[i].size))
     }
 })
 
@@ -242,7 +291,6 @@ $(".picture-file").change(function() {
           $('.picture-now')
           .attr('src', e.target.result);
 
-
         }
         reader.readAsDataURL(this.files[0]); // convert to base64 string
         $('.picture-error').hide();
@@ -263,8 +311,6 @@ $('form#patient-form input[type="number"]').each(function(i, input){
 })
 
 // input select
-
-
 $('select').children(':first-child').each(function() {
    var thisAttr = $(this).attr('disabled');
    if(thisAttr = "disabled") {
