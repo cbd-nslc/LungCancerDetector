@@ -237,7 +237,7 @@ $('#cancel-button').on('click', function() {
 
 // loading progress bar
 
-$('form#ct-scan-upload').on('submit', function(e) {
+$('form#ct-scan-uploadUI').on('submit', function(e) {
     current_progress = 0.1;
     step = 0.006; // the smaller this is the slower the progress bar
 
