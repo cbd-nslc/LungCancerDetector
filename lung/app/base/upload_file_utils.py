@@ -3,13 +3,16 @@ import os
 import shutil
 import sys
 from enum import Enum
+from functools import reduce
+from operator import xor
 from pathlib import Path
 from typing import Union, List
 
-sys.path.append("..")
-sys.path.append('../DSB2017')
 
-from DSB2017.utils import directory_padding
+# sys.path.append("..")
+# sys.path.append('../DSB2017')
+#
+# from DSB2017.utils import directory_padding
 
 
 class UploadType(Enum):
@@ -94,11 +97,12 @@ def handle_compressed_file(file_path: str):
 
 def md5_checksum(file_path: Union[List[str], str]):
     if isinstance(file_path, list):
-        hash_obj = hashlib.md5(open(file_path[0], 'rb').read())
-        for fname in file_path[1:]:
-            hash_obj.update(open(fname, 'rb').read())
-        checksum = hash_obj.hexdigest()
-        return checksum
+        md5_list = []
+        for file in file_path:
+            md5 = str(hashlib.md5(open(file, 'rb').read()).hexdigest())
+            md5_list.append(int(md5, base=16))
+        combined_hash = hex(reduce(xor, md5_list))
+        return combined_hash[2:]
     elif isinstance(file_path, str):
         return md5_checksum([file_path])
     else:
@@ -120,3 +124,12 @@ def move_files(new_path: str, file_paths: list):
     for i in range(len(file_paths)):
         shutil.move(file_paths[i], new_file_paths[i])
     return new_file_paths
+
+
+def calculate_checksum(filenames):
+    hash = hashlib.md5()
+    for fn in filenames:
+        if os.path.isfile(fn):
+            hash.update(open(fn, "rb").read())
+    return hash.hexdigest()
+
