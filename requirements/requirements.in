@@ -1,0 +1,27 @@
+-c requirements.txt
+torch
+pandas
+numpy
+scipy
+scikit-image
+matplotlib
+jupyter
+h5py
+SimpleITK
+pydicom
+opencv-python
+pyunpack
+patool
+
+# Flask stuffs
+
+Flask_Bcrypt
+Flask
+WTForms
+Flask_Login
+Flask_WTF
+Flask_SQLAlchemy
+flask_migrate
+email-validator
+flask_mail
+pdfkit
