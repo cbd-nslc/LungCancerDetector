@@ -343,7 +343,7 @@ def check_least_directory(dir_path: str):
 def directory_padding(dir_path: str):
     if check_least_directory(dir_path):
         dir_name = os.path.basename(dir_path)
-        file_paths = [os.path.join(dir_path, f) for f in os.listdir(dir_path) if f.endwiths('.dcm')]
+        file_paths = [os.path.join(dir_path, f) for f in os.listdir(dir_path) if f.endswith('.dcm')]
         dst_dir = os.path.join(dir_path, dir_name)
         if not os.path.exists(dst_dir):
             os.makedirs(dst_dir)
