@@ -132,3 +132,6 @@ dmypy.json
 # lung
 /lung/migrations/
 /kaggle_ndsb2017/.idea/
+
+# database
+*.db
